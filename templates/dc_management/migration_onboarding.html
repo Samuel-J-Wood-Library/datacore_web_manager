@@ -1,0 +1,47 @@
+
+{% load project_tags %}
+
+<table class="table table-striped table-hover">
+<thead class="thead-default">
+<tr>
+    <th colspan="3">Migration</th>
+    <th colspan="3">Confirmation Date</th>
+    <th></th>
+</tr>
+<tr>
+    <th>Project</th>
+    <th>Origin</th>
+    <th>Destination</th>
+    <th>Access</th>
+    <th>Environment</th>
+    <th>Data</th>
+    <th>Update</th>
+</tr>
+</thead>
+
+    {% for mig in migration_list %}
+      <tr>
+        <td>
+            <a href="{% url 'dc_management:project' mig.project.pk %}">
+                {{ mig.project }}
+            </a>
+        </td>
+        <td>
+            <a href="{% url 'dc_management:node' mig.node_origin.pk %}">
+            {{ mig.node_origin }}
+            </a>
+        </td>
+        <td>
+            <a href="{% url 'dc_management:node' mig.node_destination.pk %}">
+            {{ mig.node_destination }}
+            </a>
+        </td>
+        <td>{{ mig.access_date }}</td>
+        <td>{{ mig.envt_date }}</td>
+        <td>{{ mig.data_date }}</td>
+        <td><a type="button" class="btn btn-primary"
+               href="{% url 'dc_management:migration-update' mig.pk %}">Update</a>
+        </td>
+      </tr>
+    {% endfor %}
+</table>

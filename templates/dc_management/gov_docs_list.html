@@ -1,0 +1,55 @@
+{% load bootstrap3 %}
+
+{% load project_tags %}
+
+<table class="table table-striped table-hover">
+    <thead class="thead-default">
+    <tr>
+        <th>ID</th>
+        <th>Record #</th>
+        <th>Project</th>
+        <th>Type</th>
+        <th>Expiry Date</th>
+    </tr>
+    </thead>
+
+    {% for gd in gov_doc_list %}
+        
+        {% if gd.superseded_by.all.count > 0 or gd.defers_to_doc %}
+            <tr style="color:#BDA493;"">
+        {% else %}
+            <tr>
+        {% endif %}
+            <td>
+            <a href="{% url 'dc_management:govdocmeta' gd.pk %}" 
+               target="_blank">{{ gd.doc_id }}</a>
+            </td>
+            <td>{{ gd.pk }}</td>
+            <td>
+            <a href="{% url 'dc_management:project' gd.project.pk %}" 
+               target="_blank">
+               {{ gd.project }}
+            </a>
+            </td>
+            <td>{{ gd.get_governance_type_display }}</td>
+
+            {% if gd.attention_required == "danger" %}
+                <td class="bg-danger" style="color:red;">
+                    {{ gd.expiry_date }}
+                </td>
+            {% elif gd.attention_required == "warning" %}
+                <td class="bg-warning" style="color:orange;">
+                    {{ gd.expiry_date }}
+                </td>
+            {% elif gd.attention_required == "primary" %}
+                <td class="bg-info" style="color:blue;">
+                    {{ gd.expiry_date }}
+                </td>
+            {%else %}
+                <td>
+                    {{ gd.expiry_date }}
+                </td>            
+            {% endif %}
+            
+    {% endfor %}
+</table>

@@ -1,0 +1,55 @@
+{% comment %}
+<!-- This template is referenced by the individual list templates --!> 
+<!-- Include this template after the {% if project_list %} tag --!> 
+{% endcomment %}
+
+{% load project_tags %}
+
+<table class="table table-striped table-hover">
+<thead class="thead-default">
+<tr>
+    <th>Project</th>
+    <th>Name</th>
+    <th>PI</th>
+    <th>Administrator</th>
+    <th># users</th>
+    <th>Expected completion</th>
+    <th>Status</th>
+</tr>
+</thead>
+
+    {% for project in project_list %}
+      <tr>
+        <td>
+            <a href="{% url 'dc_management:project' project.pk %}">
+                {{ project.dc_prj_id }}
+            </a>
+        </td>
+        <td {% if project.status == "CO" %}style="color:#896E4E;"{% endif %}>
+            {{ project.nickname }}
+        </td>
+        <td>
+            <a href="{% url 'dc_management:dcuser' project.pi.pk %}">
+                {{ project.pi }}
+            </a> 
+        </td>
+    
+        {% if project.prj_admin %}
+            <td>
+                <a href="{% url 'dc_management:dcuser' project.prj_admin.pk %}">
+                    {{ project.prj_admin }}
+                </a> 
+            </td>
+        {% else %}
+            <td></td>
+        {% endif %}
+        
+        <!-- Hopefully this variable will pass on the template to include --!> 
+        <!-- This is for the last two columns, which have variable formatting --!> 
+        {% include passthroughhtml %}
+        <td {% if project.status == "CO" %}style="color:#896E4E;"{% endif %}>
+            {{ project.get_status_display }}
+        </td>
+      </tr>
+    {% endfor %}
+</table>

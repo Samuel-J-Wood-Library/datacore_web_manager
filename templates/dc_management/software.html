@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load project_tags %}
+
+
+<h1>
+Software: {{ software }}
+</h1>
+
+<table class="table table-striped table-hover">
+    <thead class="thead-default">
+        <tr>
+            <th>Software</th>
+            <th>Version</th>
+            <th>License type</th>
+            <th>Seat count</th>
+            <th>User count</th>
+        </tr>
+    </thead>
+        
+        <tr>
+            <td>{{ software.name }}</td>
+            <td>{{ software.version }}</td>
+            <td>{{ software.license_type }}</td>
+            <td>{{ software.seatcount }}</td>
+            <td>{{ software.swusers.count }}</td>
+        </tr>
+        
+</table>
+
+<h2>Installed on {{ software.software_installed.count }} projects</h2>
+{% with software.software_installed.all as project_list %}
+    {% with 'dc_management/project_list.html' as passthroughhtml %}
+        {% include 'dc_management/project_list_template.html' %}
+    {% endwith %}
+{% endwith %}
+
+<h2>{{ software.swusers.count }} Users</h2>
+{% with software.swusers as user_list %}
+    {% include 'dc_management/user_list_multiproject.html' %}
+{% endwith %}
+
+
+{% endblock %}

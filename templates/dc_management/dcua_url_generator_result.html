@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% load bootstrap3 %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<h2>Data Core User Agreement Qualtrics URL</h2>
+<p>The URL below will embed the entered field values into the DCUA qualtrics form. 
+You can also copy the hyperlink and paste into a rich-text editor.</p>
+
+    <table class="table table-striped table-hover">
+    <thead class="thead-default">
+    <tr>
+        <th>Field</th>
+        <th>Value</th>
+    </tr>
+    </thead>
+    
+    <tr>
+    	<td>Start Date</td>
+    	<td>{{ dcuagenerator.startdate }}</td>
+    </tr>
+	<tr>
+    	<td>End Date</td>
+    	<td>{{ dcuagenerator.enddate }}</td>
+    </tr>
+	<tr>
+    	<td>Folders</td>
+    	<td>
+            {{ dcuagenerator.folder1 }}</br>
+            {% if dcuagenerator.folder2 %}{{ dcuagenerator.folder2 }}</br>{% endif %}
+            {% if dcuagenerator.folder3 %}{{ dcuagenerator.folder3 }}</br>{% endif %}
+            {% if dcuagenerator.folder4 %}{{ dcuagenerator.folder4 }}</br>{% endif %}
+            {% if dcuagenerator.folder5 %}{{ dcuagenerator.folder5 }}</br>{% endif %}
+            {% if dcuagenerator.folder6 %}{{ dcuagenerator.folder6 }}</br>{% endif %}
+            {% if dcuagenerator.folder7 %}{{ dcuagenerator.folder7 }}</br>{% endif %}
+    	</td>
+    </tr>
+
+    {% if dcuagenerator.project %}
+	<tr>
+    	<td>Project</td>
+    	<td>{{ dcuagenerator.project }}</td>
+    </tr>
+    {% endif %}
+
+    
+    {% if dcuagenerator.ticket %}
+	<tr>
+    	<td>Ticket</td>
+    	<td>{{ dcuagenerator.ticket }}</td>
+    </tr>
+    {% endif %}
+    
+    <tr>
+    	<td>URL</td>
+    	<td>{{ dcuagenerator.url }}</td>
+    </tr>
+    <tr>
+    	<td>Hyperlink</td>
+    	<td><a href='{{ dcuagenerator.url }}'>Data Core User Agreement</a></td>
+    </tr>
+    </table>
+
+{% endblock %}

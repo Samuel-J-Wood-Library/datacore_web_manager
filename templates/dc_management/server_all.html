@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>
+All {{ server_list|length }} Servers:
+</h1>
+
+<table class="table table-striped table-hover" id="serverTable">
+<thead class="thead-default">
+    <tr>
+        <th>Node</th>
+        <th>IP address</th>
+        <th># projects</th>
+        <th>CPUs</th>
+        <th>RAM</th>
+        <th>Direct Attach</th>
+        <th>Status</th>
+    </tr>
+</thead>
+
+{% for s in server_list %}
+    <tr>
+    <td><a href="{% url 'dc_management:node' s.pk %}">{{ s }}</a></td>
+    <td>{{ s.ip_address }}</td>
+    <td> {{ s.project_set.count }}</td>
+    <td> {{ s.processor_num }}</td>
+    <td> {{ s.ram }}</td>
+    <td> {{ s.other_storage }}</td>
+    <td> {{ s.get_status_display }}</td>
+    </tr>
+{% endfor %}
+</table>
+{% endblock content %}

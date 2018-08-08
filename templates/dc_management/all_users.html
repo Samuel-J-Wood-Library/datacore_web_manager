@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% load bootstrap3 %}
+
+{% block content %}
+<h2>All Data Core Users</h2>
+<a type="button" class="btn btn-primary" href="{% url 'dc_management:dc_user-add' %}">Create user</a>
+    <a type="button" class="btn btn-info" href="{% url 'dc_management:bulkuserupload' %}">Create users (bulk upload)</a>
+
+{% include "dc_management/user_list_multiproject.html" %}
+
+
+{% endblock %}
+
+

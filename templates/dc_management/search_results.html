@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% load bootstrap3 %}
+
+{% block content %}
+
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{# Display django.contrib.messages as Bootstrap alerts #}
+{% bootstrap_messages %}
+
+<h1>Search results for "{{ search_str }}"</h1>
+
+<h2>Projects</h2>
+{% with qs_prj as project_list %}
+{% with "dc_management/project_list.html" as passthroughhtml %}
+    {% include "dc_management/project_list_template.html" %}
+{% endwith %}
+{% endwith %}
+<h2>Governance Docs</h2>
+{% with qs_gov as gov_doc_list %}
+    {% include "dc_management/gov_docs_list.html" %}
+{% endwith %}
+
+<h2>Users</h2>
+{% with qs_usr as user_list %}
+    {% include "dc_management/user_list_multiproject.html" %}
+{% endwith %}
+
+{% endblock %}
+ 

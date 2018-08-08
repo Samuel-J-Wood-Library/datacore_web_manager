@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% load bootstrap3 %}
+
+{% load crispy_forms_tags %}
+
+
+
+{% block content %}
+
+{{ form.media }}
+
+<p>This form will send a request to have the software installed on the relevant node against the relevant project / person. You only need to specify the node if you are not specifying the project. If you add the project, it will determine which node needs to have the software installed.</p>
+
+<form action="" method="post">{% csrf_token %}
+    {{ form|crispy }}
+    <input type="submit" class="btn btn-danger" value="Initiate change" />
+</form>
+{% endblock %}

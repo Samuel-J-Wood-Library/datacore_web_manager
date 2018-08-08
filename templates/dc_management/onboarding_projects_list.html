@@ -1,0 +1,65 @@
+{% load project_tags %}
+
+{% if project_list %}
+<table class="table table-striped table-hover">
+<thead class="thead-default">
+<tr>
+    <th>Project</th>
+    <th>Name</th>
+    <th>PI</th>
+    <th>Administrator</th>
+    <th># users</th>
+    <th>Expected completion</th>
+</tr>
+</thead>
+
+    {% for project in project_list %}
+      <tr>
+        <td>
+            <a href="{% url 'dc_management:project' project.pk %}">
+                {{ project.dc_prj_id }}
+            </a>
+        </td>
+        <td {% if project.status == "CO" %}style="color:#896E4E;"{% endif %}>
+            {{ project.nickname }}
+        </td>
+        <td>
+            <a href="{% url 'dc_management:dcuser' project.pi.pk %}">
+                {{ project.pi }}
+            </a> 
+        </td>
+    
+        {% if project.prj_admin %}
+            <td>
+                <a href="{% url 'dc_management:dcuser' project.prj_admin.pk %}">
+                    {{ project.prj_admin }}
+                </a> 
+            </td>
+        {% else %}
+            <td></td>
+        {% endif %}
+        <td {% if project.status == "CO" %}style="color:#896E4E;"{% endif %}>
+        {{ project.users.all.count }}</td> 
+        
+        <!-- highlight based on project status and days to expected completion --!>    
+        {% if project.requested_launch|days_until:7  %}
+            <td class="bg-danger" style="color:red;">
+            {{ project.requested_launch }} <a type="button" class="btn btn-default" href="#">Launch</a></td>
+        {% elif project.requested_launch|days_until:14 %}
+            <td class="bg-warning" style="color:orange;">
+            {{ project.requested_launch }}</td>
+        {% elif project.requested_launch|days_until:21 %}
+            <td class="bg-info" style="color:blue;">
+            {{ project.requested_launch }}</td>
+        {% else %}
+            <td>
+            {{ project.requested_launch }}</td>
+        {% endif %}
+            
+         
+      </tr>
+    {% endfor %}
+    </table>
+{% endif %}
+</br>
+

@@ -1,0 +1,33 @@
+{% load project_tags %}
+
+<!-- highlight based on completion and number of users with access --!>  
+{% if project.expected_completion|days_until:0 and project.users.all.count != 0 %}
+    <td class="bg-danger" style="color:red;">
+        {{ project.users.all.count }}
+    </td> 
+{% elif project.expected_completion|days_until:10 and project.status == 'RU' %}
+    <td class="bg-warning" style="color:orange;">
+        {{ project.users.all.count }}
+    </td>
+{% else %}
+    <td>{{ project.users.all.count }}</td>
+{% endif %}
+
+
+<!-- highlight based on project status and days to expected completion --!>    
+{% if project.expected_completion|days_until:0 and project.users.count != 0 %}
+    <td class="bg-danger" style="color:red;">
+    {{ project.expected_completion }}
+    <a type="button" class="btn btn-default" href="#">Close project</a>
+    </td>
+{% elif project.expected_completion|days_until:1 and project.users.count != 0  %}
+    <td class="bg-warning" style="color:orange;">
+    {{ project.expected_completion }}
+    <a type="button" class="btn btn-default" href="#">Close project</a>
+    </td>
+{% else %}
+    <td>
+    {{ project.expected_completion }}</td>
+{% endif %}
+        
+        

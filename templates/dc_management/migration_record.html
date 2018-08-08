@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% load project_tags %}
+
+{% block content %}
+<h2>Migration log</h2>
+Created: {{ migrationlog.record_creation }}</br>
+Created by: {{ migrationlog.record_author }}</br>
+Modified: {{ migrationlog.record_update }}</br>
+
+</br>
+
+<table class="table table-striped table-hover">
+    <tr><th>Project</th><td>{{ migrationlog.project }}</td></tr>
+    <tr><th>Origin</th><td>{{ migrationlog.node_origin }}</td></tr>
+    <tr><th>Destination</th><td>{{ migrationlog.node_destination }}</td></tr>
+    <tr><th>Access confirmation</th><td>{{ migrationlog.access_ticket }}</td></tr>
+    <tr><th>Access conf. date</th><td>{{ migrationlog.access_date }}</td></tr>
+    <tr><th>Environment confirmation</th><td>{{ migrationlog.envt_ticket }}</td></tr>
+    <tr><th>Environment conf. date</th><td>{{ migrationlog.envt_date }}</td></tr>
+    <tr><th>Data confirmation</th><td>{{ migrationlog.data_ticket }}</td></tr>
+    <tr><th>Data conf. date</th><td>{{ migrationlog.data_date }}</td></tr>
+    <tr><th>Comments</th><td>{{ migrationlog.comments|linebreaks }}</td></tr>
+</table>
+
+{% endblock content %}

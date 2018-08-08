@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% load bootstrap3 %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+<h2>Remove a user from a project</h2>
+<a type="button" class="btn btn-primary" href="{% url 'dc_management:dc_user-add' %}">Create user</a>
+
+{{ form.media }}
+<form action="" method="post">{% csrf_token %}
+    {{ form|crispy }}
+    <input type="submit" class="btn btn-danger" value="Remove User" />
+    
+</form>
+<p>Clicking "Remove user" will update the database record, log the change, and send an email to ServiceNow requesting the user be removed (and supplying the necessary details)</p>
+
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% comment this stops the option working. No need for message formatting currently %}
+{% load bootstrap3 %}
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{# Display django.contrib.messages as Bootstrap alerts #}
+{% bootstrap_messages %}
+{% endcomment %}
+
+{% block content %}
+
+<h1>{{ server.node }}</h1>
+
+{{ server.ip_address }}</br>
+{{ server.name_address }}</br></br>
+
+
+<a  type="button" class="btn btn-primary" 
+    href="{% url 'dc_management:server-update' server.pk %}">
+    Update server
+</a>
+<a type="button" class="btn btn-default" href="#">Mount project</a>
+<a type="button" class="btn btn-default" href="#">Complete project</a>
+<a type="button" class="btn btn-default" href="#">Migrate project</a>
+<a type="button" class="btn btn-default" href="#">Decommission node</a>
+
+<table class="table table-striped table-hover">
+    <thead class="thead-default">
+    <tr>
+        <th>CPUs</th>
+        <th>RAM</th>
+        <th>Disk Storage</th>
+        <th>Other Storage</th>
+        <th>Connection Date</th>
+        <th>OS</th>
+        <th>Host</th>
+    </tr>
+    </thead>
+
+    <tr>
+        <td>{{ server.processor_num }}</td>
+        <td>{{ server.ram }}</td>
+        <td>{{ server.disk_storage }}</td>
+        <td>{{ server.other_storage }}</td>
+        <td>{{ server.connection_date }}</td>
+        <td>{{ server.get_operating_sys_display }}</td>
+        <td>{{ server.host }}</td>
+    </tr>
+</table>
+
+<h2>{{ server.project_set.all.count }} projects mounted</h2>
+
+
+{% with server.project_set.all as project_list %}
+    {% with 'dc_management/project_list.html' as passthroughhtml %}
+        {% include 'dc_management/project_list_template.html' %}
+    {% endwith %}
+{% endwith %}
+
+<h2>{{ server_users|length }} users associated with {{ server.node }}</h2>
+{% if server_users %}
+    {% with server_users as user_list %}
+        {% include 'dc_management/user_list_multiproject.html' %}
+    {% endwith %}
+{% endif %}
+
+<h2>{{ server.software_installed.all|length }} software installed on {{ server.node }}</h2>
+{% if server.software_installed.all|length > 0 %}
+    {% with server.software_installed.all as software_list %}
+        {% include 'dc_management/software_list.html' %}
+    {% endwith %}
+{% endif %}
+
+<h2>{{ installed_software_bylogs|length }} software installed according to logs</h2>
+{% if installed_software_bylogs %}
+    {% with installed_software_bylogs as software_list %}
+        {% include 'dc_management/software_list.html' %}
+    {% endwith %}
+{% endif %}
+
+
+
+{% if server.comments %}
+<h3>Comments</h3>
+<p>{{ server.comments|linebreaks }}</p>
+{% endif %}
+
+{% endblock %}
+ 

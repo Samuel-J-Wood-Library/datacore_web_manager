@@ -1,0 +1,77 @@
+
+{% load project_tags %}
+
+<table class="table table-striped table-hover">
+<thead class="thead-default">
+<tr>
+    <th colspan="3">Migration</th>
+    <th colspan="3">Confirmation Date</th>
+    {% if startdate == True %}
+        <th></th>
+    {% endif %}
+
+    <th></th>
+</tr>
+<tr>
+    <th>Project</th>
+    <th>Origin</th>
+    <th>Destination</th>
+    <th>Access</th>
+    <th>Environment</th>
+    <th>Data</th>
+    {% if startdate == True %}
+        <th>Start Date</th>
+    {% endif %}
+    <th>Update</th>
+</tr>
+</thead>
+
+    {% for mig in migration_list %}
+      <tr>
+        <td>
+            <a href="{% url 'dc_management:project' mig.project.pk %}">
+                {{ mig.project }}
+            </a>
+        </td>
+        <td>
+            {% if mig.node_origin %}
+            <a href="{% url 'dc_management:node' mig.node_origin.pk %}">
+            {{ mig.node_origin }}
+            </a>
+            {% else %}
+            Unmounted
+            {% endif %}
+        </td>
+        <td>
+            <a href="{% url 'dc_management:node' mig.node_destination.pk %}">
+            {{ mig.node_destination }}
+            </a>
+        </td>
+        <td>{{ mig.access_date }}</td>
+        <td>{{ mig.envt_date }}</td>
+        <td>{{ mig.data_date }}</td>
+        {% if startdate == True %}
+            {% if mig.project.requested_launch|days_until:7  %}
+                <td class="bg-danger" style="color:red;">
+                    {{ mig.project.requested_launch }}
+                </td>
+            {% elif mig.project.requested_launch|days_until:14 %}
+                <td class="bg-warning" style="color:orange;">
+                    {{ mig.project.requested_launch }}
+                </td>
+            {% elif mig.project.requested_launch|days_until:21 %}
+                <td class="bg-info" style="color:blue;">
+                    {{ mig.project.requested_launch }}
+                </td>
+            {% else %}
+                <td>
+                    {{ mig.project.requested_launch }}
+                </td>
+            {% endif %}
+        {% endif %}
+        <td><a type="button" class="btn btn-primary"
+               href="{% url 'dc_management:migration-update' mig.pk %}">Update</a>
+        </td>
+      </tr>
+    {% endfor %}
+</table>

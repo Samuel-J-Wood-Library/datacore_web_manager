@@ -1,0 +1,49 @@
+
+{% load project_tags %}
+
+{% for gd in project.governance_doc_set.all %}
+        
+        
+        {% if gd.attention_required != "safe" %}
+        {% if gd.governance_type == "IR" or gd.governance_type == "DU" %}
+        <tr>
+        <td><a href="{% url 'dc_management:govdocmeta' gd.pk %}" target="_blank">{{ gd.doc_id }}</a></td>
+        <td>{{ gd.pk }}</td>
+        <td>
+            <a href="{% url 'dc_management:project' gd.project.pk %}" 
+               target="_blank">
+               {{ gd.project }}
+            </a>
+        </td>
+        <td>{{ gd.get_governance_type_display }}</td>
+        {% if gd.attention_required == "danger" %}
+            <td class="bg-danger" style="color:red;">
+                {{ gd.expiry_date }}
+            </td>
+        {% elif gd.attention_required == "warning" %}
+            <td class="bg-warning" style="color:orange;">
+                {{ gd.expiry_date }}
+            </td>
+        {% elif gd.attention_required == "primary" %}
+            <td class="bg-info" style="color:blue;">
+                {{ gd.expiry_date }}
+            </td>
+        {% endif %}
+        </tr>
+        {% endif %}
+        {% endif %}
+        
+        
+        {% comment "potentially cleaner code, but without the text color" %}
+        {% if gd.attention_required != "safe" %}
+        <tr>
+        <td><a href="{% url 'dc_management:govdoc' gd.pk %}" target="_blank">{{ gd }}</a></td>
+        <td>{{ gd.doc_id }}</td>
+        <td class="bg-{{ gd.attention_required }}" >
+			{{ gd.expiry_date }}
+		</td>
+        {% endif %}
+        {% endcomment %}
+        
+
+{% endfor %}

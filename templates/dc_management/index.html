@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<style>
+/* styling of the tabs*/
+#exTab1 .tab-content {
+  color : black;
+  padding : 5px 15px;
+}
+
+#exTab1 .nav-tabs > li > a {
+  border-radius: 4px 4px 0 0;
+}
+</style>
+
+
+
+    
+    <div class="container">
+     <div class="panel panel-info">
+      <div class="panel-heading">
+        <h4>User mounted twice on node</h4>
+      </div>
+      <div class="panel-body">
+        
+        {% for s in server_list %}
+            {% if s.duplicate_users|length > 0 %}
+              <h4>{{ s }}</h4>
+              <ul>
+              {% for u in s.duplicate_users %}
+              <li><a href="{% url 'dc_management:dcuser' u.pk %}">{{ u }}</a></li>
+              {% endfor %}
+              </ul>
+            {% endif %}
+        {% endfor %}
+        
+      </div>
+     </div>
+    </div>
+
+    <div class="container">
+     <div class="panel panel-info">
+      <div class="panel-heading">
+        <h4>Projects being onboarded</h4>
+      </div>
+      <div class="panel-body">
+        {% with onboarding_prj_list as project_list %}
+            {% include "dc_management/onboarding_projects_list.html" %}
+        {% endwith %}
+        </br>
+        {% with onboarding_list as migration_list %}
+        {% with True as startdate %}
+            {% include "dc_management/migration_tracking.html" %}
+        {% endwith %}
+        {% endwith %}
+      </div>
+     </div>
+    </div>
+
+
+    <div class="container">
+     <div class="panel panel-info">
+      <div class="panel-heading">
+        <h4>Projects being migrated</h4>
+      </div>
+      <div class="panel-body">
+            {% with False as startdate %}
+                {% include "dc_management/migration_tracking.html" %}
+            {% endwith %}
+      </div>
+     </div>
+    </div>
+
+
+    <div class="container">
+     <div class="panel panel-info">
+      <div class="panel-heading">
+        <h4>Projects expiring in less than 90 days</h4>
+      </div>
+      <div class="panel-body">
+        {% with expiring_list as project_list %}
+        {% with "dc_management/expiring_projects.html" as passthroughhtml %}
+            {% include "dc_management/project_list_template.html" %}
+        {% endwith %}
+        {% endwith %}
+
+      </div>
+     </div>
+    </div>
+
+    <div class="container">
+     <div class="panel panel-info">
+      <div class="panel-heading">
+        <h4>Projects shutting down</h4>
+      </div>
+      <div class="panel-body">
+        
+        {% with shutting_list as project_list %}
+        {% with "dc_management/project_closing_list.html" as passthroughhtml %}
+            {% include "dc_management/project_list_template.html" %}
+        {% endwith %}
+        {% endwith %}
+        
+        
+        
+      </div>
+     </div>
+    </div>
+
+    <div class="container">
+     <div class="panel panel-info">
+      <div class="panel-heading">
+        <h4>Governance docs requiring attention</h4>
+      </div>
+      <div class="panel-body">
+        
+        <table class="table table-striped table-hover">
+            <thead class="thead-default">
+            <tr>
+                <th>ID</th>
+                <th>Record #</th>
+                <th>Project</th>
+                <th>Type</th>
+                <th>Expiry Date</th>
+            </tr>
+            </thead>
+
+            {% for project in project_list %}
+               {% include "dc_management/expiring_gov_docs.html" %}
+            {% endfor %}
+        </table>
+        
+      </div>
+     </div>
+    </div>
+
+    <div class="container">
+     <div class="panel panel-info">
+      <div class="panel-heading">
+        <h4>Projects without any governance documentation</h4>
+      </div>
+      <div class="panel-body">
+            
+        {% with undocumented_list as project_list %}
+        {% with "dc_management/missing_gov_docs.html" as passthroughhtml %}
+            {% include "dc_management/project_list_template.html" %}
+        {% endwith %}
+        {% endwith %}
+            
+      </div>
+     </div>
+    </div>
+
+    <div class="container">
+     <div class="panel panel-info">
+      <div class="panel-heading">
+        <h4>Projects without any IRB documentation</h4>
+      </div>
+      <div class="panel-body">
+            
+        {% with irb_invalid as project_list %}
+        {% with "dc_management/missing_gov_docs.html" as passthroughhtml %}
+            {% include "dc_management/project_list_template.html" %}
+        {% endwith %}
+        {% endwith %}
+            
+      </div>
+     </div>
+    </div>
+
+    <div class="container">
+     <div class="panel panel-info">
+      <div class="panel-heading">
+        <h4>Projects with expired DUAs</h4>
+      </div>
+      <div class="panel-body">
+            
+        {% with dua_invalid as project_list %}
+        {% with "dc_management/missing_gov_docs.html" as passthroughhtml %}
+            {% include "dc_management/project_list_template.html" %}
+        {% endwith %}
+        {% endwith %}
+            
+      </div>
+     </div>
+    </div>
+
+    <div class="container">
+     <div class="panel panel-info">
+      <div class="panel-heading">
+        <h4>Users not audited in last 9 months</h4>
+      </div>
+      <div class="panel-body">
+            <p>
+                List of all users in active projects and whose governance 
+                documentation is more than a year old. This is not yet project-specific.
+            </p>
+            {% with  undoc_user_list  as user_list %}
+                {% include "dc_management/user_list_multiproject.html" %}
+            {% endwith %}
+      </div>
+     </div>
+    </div>
+    <div class="container">
+     <div class="panel panel-info">
+      <div class="panel-heading">
+        <h4>Items with missing tickets</h4>
+      </div>
+      <div class="panel-body">
+
+      </div>
+     </div>
+    </div>
+      
+  </div>
+  
+
+  
+
+{% endblock %}

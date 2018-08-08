@@ -1,0 +1,297 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<style>
+/* styling of the tabs*/
+#exTab1 .tab-content {
+  color : black;
+  padding : 5px 15px;
+}
+
+#exTab1 .nav-tabs > li > a {
+  border-radius: 4px 4px 0 0;
+}
+</style>
+
+
+<div id="exTab1" class="container">
+<ul  class="nav nav-tabs">
+			<li class="active">
+            <a  href="#overview" data-toggle="tab">Overview</a>
+			</li>
+			<li><a href="#projects" data-toggle="tab">Projects</a>
+			</li>
+			<li><a href="#users" data-toggle="tab">Users</a>
+			</li>
+  		    <li><a href="#servers" data-toggle="tab">Servers</a>
+			</li>
+			<li><a href="#software" data-toggle="tab">Software</a>
+			</li>
+		</ul>
+		
+		
+<div class="tab-content clearfix">
+  
+  <div class="tab-pane active" id="overview">
+
+    
+    <div class="container">
+     <div class="panel panel-info">
+      <div class="panel-heading">
+        <h4>User mounted twice on node</h4>
+      </div>
+      <div class="panel-body">
+        
+        {% for s in server_list %}
+            {% if s.duplicate_users|length > 0 %}
+              <h4>{{ s }}</h4>
+              <ul>
+              {% for u in s.duplicate_users %}
+              <li><a href="{% url 'dc_management:dcuser' u.pk %}">{{ u }}</a></li>
+              {% endfor %}
+              </ul>
+            {% endif %}
+        {% endfor %}
+        
+      </div>
+     </div>
+    </div>
+
+    <div class="container">
+     <div class="panel panel-info">
+      <div class="panel-heading">
+        <h4>Projects being onboarded</h4>
+      </div>
+      <div class="panel-body">
+        {% with onboarding_prj_list as project_list %}
+            {% include "dc_management/onboarding_projects_list.html" %}
+        {% endwith %}
+        </br>
+        {% with onboarding_list as migration_list %}
+        {% with True as startdate %}
+            {% include "dc_management/migration_tracking.html" %}
+        {% endwith %}
+        {% endwith %}
+      </div>
+     </div>
+    </div>
+
+
+    <div class="container">
+     <div class="panel panel-info">
+      <div class="panel-heading">
+        <h4>Projects being migrated</h4>
+      </div>
+      <div class="panel-body">
+            {% with False as startdate %}
+                {% include "dc_management/migration_tracking.html" %}
+            {% endwith %}
+      </div>
+     </div>
+    </div>
+
+
+    <div class="container">
+     <div class="panel panel-info">
+      <div class="panel-heading">
+        <h4>Projects expiring in less than 90 days</h4>
+      </div>
+      <div class="panel-body">
+        {% with expiring_list as project_list %}
+        {% with "dc_management/expiring_projects.html" as passthroughhtml %}
+            {% include "dc_management/project_list_template.html" %}
+        {% endwith %}
+        {% endwith %}
+
+      </div>
+     </div>
+    </div>
+
+    <div class="container">
+     <div class="panel panel-info">
+      <div class="panel-heading">
+        <h4>Projects shutting down</h4>
+      </div>
+      <div class="panel-body">
+        
+        {% with shutting_list as project_list %}
+        {% with "dc_management/project_closing_list.html" as passthroughhtml %}
+            {% include "dc_management/project_list_template.html" %}
+        {% endwith %}
+        {% endwith %}
+        
+        
+        
+      </div>
+     </div>
+    </div>
+
+    <div class="container">
+     <div class="panel panel-info">
+      <div class="panel-heading">
+        <h4>Governance docs requiring attention</h4>
+      </div>
+      <div class="panel-body">
+        
+        <table class="table table-striped table-hover">
+            <thead class="thead-default">
+            <tr>
+                <th>ID</th>
+                <th>Record #</th>
+                <th>Project</th>
+                <th>Type</th>
+                <th>Expiry Date</th>
+            </tr>
+            </thead>
+
+            {% for project in project_list %}
+               {% include "dc_management/expiring_gov_docs.html" %}
+            {% endfor %}
+        </table>
+        
+      </div>
+     </div>
+    </div>
+
+    <div class="container">
+     <div class="panel panel-info">
+      <div class="panel-heading">
+        <h4>Projects without any governance documentation</h4>
+      </div>
+      <div class="panel-body">
+            
+        {% with undocumented_list as project_list %}
+        {% with "dc_management/missing_gov_docs.html" as passthroughhtml %}
+            {% include "dc_management/project_list_template.html" %}
+        {% endwith %}
+        {% endwith %}
+            
+      </div>
+     </div>
+    </div>
+
+    <div class="container">
+     <div class="panel panel-info">
+      <div class="panel-heading">
+        <h4>Projects without any IRB documentation</h4>
+      </div>
+      <div class="panel-body">
+            
+        {% with irb_invalid as project_list %}
+        {% with "dc_management/missing_gov_docs.html" as passthroughhtml %}
+            {% include "dc_management/project_list_template.html" %}
+        {% endwith %}
+        {% endwith %}
+            
+      </div>
+     </div>
+    </div>
+
+    <div class="container">
+     <div class="panel panel-info">
+      <div class="panel-heading">
+        <h4>Projects with expired DUAs</h4>
+      </div>
+      <div class="panel-body">
+            
+        {% with dua_invalid as project_list %}
+        {% with "dc_management/missing_gov_docs.html" as passthroughhtml %}
+            {% include "dc_management/project_list_template.html" %}
+        {% endwith %}
+        {% endwith %}
+            
+      </div>
+     </div>
+    </div>
+
+    <div class="container">
+     <div class="panel panel-info">
+      <div class="panel-heading">
+        <h4>Users not audited in last 9 months</h4>
+      </div>
+      <div class="panel-body">
+            <p>
+                List of all users in active projects and whose governance 
+                documentation is more than a year old. This is not yet project-specific.
+            </p>
+            {% with  undoc_user_list  as user_list %}
+                {% include "dc_management/user_list_multiproject.html" %}
+            {% endwith %}
+      </div>
+     </div>
+    </div>
+    <div class="container">
+     <div class="panel panel-info">
+      <div class="panel-heading">
+        <h4>Items with missing tickets</h4>
+      </div>
+      <div class="panel-body">
+
+      </div>
+     </div>
+    </div>
+      
+  </div>
+  
+  <div class="tab-pane" id="projects">			  
+    <h2>{{ project_list|length }} Active Projects</h2>
+    <a type="button" class="btn btn-info" href="{% url 'dc_management:all_projects' %}">View all projects</a>
+    <a type="button" class="btn btn-primary" href="{% url 'dc_management:project-add' %}">Add new project</a>
+    <a type="button" class="btn btn-default" href="#">Schedule project close</a>
+    <a type="button" class="btn btn-default" href="#">Close project</a>
+    <a type="button" class="btn btn-primary"  href="{% url 'dc_management:govdocmeta-add' %}">Add governance document</a>
+    <a type="button" class="btn btn-danger" href="{% url 'dc_management:file-transfer-add' %}">Transfer file(s)</a>
+    {% with  project_list as project_list %}
+    {% with 'dc_management/project_list.html' as passthroughhtml %}
+        {% include 'dc_management/project_list_template.html' %}
+    {% endwith %}
+    {% endwith %}
+    
+  </div>
+  
+  <div class="tab-pane" id="users">
+    <h2>{{ user_list|length }} Data Core PIs</h2>
+    <a type="button" class="btn btn-info" href="{% url 'dc_management:all_users' %}">View all users</a>
+    <a type="button" class="btn btn-primary" href="{% url 'dc_management:dc_user-add' %}">Create user</a>
+    <a type="button" class="btn btn-info" href="{% url 'dc_management:bulkuserupload' %}">Create users (bulk upload)</a>
+    {% include "dc_management/user_list_multiproject.html" %}
+    </br>
+  </div>
+
+
+  <div class="tab-pane" id="servers">
+    <h2>{{ server_list|length }} Active Production Servers</h2>
+    
+    <a type="button" class="btn btn-info" 
+       href="{% url 'dc_management:all_servers' %}">
+       View all servers
+    </a>
+    <a type="button" class="btn btn-primary" href="{% url 'dc_management:server-add' %}">
+        Add new server
+    </a>
+    <a type="button" class="btn btn-default" href="#">Decommission server</a>
+    <a type="button" class="btn btn-default" href="#">Suspend server</a>
+    <a type="button" class="btn btn-default" href="#">Reactivate server</a>
+
+    {% include 'dc_management/server_list.html' %}
+  </div>
+    
+    
+  <div class="tab-pane" id="software">
+    <h2>{{ user_list|length }} Software</h2>
+    <a type="button" class="btn btn-default" href="#">View all software</a>
+    <a type="button" class="btn btn-default" href="#">Create software</a>
+    
+        {% include "dc_management/software_all.html" %}
+    </br>
+  </div>
+  
+    
+</div>
+</div>  
+
+
+
+{% endblock %}

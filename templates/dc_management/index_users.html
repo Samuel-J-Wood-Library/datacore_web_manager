@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<style>
+/* styling of the tabs*/
+#exTab1 .tab-content {
+  color : black;
+  padding : 5px 15px;
+}
+
+#exTab1 .nav-tabs > li > a {
+  border-radius: 4px 4px 0 0;
+}
+</style>
+
+
+
+  
+    <h2>{{ user_list|length }} Data Core PIs</h2>
+    <a type="button" class="btn btn-info" href="{% url 'dc_management:all_users' %}">View all users</a>
+    <a type="button" class="btn btn-primary" href="{% url 'dc_management:dc_user-add' %}">Create user</a>
+    <a type="button" class="btn btn-info" href="{% url 'dc_management:bulkuserupload' %}">Create users (bulk upload)</a>
+    {% include "dc_management/user_list_multiproject.html" %}
+    </br>
+
+
+
+
+{% endblock %}

@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% load bootstrap3 %}
+
+{% block content %}
+
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{# load the custom filters for time #}
+{% load project_tags %}
+
+{# Display django.contrib.messages as Bootstrap alerts #}
+{% bootstrap_messages %}
+
+<style>
+/* styling of the tabs*/
+#exTab1 .tab-content {
+  color : black;
+  padding : 5px 15px;
+}
+
+#exTab1 .nav-tabs > li > a {
+  border-radius: 4px 4px 0 0;
+}
+</style>
+
+
+<h1>
+    {{ filetransfer.file_num }} files transferred
+
+    <small class="text-muted">
+        from 
+        {% if filetransfer.source %}
+        {{ filetransfer.source }}
+        {% elif filetransfer.external_source %}
+        {{ filetransfer.external_source }}
+        {% endif %}
+        to
+        {% if filetransfer.destination %}
+        {{ filetransfer.destination }}
+        {% elif filetransfer.external_destination %}
+        {{ filetransfer.external_destination }}
+        {% endif %}
+    </small>
+</h1>
+<h2>
+    <small class="text-muted">Transferred {{ filetransfer.change_date }}</small>
+</h2>
+
+</br>
+
+<div class="container">
+ <div class="panel panel-info">
+  <div class="panel-heading">
+    <h4>File transfer details</h4>
+  </div>
+  <div class="panel-body">
+    <table class="table table-striped">
+    <tr><th>Transfer requested:</th><td>{{ filetransfer.change_date }}</td></tr>
+    <tr><th>Ticket</th><td>{{ filetransfer.ticket }}</td></tr>
+    <tr><th>Source</th>
+        {% if filetransfer.external_source %}
+            <td>{{ filetransfer.external_source }}</td>
+        {% elif filetransfer.source %}
+            <td>
+                <a href="{% url 'dc_management:project' filetransfer.source.pk %}">
+                    {{ filetransfer.source }}
+                </a>
+            </td>
+        {% endif %}
+    </tr>
+    <tr><th>Destination</th>
+        {% if filetransfer.external_destination %}
+            <td>{{ filetransfer.external_destination }}</td>
+        {% elif filetransfer.destination %}
+            <td>
+                <a href="{% url 'dc_management:project' filetransfer.destination.pk %}">
+                    {{ filetransfer.destination }}
+                </a>
+            </td>
+        {% endif %}
+    </tr>
+
+    <tr><th>Transfer method</th><td>{{ filetransfer.transfer_method }}</td></tr>
+    <tr><th>Requested by</th><td>{{ filetransfer.requester }}</td></tr>
+    <tr><th>Files transferred</th><td>{{ filetransfer.filenames|linebreaks }}</td></tr>
+    <tr><th>Data type</th><td>{{ filetransfer.get_data_type_display }}</td></tr>
+
+    {% if filetransfer.data_type == "ID" and not filetransfer.reviewed_by and filetransfer.external_destination  %}
+        <tr class="bg-danger" style="color:red;background:lightpink">
+            <th>Reviewed by</th><td>{{ filetransfer.reviewed_by }}</td>
+        </tr>
+    {% else %}
+        <tr><th>Reviewed by</th><td>{{ filetransfer.reviewed_by }}</td></tr>
+    {% endif %}
+    </table>
+  </div>
+ </div>
+</div>
+
+    
+{% if filetransfer.comment %}
+<div class="container">
+ <div class="panel panel-info">
+  <div class="panel-heading">    
+    <h3>Comments</h3>
+  </div>
+  <div class="panel-body">
+    <p>{{ filetransfer.comment|linebreaks }}</p>
+  </div>
+ </div>
+</div>
+{% endif %}
+</div>
+
+
+</div>
+</div>
+</div>
+
+</br>
+Created: {{ filetransfer.record_creation }}</br>
+Created by: {{ filetransfer.record_author }}</br>
+Modified: {{ filetransfer.record_update }}</br>
+</br>
+</br>
+
+{% endblock %}

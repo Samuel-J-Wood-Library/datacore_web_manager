@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% load bootstrap3 %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="jumbotron">
+  <h1>I guess you have a token??</h1>
+  <p>{{ email }}</p>
+  <p>{{ auth_code }}</p>
+    <p>
+    <a class="btn btn-lg btn-primary" href="{% url 'dc_management:sendtest' %}" role="button" id="connect-button">Send a test email</a>
+  </p>
+
+</div>
+
+{% endblock %}

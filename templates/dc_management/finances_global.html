@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% load bootstrap3 %}
+
+{% block content %}
+
+{% load project_tags %}
+
+<style>
+.container-outer { overflow: scroll; width: 100%; height: 50%; }
+.container-inner { width: 2100px; }
+
+tbody tr td {
+  min-width: 8em;
+  max-width: 18em;
+}
+</style>
+
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{# Display django.contrib.messages as Bootstrap alerts #}
+{% bootstrap_messages %}
+
+<h1>Finance Report</h1>
+<h2>Projected annual costs</h2>
+
+<div class="container-outer">
+   <div class="container-inner">
+	<table class="table table-striped table-hover">
+		<thead class="thead-default">
+		<tr>
+			<th>Project</th>
+			<th>Title</th>
+			<th>PI</th>
+			<th># users</th>
+			<th>$</th>
+			<th>Extra resources</th>
+			<th>$</th>
+			<th>Database</th>
+			<th>$</th>
+			<th>fileshare with replication</th>
+			<th>$</th>
+			<th>Direct attach</th>
+			<th>$</th>
+			<th>versioned backup</th>
+			<th>$</th>
+			<th>Software</th>
+			<th>$</th>
+			<th>Total Cost</th>
+		</tr>
+		</thead>
+		
+		{% for prj, swlist, cplist in prj_data %}
+		<tr>
+			<td><a href="{% url 'dc_management:project' prj.pk %}">{{ prj.dc_prj_id }}</a></td>
+			<td {% if prj.status == "CO" %}style="color:#896E4E;"{% endif %}>
+			{{ prj.title }}</td>
+			<td {% if prj.status == "CO" %}style="color:#896E4E;"{% endif %}>
+			{{ prj.pi }}</td>
+			<td {% if prj.status == "CO" %}style="color:#896E4E;"{% endif %}>
+			{{ prj.users.all.count }}</td>
+			<td {% if prj.status == "CO" %}style="color:#896E4E;"{% endif %}>
+			{{ prj.user_cost|account_format }}</td>
+			<td {% if prj.status == "CO" %}style="color:#896E4E;"{% endif %}>
+			{% for cp in cplist %}
+					{{ cp.0 }} {{ cp.1 }}</br>
+				{% endfor %}
+			</td>
+			<td {% if prj.status == "CO" %}style="color:#896E4E;"{% endif %}>
+			{% for cp in cplist %}
+					{{ cp.2|account_format }}</br>
+				{% endfor %}
+			</td>
+			
+			<td {% if prj.status == "CO" %}style="color:#896E4E;"{% endif %}>
+			{{ prj.db }}</td>
+			<td {% if prj.status == "CO" %}style="color:#896E4E;"{% endif %}>
+			{{ prj.db_cost|account_format }}</td>
+			<td {% if prj.status == "CO" %}style="color:#896E4E;"{% endif %}>
+			{{ prj.fileshare_storage }} GB</td>
+			<td {% if prj.status == "CO" %}style="color:#896E4E;"{% endif %}>
+			{{ prj.fileshare_cost|account_format }}</td>
+			<td {% if prj.status == "CO" %}style="color:#896E4E;"{% endif %}>
+			{{ prj.direct_attach_storage }} GB</td>
+			<td {% if prj.status == "CO" %}style="color:#896E4E;"{% endif %}>
+			{{ prj.direct_attach_cost|account_format }}</td>
+			<td {% if prj.status == "CO" %}style="color:#896E4E;"{% endif %}>
+			{{ prj.backup_storage }} GB</td>
+			<td {% if prj.status == "CO" %}style="color:#896E4E;"{% endif %}>
+			{{ prj.backup_cost|account_format }}</td>
+			
+			<td {% if prj.status == "CO" %}style="color:#896E4E;"{% endif %}>
+			{% for sw in swlist %}
+					{{ sw.0 }}</br>
+				{% endfor %}
+			</td>
+			
+			<td {% if prj.status == "CO" %}style="color:#896E4E;"{% endif %}>
+			{% for sw in swlist %}
+					{{ sw.1|account_format }}</br>
+				{% endfor %}
+			</td>
+			<td {% if prj.status == "CO" %}style="color:#896E4E;"{% endif %}>
+			{{ prj.project_total_cost|account_format }}</td>
+		</tr>
+		{% endfor %}
+		
+	</table>
+   </div>
+</div>
+
+
+<p>Grand total for all active projects: {{ grand_total_cost|account_format }}</p>
+<a href="#" type="button" class="btn btn-default">Pro-rate to expected project completion</a>
+
+{% if finance.comments %}
+<h3>Comments</h3>
+<p>{{ server.comments }}</p>
+{% endif %}
+
+{% endblock %}
+ 

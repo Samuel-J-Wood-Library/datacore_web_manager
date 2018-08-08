@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load bootstrap3 %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+        
+
+{{ form.media }}
+
+<h2>Add a user to a project</h2>
+<a type="button" class="btn btn-primary" href="{% url 'dc_management:dc_user-add' %}">Create user</a>
+<form action="" method="post">
+	{% csrf_token %}
+    {{ form|crispy }}
+    
+    <input type="submit" class="btn btn-danger" value="Add user" />
+</form>    
+    
+
+
+
+<p>Clicking "Add user" will update the database record, log the change, and send an email to ServiceNow requesting the user be added (and supplying the necessary details)</p>
+
+
+{% endblock %}

@@ -1,0 +1,80 @@
+
+{% load project_tags %}
+
+<table class="table table-striped table-hover">
+    <thead class="thead-default">
+    <tr>
+        <th>Item</th>
+        <th>Value</th>
+        <th>Price</th>
+        <th>Monthly cost</th>
+        <th>Yearly cost</th>
+    </tr>
+    </thead>
+
+    <tr>
+      <td>Base cost</td>
+      <td>{{ project.users.count }} users</td>
+      <td>$ / </td>
+      <td>$</td>
+      <td>$</td>
+    </tr>
+    <tr>
+      <td>Extra CPU</td>
+      <td> CPUs</td>
+      <td>$ /CPU</td>
+      <td>$</td>
+      <td>$</td>
+    </tr>
+    <tr>
+      <td>Extra RAM</td>
+      <td> GB</td>
+      <td>$ /GB </td>
+      <td>$</td>
+      <td>$</td>
+    </tr>
+    <tr>
+      <td>Database</td>
+      <td> DBs</td>
+      <td>$ /DB</td>
+      <td>$</td>
+      <td>$</td>
+    </tr>
+    <tr>
+      <td>Fileshare</td>
+      <td>{{ project.fileshare_storage }} GB</td>
+      <td>$ /GB</td>
+      <td>$</td>
+      <td>$</td>
+    </tr>
+    <tr>
+      <td>Versioned backup</td>
+      <td>{{ project.backup_storage }} GB</td>
+      <td>$ /GB</td>
+      <td>$</td>
+      <td>$</td>
+    </tr>
+    <tr>
+      <td>Direct attach storage</td>
+      <td>{{ project.direct_attach_storage }} GB</td>
+      <td>$ /GB</td>
+      <td>$</td>
+      <td>$</td>
+    </tr>
+    <tr>
+      <td>Software</td>
+      <td></td>
+      <td>$ / user</td>
+      <td>$</td>
+      <td>$</td>
+    </tr>
+    <tr>
+      <th class="bg-warning">TOTAL</th>
+      <td class="bg-warning"></td>
+      <td class="bg-warning"></td>
+      <th class="bg-warning">$</th>
+      <th class="bg-warning">$</th>
+    </tr>
+
+
+</table>

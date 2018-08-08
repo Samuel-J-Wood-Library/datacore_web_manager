@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% load bootstrap3 %}
+
+{% block content %}
+
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{# load the custom filters for time #}
+{% load project_tags %}
+
+{# Display django.contrib.messages as Bootstrap alerts #}
+{% bootstrap_messages %}
+
+<style>
+/* styling of the tabs*/
+#exTab1 .tab-content {
+  color : black;
+  padding : 5px 15px;
+}
+
+#exTab1 .nav-tabs > li > a {
+  border-radius: 4px 4px 0 0;
+}
+</style>
+
+
+<h1>
+    {{ governance_doc.get_governance_type_display }} {{ governance_doc.doc_id }}
+    <small class="text-muted">{{ governance_doc.project  }}</small>
+</h1>
+<h2>
+    <small class="text-muted">Expires {{ governance_doc.expiry_date }}</small>
+</h2>
+
+
+
+<a type="button" class="btn btn-info" href="{% url 'dc_management:govdoc' governance_doc.pk %}"  target="_blank">View governance doc</a>
+<a type="button" class="btn btn-primary" href="{% url 'dc_management:govdocmeta-update' governance_doc.pk %}">Update governance doc</a>
+
+</br>
+</br>
+</br>
+
+<div class="container">
+ <div class="panel panel-info">
+  <div class="panel-heading">
+    <h4>Governance document metadata</h4>
+  </div>
+  <div class="panel-body">
+    <table class="table table-striped">
+        
+        
+<tr><th>Record #:</th><td>{{ governance_doc.pk }}</td></tr>        
+<tr><th>ID:</th><td>{{ governance_doc.doc_id }}</td></tr>
+<tr><th>Type</th><td>{{ governance_doc.get_governance_type_display }}</td></tr>
+
+{% comment %}
+{% if governance_doc.defers_to_doc or governance_doc.superseded_by.count > 0 %}
+{% endcomment %}
+<tr>
+  <th>Defers to gov. docs:</th>  
+  <td>
+    {% if governance_doc.defers_to_doc %}
+      <a href="{% url 'dc_management:govdocmeta' governance_doc.defers_to_doc.pk %}">
+        {{ governance_doc.defers_to_doc }}
+      </a>
+    {% endif %}
+    {% for gd in governance_doc.superseded_by.all %}
+      <br/>{{ gd }}
+    {% endfor %}
+  </td>
+</tr>
+{% comment %}
+{% endif %}
+{% endcomment %}
+
+{% comment %}
+{% if governance_doc.supersedes_doc or governance_doc.overrules.count > 0 %}
+{% endcomment %}
+<tr>
+  <th>Supersedes gov. doc:</th>
+  <td>
+    {% if governance_doc.supersedes_doc %}
+      <a href="{% url 'dc_management:govdocmeta' governance_doc.supersedes_doc.pk %}">
+        {{ governance_doc.supersedes_doc }}
+      </a> 
+    {% endif %}
+    {% for gd in governance_doc.overrules.all %}
+      <br/>{{ gd }}
+    {% endfor %}
+  </td>
+</tr>
+{% comment %}
+{% endif %}
+{% endcomment %}
+
+<tr><th>Date Issued</th><td>{{ governance_doc.date_issued }}</td></tr>
+    {% if governance_doc.expiry_date|days_until:0  %}
+        <tr class="bg-danger" style="color:red;background:lightpink">
+            <th>Expiry Date</th><td>{{ governance_doc.expiry_date }}</td>
+        </tr>
+    {% elif governance_doc.expiry_date|days_until:10 %}
+        <tr class="bg-warning" style="color:orange;">
+            <th>Expiry Date</th><td>{{ governance_doc.expiry_date }}</td>
+        </tr>
+    {% elif governance_doc.expiry_date|days_until:90  %}
+        <tr class="bg-info" style="color:blue;">
+           <th>Expiry Date</th><td>{{ governance_doc.expiry_date }}</td>
+        </tr>
+    {% else %}
+        <tr>
+            <th>Expiry Date</th><td>{{ governance_doc.expiry_date }}</td>
+        </tr>
+    {% endif %}
+<tr><th>Project</th><td><a href="{% url 'dc_management:project' governance_doc.project.pk %}">{{ governance_doc.project }}</a></td></tr>
+<tr><th>Users Permitted</th><td>{% for u in governance_doc.users_permitted.all %}{{ u }}<br/>{% endfor %}</td></tr>
+<tr><th>Access permitted</th><td>{{ governance_doc.access_allowed }}</td></tr>
+
+<tr><th>Ticket</th><td>{{ governance_doc.sn_ticket }}</td></tr>
+
+    </table>
+  </div>
+ </div>
+</div>
+
+
+
+    
+{% if governance_doc.comments %}
+<div class="container">
+ <div class="panel panel-info">
+  <div class="panel-heading">    
+    <h3>Comments</h3>
+  </div>
+  <div class="panel-body">
+    <p>{{ governance_doc.comments }}</p>
+  </div>
+ </div>
+</div>
+{% endif %}
+</div>
+
+
+</div>
+</div>
+</div>
+
+</br>
+Created: {{ governance_doc.record_creation }}</br>
+Created by: {{ governance_doc.record_author }}</br>
+Modified: {{ governance_doc.record_update }}</br>
+</br>
+</br>
+{% endblock %}
