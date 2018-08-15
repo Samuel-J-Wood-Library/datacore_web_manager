@@ -123,12 +123,15 @@
 </br>
 
 
-
-
 </div>
 
+<!--  ####  --!>
 <!--  LOGS  --!>
+<!--  ####  --!>
+
+
 <div class="tab-pane" id="logs">
+ 
  <h4>Access logs</h4>
  <table class="table table-striped">
   <thead class="thead-default">
@@ -136,11 +139,11 @@
             <th>Logged</th>
             <th>Ticket</th>
             <th>Activated</th>
-            <th>User</th>
+            <th>Project</th>
             <th>Change</th>
         </tr>
   </thead>
-  {% for l in project.access_log_set.all %}
+  {% for l in dc_user.access_log_set.all %}
    <tr><td>{{ l.record_creation }}</td>
        {% if l.sn_ticket %}
        <td>{{ l.sn_ticket }}</td>
@@ -148,7 +151,7 @@
        <td class="bg-warning" style="color:orange;">{{ l.sn_ticket }}</td>
        {% endif %}
        <td>{{ l.date_changed }}</td>
-       <td>{{ l.dc_user }}</td>
+       <td>{{ l.prj_affected }}</td>
        <td>{{ l.get_change_type_display }}</td>
        </tr>
   {% endfor %}
@@ -186,7 +189,7 @@
             <th>Software</th>
         </tr>
   </thead>
-  {% for l in project.software_log_set.all %}
+  {% for l in dc_user.software_log_set.all %}
     <tr>
        {% if l.sn_ticket %}
        <td>{{ l.sn_ticket }}</td>
@@ -211,7 +214,7 @@
             <th>Comments</th>
         </tr>
   </thead>
-  {% for l in project.storage_log_set.all %}
+  {% for l in dc_user.storage_log_set.all %}
    <tr><td>{{ l.record_creation }}</td>
        {% if l.sn_ticket %}
        <td>{{ l.sn_ticket }}</td>
@@ -225,6 +228,56 @@
   {% endfor %}
  </table>
 
+
+
+ <h4>
+    File Transfer logs
+ </h4>
+ <table class="table table-striped">
+  <thead class="thead-inverse">
+        <tr>
+            <th>Date</th>
+            <th>Ticket</th>
+            <th>Source</th>
+            <th>Destination</th>
+            <th>Data</th>
+        </tr>
+  </thead>
+  {% for ft in dc_user.filetransfer_set.all %}
+   <tr>
+       <td>
+            <a href="{% url 'dc_management:file-transfer-view' ft.pk %}">
+              {{ ft.change_date }}
+            </a>
+        </td>
+       {% if ft.ticket %}
+       <td>{{ ft.ticket }}</td>
+       {% else %}
+       <td class="bg-warning" style="color:orange;">{{ ft.ticket }}</td>
+       {% endif %}
+       
+        <td> 
+        {% if ft.source %}
+        {{ ft.source }}
+        {% elif ft.external_source %}
+        {{ ft.external_source }}
+        {% endif %}
+        </td>
+        <td>
+        {% if ft.destination %}
+        {{ ft.destination }}
+        {% elif ft.external_destination %}
+        {{ ft.external_destination }}
+        {% endif %}
+        </td>
+       
+       <td>{{ ft.get_data_type_display }}</td>
+       
+       </tr>
+  {% endfor %}
+</table>  
+  
+  
  <h4>Audit logs</h4>
  <table class="table table-striped">
   <thead class="thead-inverse">
@@ -236,7 +289,7 @@
             <th>Comments</th>
         </tr>
   </thead>
-  {% for l in project.audit_log_set.all %}
+  {% for l in dc_user.audit_log_set.all %}
    <tr><td>{{ l.record_creation }}</td>
        {% if l.sn_ticket %}
        <td>{{ l.sn_ticket }}</td>
