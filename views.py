@@ -354,7 +354,7 @@ class IndexView(LoginRequiredMixin, generic.ListView):
                                     governance_doc__governance_type='DU'
                                 ).exclude(
                                     status='CO',
-                                )
+                                ).distinct()
         
         swqs = Software.objects.all()
         swqs = sorted(swqs, key=lambda i: i.seatcount(), reverse=True)

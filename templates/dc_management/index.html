@@ -32,7 +32,7 @@
      </div>
     </div>
     
-    
+    {% if onboarding_prj_list|length > 0 %}
     <div class="container">
      <div class="panel panel-info">
       <div class="panel-heading">
@@ -51,8 +51,9 @@
       </div>
      </div>
     </div>
-
-
+    {% endif %}
+    
+    {% if migration_list|length > 0 %}
     <div class="container">
      <div class="panel panel-info">
       <div class="panel-heading">
@@ -65,8 +66,9 @@
       </div>
      </div>
     </div>
+    {% endif %}
 
-
+    {% if expiring_list|length > 0 %}
     <div class="container">
      <div class="panel panel-info">
       <div class="panel-heading">
@@ -82,7 +84,9 @@
       </div>
      </div>
     </div>
-
+    {% endif %}
+    
+    {% if shutting_list|length > 0 %}
     <div class="container">
      <div class="panel panel-info">
       <div class="panel-heading">
@@ -95,12 +99,11 @@
             {% include "dc_management/project_list_template.html" %}
         {% endwith %}
         {% endwith %}
-        
-        
-        
       </div>
      </div>
     </div>
+    {% endif %}
+    
 
     <div class="container">
      <div class="panel panel-info">
@@ -124,11 +127,11 @@
                {% include "dc_management/expiring_gov_docs.html" %}
             {% endfor %}
         </table>
-        
       </div>
      </div>
     </div>
 
+    {% if undocumented_list|length > 0 %}
     <div class="container">
      <div class="panel panel-info">
       <div class="panel-heading">
@@ -145,7 +148,9 @@
       </div>
      </div>
     </div>
-
+    {% endif %}
+    
+    {% if irb_invalid|length > 0 %}
     <div class="container">
      <div class="panel panel-info">
       <div class="panel-heading">
@@ -162,7 +167,9 @@
       </div>
      </div>
     </div>
-
+    {% endif %}
+    
+    {% if dua_invalid|length > 0 %}
     <div class="container">
      <div class="panel panel-info">
       <div class="panel-heading">
@@ -179,7 +186,9 @@
       </div>
      </div>
     </div>
-
+    {% endif %}
+    
+    
     <div class="container">
      <div class="panel panel-info">
       <div class="panel-heading">

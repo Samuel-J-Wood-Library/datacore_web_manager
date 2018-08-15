@@ -1113,16 +1113,28 @@ class AlertTag(models.Model):
     record_author = models.ForeignKey(User, on_delete=models.CASCADE)
     
     alertcomment = models.TextField()
-    cleared = models.DateTimeField()
-
+    cleared = models.DateTimeField(blank=True, null=True)
+    
+    def __str__(self):
+        if self.cleared:
+            return "resolved {}: {}".format(self.cleared, self.alertcomment)
+        else:
+            return "ACTIVE: {}".format(self.alertcomment)
+        
 class CommentLog(models.Model):
     record_creation = models.DateField(auto_now_add=True)
     record_update = models.DateField(auto_now=True)
     record_author = models.ForeignKey(User, on_delete=models.CASCADE)
 
     comment = models.TextField()
-    parent_comment = models.ForeignKey('self', blank=True, null=True) # for replies 
-  
+    parent_comment = models.ForeignKey('self', 
+                                        on_delete=models.CASCADE,
+                                        blank=True, 
+                                        null=True
+                                        ) # for replies 
+    def __str__(self):
+        return "{}: {}".format(self.record_author, self.comment)
+         
 class MigrationLog(models.Model):
     record_creation = models.DateField(auto_now_add=True)
     record_update = models.DateField(auto_now=True)
