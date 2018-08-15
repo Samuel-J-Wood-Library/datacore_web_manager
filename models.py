@@ -1112,55 +1112,8 @@ class AlertTag(models.Model):
     record_update = models.DateField(auto_now=True)
     record_author = models.ForeignKey(User, on_delete=models.CASCADE)
     
-    name = models.CharField(max_length=64, null=True, blank=True)   
-    type = models.ForeignKey(AlertTagType, 
-                            on_delete=models.CASCADE, 
-                            related_name="tagtype"
-                            )
-                            
-    description = models.TextField(null=True, blank=True)                   
-    affected_prj = models.ForeignKey(Project, 
-                            on_delete=models.CASCADE, 
-                            related_name="tagtype",
-                            null=True,
-                            blank=True,
-                            )
-    affected_dcuser = models.ForeignKey(DC_User, 
-                            on_delete=models.CASCADE, 
-                            related_name="tagtype",
-                            null=True,
-                            blank=True,
-                            )
-    affected_software = models.ForeignKey(Software, 
-                            on_delete=models.CASCADE, 
-                            related_name="tagtype",
-                            null=True,
-                            blank=True,
-                            )
-    affected_server = models.ForeignKey(Server, 
-                            on_delete=models.CASCADE, 
-                            related_name="tagtype",
-                            null=True,
-                            blank=True,
-                            )
-    affected_admin = models.ForeignKey(DC_Administrator, 
-                            on_delete=models.CASCADE, 
-                            related_name="tagtype",
-                            null=True,
-                            blank=True,
-                            )
-    affected_govdoc = models.ForeignKey(Governance_Doc, 
-                            on_delete=models.CASCADE, 
-                            related_name="tagtype",
-                            null=True,
-                            blank=True,
-                            )
-    affected_softwarelicensetype = models.ForeignKey(Software_License_Type, 
-                            on_delete=models.CASCADE, 
-                            related_name="tagtype",
-                            null=True,
-                            blank=True,
-                            )
+    alertcomment = models.TextField()
+    cleared = models.DateTimeField()
 
 class CommentLog(models.Model):
     record_creation = models.DateField(auto_now_add=True)
@@ -1168,6 +1121,7 @@ class CommentLog(models.Model):
     record_author = models.ForeignKey(User, on_delete=models.CASCADE)
 
     comment = models.TextField()
+    parent_comment = models.ForeignKey('self', blank=True, null=True) # for replies 
   
 class MigrationLog(models.Model):
     record_creation = models.DateField(auto_now_add=True)
