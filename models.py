@@ -225,10 +225,28 @@ class Server(models.Model):
         # pull all users from all projects. Return users/projects when a user
         # is present in more than one project on the node
         mounted_projects = Project.objects.filter(host=self.pk, status='RU')
-        users = [ u for p in mounted_projects for u in p.users.all() ]
+        user_projects = {}
+        for p in mounted_projects:
+            for u in p.users.all():
+                if u in user_projects:
+                    user_projects[u].append(p)
+                else:
+                    user_projects[u] = [p]
         
-        return [ item for item, count in collections.Counter(users).items() if count > 1]
-
+        # return only those users/projects where there are more than one project,
+        # and the user is not data core staff:
+        duplicate_user_dict = {}
+        for u in user_projects:
+            if (len(user_projects[u]) > 1) & (u.role != 'DC'):
+                duplicate_user_dict[u] = user_projects[u]
+        
+        
+        # deprecated:
+        #users = [ u for p in mounted_projects for u in p.users.all() ]
+        #return [ item for item, count in collections.Counter(users).items() if count > 1]
+        
+        return duplicate_user_dict
+        
     def get_absolute_url(self):
         return reverse('dc_management:node', kwargs={'pk': self.pk})
            
@@ -282,6 +300,7 @@ class DC_User(models.Model):
     STATISTICIAN = 'SN'
     VOLUNTEER = 'VO'
     STAFF = 'SF'
+    DATACORE = 'DC'
     EXPIRED = 'EX'
     OTHER = 'OT' # note this is also used in AFFILIATION_CHOICES
     ROLE_CHOICES = (
@@ -292,6 +311,7 @@ class DC_User(models.Model):
                 (STAFF, 'Staff'),
                 (STUDENT, 'Student'),
                 (VOLUNTEER, 'Volunteer'),
+                (DATACORE, 'Data Core Staff'),
                 (OTHER, 'Other'),
                 (EXPIRED, 'Role Expired'),
     )

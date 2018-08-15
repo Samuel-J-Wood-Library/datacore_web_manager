@@ -1,0 +1,14 @@
+{% for s in server_list %}
+    {% if s.duplicate_users|length > 0 %}
+        <h4>{{ s }}</h4>
+    {% endif %}
+    {% for u, p_list in s.duplicate_users.items %} 
+      <li><a href="{% url 'dc_management:dcuser' u.pk %}">{{u}}</a>
+        <ul>
+            {% for p in p_list %}
+            <li><a href="{% url 'dc_management:project' p.pk %}">{{p}}</a></li>
+            {% endfor %}
+        </ul>
+      </li>
+    {% endfor %}
+{% endfor %}

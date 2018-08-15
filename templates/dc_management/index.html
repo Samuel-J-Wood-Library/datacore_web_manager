@@ -17,29 +17,22 @@
 
 
 
-    
+   
     <div class="container">
      <div class="panel panel-info">
       <div class="panel-heading">
-        <h4>User mounted twice on node</h4>
+        <h4>Users mounted twice on node</h4>
       </div>
       <div class="panel-body">
-        
-        {% for s in server_list %}
-            {% if s.duplicate_users|length > 0 %}
-              <h4>{{ s }}</h4>
-              <ul>
-              {% for u in s.duplicate_users %}
-              <li><a href="{% url 'dc_management:dcuser' u.pk %}">{{ u }}</a></li>
-              {% endfor %}
-              </ul>
-            {% endif %}
-        {% endfor %}
+        {% with server_list as server_list %}
+            {% include "dc_management/duplicate_user_list.html" %}
+        {% endwith %}
         
       </div>
      </div>
     </div>
-
+    
+    
     <div class="container">
      <div class="panel panel-info">
       <div class="panel-heading">

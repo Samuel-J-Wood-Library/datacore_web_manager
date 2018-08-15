@@ -388,6 +388,7 @@ class IndexView(LoginRequiredMixin, generic.ListView):
                                         status='SD',
                                         completion_date__isnull=True,
                                         ).order_by('expected_completion'),                            
+            # for finding users assigned more than once:
             'server_list'       : Server.objects.filter(
                                         status="ON"
                                         ).filter(
@@ -701,6 +702,7 @@ class ServerView(LoginRequiredMixin, generic.DetailView):
         context.update({
                         'server_users': server_users,
                         'installed_software_bylogs':installed_sw,
+                        'self_server_list':[self.object,],
         })
         return context
 
