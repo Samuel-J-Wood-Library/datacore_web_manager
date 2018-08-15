@@ -1,16 +1,16 @@
 {% load project_tags %}
 
 <!-- highlight based on completion and number of users with access --!>  
-{% if project.expected_completion|days_until:0 and project.users.all.count != 0 %}
+{% if project.expected_completion|days_until:0 and project.billable_users.count != 0 %}
     <td class="bg-danger" style="color:red;">
-        {{ project.users.all.count }}
+        {{ project.billable_users.count }}
     </td> 
 {% elif project.expected_completion|days_until:10 and project.status == 'RU' %}
     <td class="bg-warning" style="color:orange;">
-        {{ project.users.all.count }}
+        {{ project.billable_users.count }}
     </td>
 {% else %}
-    <td>{{ project.users.all.count }}</td>
+    <td>{{ project.billable_users.count }}</td>
 {% endif %}
 
 

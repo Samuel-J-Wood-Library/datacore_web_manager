@@ -461,6 +461,9 @@ class Project(models.Model):
     def days_to_completion(self):
     	td = self.expected_completion - datetime.date.today()
     	return td.days
+    
+    def billable_users(self):
+        return DC_User.objects.filter(project=self.pk,).exclude(role='DC')
     	    
 class AccessPermission(models.Model):
     name = models.CharField(max_length=32)

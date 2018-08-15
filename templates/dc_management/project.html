@@ -204,7 +204,7 @@
 <div class="container">
  <div class="panel panel-info">
   <div class="panel-heading">
-    <h4>{{ project.users.all.count }} users
+    <h4>Users ({{ project.billable_users.count }}/{{ project.users.all.count }} billable)
         <span class="pull-right">
             <a type="button" class="btn btn-danger" href="{% url 'dc_management:usertothisproject-remove' project.pk %}">Remove user from project</a>
             <a type="button" class="btn btn-danger" href="{% url 'dc_management:usertothisproject-add' project.pk %}">Add user to project</a>

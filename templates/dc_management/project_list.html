@@ -1,7 +1,7 @@
 {% load project_tags %}
 
 <td {% if project.status == "CO" %}style="color:#896E4E;"{% endif %}>
-{{ project.users.all.count }}</td> 
+{{ project.billable_users.count }}</td> 
 
 
 <!-- highlight based on project status and days to expected completion --!>    
