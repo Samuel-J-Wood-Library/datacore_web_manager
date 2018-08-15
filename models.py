@@ -1161,6 +1161,13 @@ class AlertTag(models.Model):
                             null=True,
                             blank=True,
                             )
+
+class CommentLog(models.Model):
+    record_creation = models.DateField(auto_now_add=True)
+    record_update = models.DateField(auto_now=True)
+    record_author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    comment = models.TextField()
   
 class MigrationLog(models.Model):
     record_creation = models.DateField(auto_now_add=True)
