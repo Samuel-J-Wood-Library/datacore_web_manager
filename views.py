@@ -108,7 +108,8 @@ class GovdocAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
                             Q(doc_id__icontains=self.q) | 
                             Q(project__dc_prj_id__icontains=self.q) |
                             Q(project__nickname__icontains=self.q) |
-                            Q(comments__icontains=self.q)
+                            Q(comments__icontains=self.q) |
+                            Q(pk=self.q)
                             )
         return qs
 
