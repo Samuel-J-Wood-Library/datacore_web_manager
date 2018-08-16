@@ -9,15 +9,17 @@ from django.utils.translation import gettext_lazy as _
 
 from .models import Server, Project, DC_User, Software, Software_Log, Project
 from .models import DCUAGenerator, Storage_Log, StorageCost, Governance_Doc
-from .models import FileTransfer, MigrationLog
+from .models import FileTransfer, MigrationLog, CommentLog
 
+"""
 class CommentForm(forms.Form):
-    name = forms.CharField()
-    message = forms.CharField(widget=forms.Textarea)
-    topics = forms.ModelMultipleChoiceField(queryset=Project.objects.all())
-    def send_email(self):
-        # send email using the self.cleaned_data dictionary
-        pass
+    comment = forms.TextField(widget=forms.Textarea)
+"""
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = CommentLog
+        fields = [ 'comment', ]
+    
         
 class AddUserToProjectForm(forms.Form):
     dcusers = forms.ModelMultipleChoiceField(

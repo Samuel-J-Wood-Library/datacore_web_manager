@@ -116,8 +116,26 @@
 {% endwith %}
 
 {% if dc_user.comments %}
-<h3>Comments</h3>
-<p>{{ dc_user.comments }}</p>
+<div class="container">
+ <div class="panel panel-info">
+  <div class="panel-heading">    
+    <h3>Comments</h3>
+  </div>
+  <div class="panel-body">
+    {% for cmts in dc_user.dynamic_comments.all %}
+
+    <div class="insetwell" >
+    
+    {{ cmts.comment }}
+
+    <h5 align="right" style="font-family:verdana;font-size:75%;">Posted by {{ cmts.record_author }} {{ cmts.record_creation }}</h5>
+    </div>
+    
+    
+    {% endfor %}
+  </div>
+ </div>
+</div>
 {% endif %}
 
 </br>

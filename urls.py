@@ -52,10 +52,10 @@ urlpatterns = [
     path('node/all', views.AllServersView.as_view(), name='all_servers'),
     
     # detail views of projects, nodes and users:
-    url(r'^project/(?P<pk>[0-9]+)/$', views.ProjectView.as_view(), name='project'),
-    url(r'^node/(?P<pk>[0-9]+)/$', views.ServerView.as_view(), name='node'),
-    url(r'^dcuser/(?P<pk>[0-9]+)/$', views.DCUserView.as_view(), name='dcuser'),
-    url(r'^govdoc/(?P<pk>[0-9]+)/$', views.pdf_view, name='govdoc'),
+    path('project/<int:pk>', views.ProjectView.as_view(), name='project'),
+    path('node/<int:pk>', views.ServerView.as_view(), name='node'),
+    path('dcuser/<int:pk>', views.DCUserView.as_view(), name='dcuser'),
+    path('govdoc/<int:pk>', views.pdf_view, name='govdoc'),
     path('govdoc/meta/<int:pk>', views.GovernanceView.as_view(), name='govdocmeta'),
     
     # add, modify, remove user
@@ -142,6 +142,11 @@ urlpatterns = [
             views.MigrationDetailView.as_view(), 
             name='migration-info',
     ),
+    
+    # comment views
+    path('comment/add/<int:inst_pk>/<str:model_type>/<str:comment_type>', 
+            views.CommentView.as_view(), 
+            name='add_comment'),
     
     # search view:
     path('search/all', views.FullSearch.as_view(), name="full-search"),

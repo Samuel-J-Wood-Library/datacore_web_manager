@@ -32,18 +32,72 @@ from dc_management.outlookservice import get_me, send_message
 from .models import Server, Project, DC_User, Access_Log, Governance_Doc
 from .models import Software, Software_Log, Storage_Log
 from .models import UserCost, SoftwareCost, StorageCost, DCUAGenerator
-from .models import FileTransfer, MigrationLog
+from .models import FileTransfer, MigrationLog, CommentLog
 
 from .forms import AddUserToProjectForm, RemoveUserFromProjectForm
 from .forms import ExportFileForm, CreateDCAgreementURLForm
 from .forms import AddSoftwareToProjectForm, ProjectForm, ProjectUpdateForm
 from .forms import StorageChangeForm, BulkUserUploadForm, GovernanceDocForm
 from .forms import FileTransferForm, ServerUpdateForm, ServerForm, MigrationForm
+from .forms import CommentForm
 
-#################################
-#### Basic information views ####
-#################################
+#######################
+#### Comment views ####
+#######################
 
+class CommentView(LoginRequiredMixin, CreateView):
+    template_name = 'dc_management/comment_form.html'
+    form_class = CommentForm
+    
+    def get_success_url(self):
+        if self.kwargs['model_type'] ==  'project':
+            return reverse('dc_management:project', args=(self.kwargs['inst_pk'],))
+        if self.kwargs['model_type'] ==  'server':
+            return reverse('dc_management:node', args=(self.kwargs['inst_pk'],))
+        if self.kwargs['model_type'] ==  'dc_user':
+            return reverse('dc_management:dcuser', args=(self.kwargs['inst_pk'],))
+        if self.kwargs['model_type'] ==  'software':
+            return reverse('dc_management:software-detail',
+                             args=(self.kwargs['inst_pk'],)
+                            )
+        if self.kwargs['model_type'] ==  'governance_doc':
+            return reverse('dc_management:govdoc', args=(self.kwargs['inst_pk'],))
+            
+    def form_valid(self, form, ):
+        self.object = form.save(commit=False)
+        # get model instance comment is connected with:
+        inst_pk = self.kwargs['inst_pk']
+        model_type = self.kwargs['model_type']
+        
+        # get the user who posted
+        self.object.record_author = self.request.user
+        
+        # check if reply, then save parent if so:
+        if self.kwargs['comment_type'] == 'new':
+            pass
+        else:
+            self.object.parent_comment = CommentLog.objects.get(
+                                                pk=int(self.kwargs['comment_type'])
+                                                            )
+        self.object.save()
+        
+        # connect comment to model instance:
+        if model_type == 'project':
+            inst = Project.objects.get(pk=inst_pk)
+        elif model_type == 'server':
+            inst = Server.objects.get(pk=inst_pk)
+        elif model_type == 'dc_user':
+            inst = DC_User.objects.get(pk=inst_pk)
+        elif model_type == 'software':
+            inst = Software.objects.get(pk=inst_pk)
+        elif model_type == 'governance_doc':
+            inst = Governance_Doc.objects.get(pk=inst_pk) 
+        
+        inst.dynamic_comments.add(self.object)
+        inst.save()
+        
+        
+        return super(CommentView, self).form_valid(form)
 
 
 ####################################
@@ -241,7 +295,7 @@ class IndexProjectView(LoginRequiredMixin, generic.ListView):
     def get_context_data(self, **kwargs):
         context = super(IndexProjectView, self).get_context_data(**kwargs)
         context.update({
-            'empty_list'     : [],
+            'empty_list'    : [],
         })
         return context
         
@@ -1674,6 +1728,12 @@ class MigrationDetailView(LoginRequiredMixin, generic.DetailView):
     model = MigrationLog
     template_name = 'dc_management/migration_record.html'
 
+    
+class AddProjectComment(CreateView):
+    template_name = 'dc_management/comment_form.html'
+    form_class = CommentForm
+    
+    
 ##############################
 ######  SEARCH  VIEWS   ######
 ##############################

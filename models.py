@@ -11,6 +11,38 @@ import collections
 
 
 ############################
+####  Comment Models    ####
+############################
+
+class AlertTag(models.Model):
+    record_creation = models.DateField(auto_now_add=True)
+    record_update = models.DateField(auto_now=True)
+    record_author = models.ForeignKey(User, on_delete=models.CASCADE)
+    
+    alertcomment = models.TextField()
+    cleared = models.DateTimeField(blank=True, null=True)
+    
+    def __str__(self):
+        if self.cleared:
+            return "resolved {}: {}".format(self.cleared, self.alertcomment)
+        else:
+            return "ACTIVE: {}".format(self.alertcomment)
+        
+class CommentLog(models.Model):
+    record_creation = models.DateField(auto_now_add=True)
+    record_update = models.DateField(auto_now=True)
+    record_author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    comment = models.TextField()
+    parent_comment = models.ForeignKey('self', 
+                                        on_delete=models.CASCADE,
+                                        blank=True, 
+                                        null=True
+                                        ) # for replies 
+    def __str__(self):
+        return "{}: {}".format(self.record_author, self.comment)
+         
+############################
 ####  Software Models   ####
 ############################
 
@@ -42,6 +74,10 @@ class Software(models.Model):
     package = models.BooleanField(default=False)
     purchase_details = models.TextField(null=True, blank=True)
     comments = models.TextField(null=True, blank=True)
+    dynamic_comments = models.ManyToManyField(CommentLog, 
+                                              blank=True, 
+                                              related_name='software_comments'
+                                              )
 
     def __str__(self):
             return "{} (version {})".format(self.name, self.version)
@@ -217,6 +253,10 @@ class Server(models.Model):
                         blank=True
                         ) # eg brbesx10.med.cornell.edu
     comments = models.TextField(null=True, blank=True)
+    dynamic_comments = models.ManyToManyField(CommentLog, 
+                                              blank=True, 
+                                              related_name='server_comments'
+                                              )
 
     def __str__(self):
             return self.node
@@ -322,6 +362,10 @@ class DC_User(models.Model):
     )
     
     comments = models.TextField(null=True, blank=True)
+    dynamic_comments = models.ManyToManyField(CommentLog, 
+                                              blank=True, 
+                                              related_name='user_comments'
+                                              )
 
     def __str__(self):
             return "{1} {2} ({0})".format(self.cwid, self.first_name, self.last_name)
@@ -451,6 +495,10 @@ class Project(models.Model):
     project_total_cost = models.FloatField(null=True, blank=True)
     
     comments = models.TextField(null=True, blank=True)
+    dynamic_comments = models.ManyToManyField(CommentLog, 
+                                              blank=True, 
+                                              related_name='project_comments'
+                                              )
     
     def __str__(self):
             return "{} ({})".format(self.dc_prj_id, self.nickname)
@@ -530,6 +578,10 @@ class Governance_Doc(models.Model):
     )
     destroy_data = models.NullBooleanField()
     comments = models.TextField(null=True, blank=True)
+    dynamic_comments = models.ManyToManyField(CommentLog, 
+                                              blank=True, 
+                                              related_name='govdoc_comments'
+                                              )
 
     def __str__(self):
             return "{4}_{0}_{2}_{1}_{3}".format(self.governance_type, 
@@ -1107,34 +1159,7 @@ class AlertTagType(models.Model):
     name = models.CharField(max_length=64)
     description = models.TextField(null=True, blank=True)
 
-class AlertTag(models.Model):
-    record_creation = models.DateField(auto_now_add=True)
-    record_update = models.DateField(auto_now=True)
-    record_author = models.ForeignKey(User, on_delete=models.CASCADE)
-    
-    alertcomment = models.TextField()
-    cleared = models.DateTimeField(blank=True, null=True)
-    
-    def __str__(self):
-        if self.cleared:
-            return "resolved {}: {}".format(self.cleared, self.alertcomment)
-        else:
-            return "ACTIVE: {}".format(self.alertcomment)
-        
-class CommentLog(models.Model):
-    record_creation = models.DateField(auto_now_add=True)
-    record_update = models.DateField(auto_now=True)
-    record_author = models.ForeignKey(User, on_delete=models.CASCADE)
 
-    comment = models.TextField()
-    parent_comment = models.ForeignKey('self', 
-                                        on_delete=models.CASCADE,
-                                        blank=True, 
-                                        null=True
-                                        ) # for replies 
-    def __str__(self):
-        return "{}: {}".format(self.record_author, self.comment)
-         
 class MigrationLog(models.Model):
     record_creation = models.DateField(auto_now_add=True)
     record_update = models.DateField(auto_now=True)
