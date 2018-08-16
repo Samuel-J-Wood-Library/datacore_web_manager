@@ -108,28 +108,11 @@
 
 
 
-{% if server.comments %}
-<div class="container">
- <div class="panel panel-info">
-  <div class="panel-heading">    
-    <h3>Comments</h3>
-  </div>
-  <div class="panel-body">
-    {% for cmts in server.dynamic_comments.all %}
-
-    <div class="insetwell" >
-    
-    {{ cmts.comment }}
-
-    <h5 align="right" style="font-family:verdana;font-size:75%;">Posted by {{ cmts.record_author }} {{ cmts.record_creation }}</h5>
-    </div>
-    
-    
-    {% endfor %}
-  </div>
- </div>
-</div>
-{% endif %}
+{% with server as model_instance  %}
+{% with 'server' as  model_type %}
+{% include 'dc_management/comment_list.html' %}
+{% endwith %}
+{% endwith %}
 
 {% endblock %}
  
