@@ -275,6 +275,24 @@
  </div>
 </div>
 
+
+<div class="container">
+ <div class="panel panel-info">
+  <div class="panel-heading">
+    <h4>Nodes suitable for migration of {{ project }}</h4>
+  </div>
+  <div class="panel-body">
+    <ul>
+    {% for node in project.valid_nodes %}
+        <li><a href="{% url 'dc_management:node' node.pk %}">{{node}}</a></li>
+    {% endfor %}
+    </ul>
+  </div>
+ </div>
+</div>
+
+
+<!-- Comments --!>
 {% with project as model_instance  %}
 {% with 'project' as  model_type %}
 {% include 'dc_management/comment_list.html' %}

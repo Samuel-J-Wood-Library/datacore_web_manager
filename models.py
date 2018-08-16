@@ -3,6 +3,7 @@ from django.db import models
 
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.db.models import Q
 
 import datetime
 from datetime import date
@@ -261,10 +262,15 @@ class Server(models.Model):
     def __str__(self):
             return self.node
 
-    def duplicate_users(self):
+    def get_all_active_users(self):
         # pull all users from all projects. Return users/projects when a user
         # is present in more than one project on the node
-        mounted_projects = Project.objects.filter(host=self.pk, status='RU')
+        mounted_projects = Project.objects.filter(host=self.pk
+                                                ).filter(
+                                                    Q(status='RU') |
+                                                    Q(status='SU') |
+                                                    Q(status='ON')
+                                                )
         user_projects = {}
         for p in mounted_projects:
             for u in p.users.all():
@@ -272,19 +278,17 @@ class Server(models.Model):
                     user_projects[u].append(p)
                 else:
                     user_projects[u] = [p]
-        
+        return user_projects
+    
+    def duplicate_users(self):    
         # return only those users/projects where there are more than one project,
         # and the user is not data core staff:
+        user_projects = self.get_all_active_users()
         duplicate_user_dict = {}
         for u in user_projects:
             if (len(user_projects[u]) > 1) & (u.role != 'DC'):
                 duplicate_user_dict[u] = user_projects[u]
-        
-        
-        # deprecated:
-        #users = [ u for p in mounted_projects for u in p.users.all() ]
-        #return [ item for item, count in collections.Counter(users).items() if count > 1]
-        
+                
         return duplicate_user_dict
         
     def get_absolute_url(self):
@@ -511,7 +515,24 @@ class Project(models.Model):
     	return td.days
     
     def billable_users(self):
+        """
+        when we need to ignore ITS staff who have been given access to dcore
+        """
         return DC_User.objects.filter(project=self.pk,).exclude(role='DC')
+    
+    def valid_nodes(self):
+        """
+        Find all nodes for which there are no users in common.
+        for performance, this should be called explicitly, not every time the project 
+        view is loaded.
+        """
+        node_pool = Server.objects.filter(status="ON", function="PR")
+        valid_node_list = []
+        for node in node_pool:
+            node_users = node.get_all_active_users()  # running, suspended, or onboarding
+            if self.users not in node_users.values():
+                valid_node_list.append(node)
+        return valid_node_list
     	    
 class AccessPermission(models.Model):
     name = models.CharField(max_length=32)
