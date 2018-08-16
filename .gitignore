@@ -1,0 +1,10 @@
+manage.py
+db.sqlite3
+datacore/*
+.DS_store
+*.pyc
+*/*.pyc
+media/
+static/
+dcfront/*
+dcfront
