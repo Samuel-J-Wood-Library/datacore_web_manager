@@ -275,8 +275,11 @@
  </div>
 </div>
 
-
-    
+{% with project as model_instance  %}
+{% with 'project' as  model_type %}
+{% include 'dc_management/comment_list.html' %}
+{% endwith %}
+{% endwith %}
 
 <div class="container">
  <div class="panel panel-info">

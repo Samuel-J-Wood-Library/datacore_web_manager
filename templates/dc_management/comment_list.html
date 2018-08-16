@@ -1,0 +1,46 @@
+<div class="container">
+ <div class="panel panel-info">
+  <div class="panel-heading">    
+    <h3>Comments
+    <span class="pull-right">
+            <a class="btn btn-primary"
+   href="{% url 'dc_management:add_comment' model_instance.pk model_type 'new' %}">Add comment</a>
+      </span>
+    </h3>
+  </div>
+  <div class="panel-body">
+    {% for cmts in model_instance.dynamic_comments.all %}
+    {% if not cmts.parent_comment %}
+    <div class="insetwell" >
+    
+    {{ cmts.comment|linebreaks }}
+
+    <h5 align="right" style="font-family:verdana;font-size:75%;">Posted by {{ cmts.record_author }} {{ cmts.record_creation }}
+    <span class="pull-left">
+       <a class="btn btn-primary btn-sm" style="padding:2px"
+   href="{% url 'dc_management:add_comment' model_instance.pk model_type cmts.pk %}">Reply</a>     
+      </span>
+    
+    </h5>
+    
+    {% for reply in cmts.commentlog_set.all %}
+        <div class="insetwell" >
+    
+        {{ reply.comment|linebreaks }}
+
+        <h5 align="right" 
+        style="font-family:verdana;font-size:75%;">
+            Posted by {{ cmts.record_author }} {{ cmts.record_creation }}
+        </h5>
+        </div>
+    
+    {% endfor %}
+    
+    </br>
+    </div>
+    
+    {% endif %}
+    {% endfor %}
+  </div>
+ </div>
+</div>
