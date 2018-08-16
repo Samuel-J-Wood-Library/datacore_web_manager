@@ -527,11 +527,17 @@ class Project(models.Model):
         view is loaded.
         """
         node_pool = Server.objects.filter(status="ON", function="PR")
+        # get set of pks for all users in this project
+        # this could be changed to potential users later!
+        this_prj = set(self.users.values_list('id', flat=True))
+
         valid_node_list = []
         for node in node_pool:
             node_users = node.get_all_active_users()  # running, suspended, or onboarding
-            if self.users not in node_users.values():
+            that_node = set([u.pk  for u in list(node_users.keys())])
+            if len(this_prj.intersection(that_node)) == 0:
                 valid_node_list.append(node)
+
         return valid_node_list
     	    
 class AccessPermission(models.Model):
