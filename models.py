@@ -392,6 +392,10 @@ class Project(models.Model):
     dc_prj_id = models.CharField(max_length=8, unique=True)
     title = models.CharField(max_length=256)
     nickname = models.CharField(max_length=256, blank=True)
+    open_allowed = models.NullBooleanField()
+    open_enabled = models.NullBooleanField()
+    isolate_data = models.NullBooleanField()
+    
     fileshare_storage = models.IntegerField("Fileshare size (GB)",
                                             null=True, 
                                             blank=True)
@@ -609,6 +613,7 @@ class Governance_Doc(models.Model):
                                               blank=True, 
                                               related_name='govdoc_comments'
                                               )
+    isolate_data = models.NullBooleanField()
 
     def __str__(self):
             return "{4}_{0}_{2}_{1}_{3}".format(self.governance_type, 
