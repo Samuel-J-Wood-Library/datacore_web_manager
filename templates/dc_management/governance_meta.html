@@ -120,6 +120,7 @@
 <tr><th>Access permitted</th><td>{{ governance_doc.access_allowed }}</td></tr>
 
 <tr><th>Ticket</th><td>{{ governance_doc.sn_ticket }}</td></tr>
+<tr><th>Data Isolation</th><td>{% if governance_doc.isolate_data == True %}Isolate data: do not mix datasets.{% elif governance_doc.isolate_data == None %}Unspecified{% else %}Mixing allowed{% endif %}</td></tr>
 
     </table>
   </div>
