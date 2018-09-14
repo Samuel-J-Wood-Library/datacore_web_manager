@@ -181,7 +181,7 @@ class GovernanceDocForm(forms.ModelForm):
                     'supersedes_doc',
                     'project',  
                     'documentation',
-                    'comments',
+                    'isolate_data',
         ]
         widgets = {
                     'users_permitted' : autocomplete.ModelSelect2Multiple(
@@ -205,6 +205,9 @@ class ProjectForm(forms.ModelForm):
         fields = [  'dc_prj_id',
                     'title', 
                     'nickname', 
+                    'isolate_data', 
+                    'open_allowed', 
+                    'open_enabled',
                     'fileshare_storage', 
                     'direct_attach_storage', 
                     'backup_storage',
@@ -227,7 +230,7 @@ class ProjectForm(forms.ModelForm):
                     'completion_date',
                     'host',
                     'db',
-                    'comments',
+                    
                 ]
 
         widgets =  {'users' : autocomplete.ModelSelect2Multiple(
@@ -254,6 +257,9 @@ class ProjectUpdateForm(forms.ModelForm):
         model = Project
         fields = [  'title', 
                     'nickname', 
+                    'isolate_data', 
+                    'open_allowed', 
+                    'open_enabled',
                     'requested_ram', 
                     'requested_cpu', 
                     'pi',
@@ -270,7 +276,6 @@ class ProjectUpdateForm(forms.ModelForm):
                     'completion_date',
                     'host',
                     'db',
-                    'comments',
                 ]
 
         widgets =  {'users' : autocomplete.ModelSelect2Multiple(

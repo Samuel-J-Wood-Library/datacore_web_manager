@@ -24,6 +24,7 @@ class GovDocAdmin(admin.ModelAdmin):
                     'defers_to_doc', 
                     "supersedes_doc",
                     'allowed_user_string',
+                    'isolate_data',
                     )
     list_filter = ('governance_type','expiry_date')
     search_fields = ('pk', 'doc_id', 'project')
@@ -40,6 +41,9 @@ class ProjectAdmin(admin.ModelAdmin):
 					'status',
 					'expected_completion',
 					'env_type',
+					'isolate_data', 
+					'open_allowed', 
+					'open_enabled',
     )
     list_filter = ('env_type','status')
     exlude = (  'user_cost',

@@ -33,6 +33,23 @@
 <h1>
     {{ project.dc_prj_id }}
     <small class="text-muted">{{ project.nickname }}</small>
+    
+    {% if project.open_allowed == True %}
+    <span class="alert alert-success" style="float:right;font-size:50%;">OPEN</span>
+    {% elif project.open_allowed == None %}
+    <span class="alert alert-secondary" style="float:right;font-size:50%;">UNSPECIFIED ACCESS</span>
+    {% else %}
+    <span class="alert alert-danger" style="float:right;font-size:50%;">FIREWALLED</span>
+    {% endif %}
+
+    {% if project.isolate_data == True %}
+    <span class="alert alert-danger" style="float:right;font-size:50%;">ISOLATE DATA</span>
+    {% elif project.isolate_data == None %}
+    <span class="alert alert-secondary" style="float:right;font-size:50%;">UNSPECIFIED DATA</span>
+    {% else %}
+    <span class="alert alert-success" style="float:right;font-size:50%;">MISCIBLE DATA</span>
+    {% endif %}
+    
 </h1>
 <h2>
     <small class="text-muted">{{ project.title }}</small>
