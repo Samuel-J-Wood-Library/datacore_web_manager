@@ -29,31 +29,47 @@
 }
 </style>
 
+<div class="col-md-12">
+ <div class="col-md-8">
+    <h1 style="padding:0;margin:0;">
+        {{ project.dc_prj_id }}
+        <small class="text-muted">{{ project.nickname }}</small>
+    </h1>
+    <h2>
+        <small class="text-muted">{{ project.title }}</small>
+    </h2>
+ </div>
 
-<h1>
-    {{ project.dc_prj_id }}
-    <small class="text-muted">{{ project.nickname }}</small>
-    
+ <div class="col-md-2">
     {% if project.open_allowed == True %}
-    <span class="alert alert-success" style="float:right;font-size:50%;">OPEN</span>
+        <h6 class="alert alert-success" style="margin:0">PUBLIC</h5>
     {% elif project.open_allowed == None %}
-    <span class="alert alert-secondary" style="float:right;font-size:50%;">UNSPECIFIED ACCESS</span>
+        <h6 class="alert alert-warning" style="margin:0">UNDETERMINED SENSITIVITY</h5>
     {% else %}
-    <span class="alert alert-danger" style="float:right;font-size:50%;">FIREWALLED</span>
+        <h6 class="alert alert-danger" style="margin:0">CONFIDENTIAL</h5>
     {% endif %}
 
     {% if project.isolate_data == True %}
-    <span class="alert alert-danger" style="float:right;font-size:50%;">ISOLATE DATA</span>
+        <h6 class="alert alert-danger" style="margin:0">ISOLATE DATA</h5>
     {% elif project.isolate_data == None %}
-    <span class="alert alert-secondary" style="float:right;font-size:50%;">UNSPECIFIED DATA</span>
+        <h6 class="alert alert-warning" style="margin:0">UNSPECIFIED DATA</h5>
     {% else %}
-    <span class="alert alert-success" style="float:right;font-size:50%;">MISCIBLE DATA</span>
+        <h6 class="alert alert-success" style="margin:0">MISCIBLE DATA</h5>
     {% endif %}
-    
-</h1>
-<h2>
-    <small class="text-muted">{{ project.title }}</small>
-</h2>
+ </div>
+
+ <div class="col-md-2">
+    {% if project.open_enabled == True %}
+        <h6 class="alert alert-danger" style="margin:0">OPEN</h5>
+    {% elif project.open_enabled == None %}
+        <h6 class="alert alert-warning" style="margin:0">UNDETERMINED ACCESS</h5>
+    {% else %}
+        <h6 class="alert alert-success" style="margin:0">FIREWALLED</h5>
+    {% endif %}
+ </div>
+</div>
+
+
 
 <!-- Setup tabs for separating details and logs --!>
 <div id="exTab1" class="container">
