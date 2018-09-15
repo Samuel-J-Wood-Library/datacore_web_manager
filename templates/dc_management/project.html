@@ -256,10 +256,20 @@
             <td>{{ project.host.ip_address }}</td>
         </tr>
         {% else %}
+        <tr>
             <td>Project not mounted</td>
             <td>Project not mounted</td>
             <td>Project not mounted</td>
+        </tr>
         {% endif %}
+        {% if project.prj_dns %}
+        <tr>
+            <td></td>
+            <td>{{ project.prj_dns }}</td>
+            <td></td>
+        </tr>
+        {% endif %}
+
 
     </table>
   </div>

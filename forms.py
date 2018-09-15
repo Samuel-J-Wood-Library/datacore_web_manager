@@ -275,6 +275,7 @@ class ProjectUpdateForm(forms.ModelForm):
                     'completion_ticket',
                     'completion_date',
                     'host',
+                    'prj_dns',
                     'db',
                 ]
 

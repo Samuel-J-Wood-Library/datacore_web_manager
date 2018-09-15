@@ -35,6 +35,7 @@ class ProjectAdmin(admin.ModelAdmin):
 					'nickname',
 					'pi',
 					'title',
+					'prj_dns',
 					'fileshare_storage',
 					'requested_ram',
 					'requested_cpu',
