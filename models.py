@@ -485,6 +485,9 @@ class Project(models.Model):
     completion_date = models.DateField(null=True, blank=True)
     
     host = models.ForeignKey(Server, on_delete=models.CASCADE, null=True, blank=True)
+    prj_dns = models.CharField('project-specific DNS', 
+                                max_length=64, null=True, blank=True,
+    )
     db = models.ForeignKey(Server, 
                             on_delete=models.CASCADE, 
                             related_name='db_host',
