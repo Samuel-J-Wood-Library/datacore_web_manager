@@ -29,8 +29,15 @@
 }
 </style>
 
-<div class="col-md-12">
- <div class="col-md-8">
+
+
+<!-- project top panel --!>
+<div class="container col-md-12">
+ <div class="col-md-1">
+ </div>
+ 
+ <div class="col-md-10">
+  <div class="col-md-6 panel panel-default">
     <h1 style="padding:0;margin:0;">
         {{ project.dc_prj_id }}
         <small class="text-muted">{{ project.nickname }}</small>
@@ -38,9 +45,9 @@
     <h2>
         <small class="text-muted">{{ project.title }}</small>
     </h2>
- </div>
+  </div>
 
- <div class="col-md-2">
+  <div class="col-md-3">
     {% if project.open_allowed == True %}
         <h6 class="alert alert-success" style="margin:0">PUBLIC</h5>
     {% elif project.open_allowed == None %}
@@ -56,9 +63,9 @@
     {% else %}
         <h6 class="alert alert-success" style="margin:0">MISCIBLE DATA</h5>
     {% endif %}
- </div>
+  </div>
 
- <div class="col-md-2">
+  <div class="col-md-3">
     {% if project.open_enabled == True %}
         <h6 class="alert alert-danger" style="margin:0">OPEN</h5>
     {% elif project.open_enabled == None %}
@@ -66,50 +73,73 @@
     {% else %}
         <h6 class="alert alert-success" style="margin:0">FIREWALLED</h5>
     {% endif %}
+  </div>
  </div>
 </div>
 
 
 
+<div class="col-md-12">
+<!-- left side button panel --!>
+<div class="col-md-2">
+    </br>
+    </br>
+    <a  type="button" class="btn btn-primary btn-group-justified" 
+        href="{% url 'dc_management:project-update' project.pk %}">Update project</a>
+
+    <a  type="button" class="btn btn-primary btn-group-justified" 
+        href="{% url 'dc_management:file-transfer-add' %}">Transfer file(s)</a>
+    <a  type="button" class="btn btn-primary btn-group-justified" 
+        href="{% url 'dc_management:storage-change' project.pk %}">Change Storage</a>
+    <a  type="button" class="btn btn-default btn-group-justified" 
+        href="#">Change RAM/CPU</a>
+
+    </br>
+    </br>
+
+    <a  type="button" class="btn btn-primary btn-group-justified" 
+        href="{% url 'dc_management:migration-add' project.pk %}">Migrate project</a>
+    <a  type="button" class="btn btn-default btn-group-justified" 
+        href="#">Find available node</a>
+    <a  type="button" class="btn btn-default btn-group-justified" 
+        href="#">Unmount project</a>
+    <a  type="button" class="btn btn-default btn-group-justified" 
+        href="#">Mount project</a>
+    <a  type="button" class="btn btn-default btn-group-justified" 
+        href="#">Login instructions</a>
+    <a  type="button" class="btn btn-default btn-group-justified" 
+        href="#">Decommission project</a>
+    </br>
+    </br>
+</div>
+
+<!-- right hand info panel --!>
+<div class="col-md-10">
+
+
 <!-- Setup tabs for separating details and logs --!>
-<div id="exTab1" class="container">
-<ul  class="nav nav-tabs">
-			<li class="active">
+<div id="exTab1" class="container col-md-12">
+    <ul  class="nav nav-tabs">
+        <li class="active">
             <a  href="#details" data-toggle="tab">Details</a>
-			</li>
-			<li><a href="#logs" data-toggle="tab">Logs</a>
-			</li>
-		</ul>
+        </li>
+            <li><a href="#logs" data-toggle="tab">Logs</a>
+        </li>
+	</ul>
 		
 		
-<div class="tab-content clearfix">
+<div class="tab-content clearfix col-md-12">
   
 
 
 
 
 <!-- Attributes of project --!>
-<div class="tab-pane active" id="details">
-<a type="button" class="btn btn-primary" href="{% url 'dc_management:project-update' project.pk %}">Update project</a>
-
-<a type="button" class="btn btn-danger" href="{% url 'dc_management:file-transfer-add' %}">Transfer file(s)</a>
-<a type="button" class="btn btn-primary" href="{% url 'dc_management:storage-change' project.pk %}">Change Storage</a>
-<a type="button" class="btn btn-default" href="#">Change RAM/CPU</a>
+<div class="tab-pane active col-md-12" id="details">
 
 </br>
-</br>
 
-<a type="button" class="btn btn-primary" href="{% url 'dc_management:migration-add' project.pk %}">Migrate project</a>
-<a type="button" class="btn btn-default" href="#">Find available node</a>
-<a type="button" class="btn btn-default" href="#">Unmount project</a>
-<a type="button" class="btn btn-default" href="#">Mount project</a>
-<a type="button" class="btn btn-default" href="#">Login instructions</a>
-<a type="button" class="btn btn-default" href="#">Decommission project</a>
-</br>
-</br>
-</br>
-
-<div class="container">
+<div class="container col-md-12">
  <div class="panel panel-info">
   <div class="panel-heading">
     <h4>Project attributes:</h4>
@@ -207,7 +237,7 @@
  </div>
 </div>
 
-<div class="container">
+<div class="container col-md-12">
  <div class="panel panel-info">
   <div class="panel-heading">
     <h4>Project node:</h4>
@@ -236,7 +266,7 @@
  </div>
 </div>
 
-<div class="container">
+<div class="container col-md-12">
  <div class="panel panel-info">
   <div class="panel-heading">
     <h4>Users ({{ project.billable_users.count }}/{{ project.users.all.count }} billable)
@@ -254,7 +284,7 @@
 </div>
 
 
-<div class="container">
+<div class="container col-md-12">
  <div class="panel panel-info">
   <div class="panel-heading">
     <h4>Project governance
@@ -274,7 +304,7 @@
 
 
 
-<div class="container">
+<div class="container col-md-12">
  <div class="panel panel-info">
   <div class="panel-heading">
     <h4>Installed software:
@@ -297,7 +327,7 @@
 </div>
 
 
-<div class="container">
+<div class="container col-md-12">
  <div class="panel panel-info">
   <div class="panel-heading">
     <h4>Project billing</h4>
@@ -309,7 +339,7 @@
 </div>
 
 
-<div class="container">
+<div class="container col-md-12">
  <div class="panel panel-info">
   <div class="panel-heading">
     <h4>Nodes suitable for migration of {{ project }}</h4>
@@ -337,7 +367,7 @@
 </div>
 
 
-<div class="tab-pane" id="logs">
+<div class="tab-pane col-md-12" id="logs">
 
 <!-- ############ --!>
 <!-- project logs --!>
@@ -558,8 +588,8 @@
 </div>
 </div>
 
-
-
+</div>
+</div>
 
 
 
