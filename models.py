@@ -392,9 +392,9 @@ class Project(models.Model):
     dc_prj_id = models.CharField(max_length=8, unique=True)
     title = models.CharField(max_length=256)
     nickname = models.CharField(max_length=256, blank=True)
-    open_allowed = models.NullBooleanField()
-    open_enabled = models.NullBooleanField()
-    isolate_data = models.NullBooleanField()
+    open_allowed = models.NullBooleanField("classification: public?")
+    open_enabled = models.NullBooleanField("security: open?")
+    isolate_data = models.NullBooleanField("data isolation: isolate?")
     
     fileshare_storage = models.IntegerField("Fileshare size (GB)",
                                             null=True, 
