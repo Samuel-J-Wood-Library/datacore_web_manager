@@ -1,11 +1,12 @@
 {% extends 'base.html' %}
 
 {% load static %}
-{% load bootstrap3 %}
+{% load bootstrap4 %}
 
 {% block content %}
 
 {# Load CSS and JavaScript #}
+
 {% comment this breaks after removing the load bootstrap3 tag %}
 {% bootstrap_css %}
 {% bootstrap_javascript %}
@@ -37,7 +38,7 @@
  </div>
  
  <div class="col-md-10">
-  <div class="col-md-6 panel panel-default">
+  <div class="col-md-8 panel panel-default">
     <h1 style="padding:0;margin:0;">
         {{ project.dc_prj_id }}
         <small class="text-muted">{{ project.nickname }}</small>
@@ -47,31 +48,30 @@
     </h2>
   </div>
 
-  <div class="col-md-3">
+  <div class="col-md-4" >
     {% if project.open_allowed == True %}
-        <h6 class="alert alert-success" style="margin:0">PUBLIC</h5>
+        <h6 class="alert alert-success" style="margin:0;padding:2px;">CLASSIFICATION: PUBLIC</h5>
     {% elif project.open_allowed == None %}
-        <h6 class="alert alert-warning" style="margin:0">UNDETERMINED SENSITIVITY</h5>
+        <h6 class="alert alert-warning" style="margin:0;padding:2px;">CLASSIFICATION: UNDETERMINED SENSITIVITY</h5>
     {% else %}
-        <h6 class="alert alert-danger" style="margin:0">CONFIDENTIAL</h5>
+        <h6 class="alert alert-danger" style="margin:0;padding:2px;">CLASSIFICATION: CONFIDENTIAL</h5>
     {% endif %}
 
     {% if project.isolate_data == True %}
-        <h6 class="alert alert-danger" style="margin:0">ISOLATE DATA</h5>
+        <h6 class="alert alert-danger" style="margin:0;padding:2px;">DATA ISOLATION: ISOLATE</h5>
     {% elif project.isolate_data == None %}
-        <h6 class="alert alert-warning" style="margin:0">UNSPECIFIED DATA</h5>
+        <h6 class="alert alert-warning" style="margin:0;padding:2px;">DATA ISOLATION: UNSPECIFIED</h5>
     {% else %}
-        <h6 class="alert alert-success" style="margin:0">MISCIBLE DATA</h5>
+        <h6 class="alert alert-success" style="margin:0;padding:2px;">DATA ISOLATION: MISCIBLE</h5>
     {% endif %}
-  </div>
-
-  <div class="col-md-3">
+  
+  
     {% if project.open_enabled == True %}
-        <h6 class="alert alert-danger" style="margin:0">OPEN</h5>
+        <h6 class="alert alert-danger" style="margin:0;padding:2px;">SECURITY: OPEN</h5>
     {% elif project.open_enabled == None %}
-        <h6 class="alert alert-warning" style="margin:0">UNDETERMINED ACCESS</h5>
+        <h6 class="alert alert-warning" style="margin:0;padding:2px;">SECURITY: UNDETERMINED</h5>
     {% else %}
-        <h6 class="alert alert-success" style="margin:0">FIREWALLED</h5>
+        <h6 class="label label-success" style="margin:0;padding:2px;">SECURITY: FIREWALLED</h5>
     {% endif %}
   </div>
  </div>
