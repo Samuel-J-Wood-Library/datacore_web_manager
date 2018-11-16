@@ -515,13 +515,23 @@ class ProjectView(LoginRequiredMixin, generic.DetailView):
         else:
             available_sw = []            
         
+        current_gov_docs = self.object.governance_doc_set.all(
+                                                    ).exclude(superseded_by__isnull=False
+                                                    ).exclude(defers_to_doc__isnull=False
+                                                    )
+        
         # update context        
         context = super(ProjectView, self).get_context_data(**kwargs)
         context.update({
                         'project_costs': project_costs,
                         'available_software':available_sw,
+                        'current_gov_docs':current_gov_docs,
         })
         return context
+
+class AllProjectGovDocsView(LoginRequiredMixin, generic.DetailView):
+    model = Project
+    template_name = 'dc_management/gov_docs_all.html'
 
 class AllProjectsView(LoginRequiredMixin, generic.ListView):
     template_name = 'dc_management/projects_all.html'

@@ -303,18 +303,26 @@
 </div>
 
 
+
+
+<!-- Display of current gov docs --!>
 <div class="container col-md-12">
  <div class="panel panel-info">
   <div class="panel-heading">
-    <h4>Project governance
+    <h4>Project governance - current only
       <span class="pull-right">
-            <a type="button" class="btn btn-primary"  href="{% url 'dc_management:govdocmeta-add' %}">Add document</a>
+            <a  type="button" 
+                class="btn btn-info"  
+                href="{% url 'dc_management:prjgovdocs' project.pk %}">See all</a>
+            <a  type="button" 
+                class="btn btn-primary"  
+                href="{% url 'dc_management:govdocmeta-add' %}">Add document</a>
       </span>
     </h4>
   </div>
   <div class="panel-body">
     
-    {% with project.governance_doc_set.all as gov_doc_list %}
+    {% with current_gov_docs as gov_doc_list %}
         {% include "dc_management/gov_docs_list.html" %}
     {% endwith %}
   </div>

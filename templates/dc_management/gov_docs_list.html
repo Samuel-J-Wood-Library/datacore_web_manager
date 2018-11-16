@@ -1,4 +1,6 @@
-{% load bootstrap3 %}
+{% load bootstrap4 %}
+{% load static %}
+
 
 {% load project_tags %}
 
@@ -10,6 +12,7 @@
         <th>Project</th>
         <th>Type</th>
         <th>Expiry Date</th>
+        <th><img src="{% static 'img/information.svg' %}" height="20" width="20"></th>
     </tr>
     </thead>
 
@@ -50,6 +53,26 @@
                     {{ gd.expiry_date }}
                 </td>            
             {% endif %}
-            
+                <td>
+                    {% if gd.dynamic_comments.count > 0 %}
+                    <div data-toggle="tooltip" 
+                       data-html="true"
+                       data-trigger="click"
+                       data-placement="left"
+                       data-container="body"
+                       title="{% for cmt in gd.dynamic_comments.all %}
+                                {{ cmt|linebreaks }}
+                              {% endfor %}">
+                    <img src="{% static 'img/information.svg' %}" height="20" width="20">
+                    </div>
+                    
+                    
+                    
+                    {% endif %}
+                </td>
     {% endfor %}
 </table>
+
+<script>
+$("[data-toggle=tooltip").tooltip();
+</script>

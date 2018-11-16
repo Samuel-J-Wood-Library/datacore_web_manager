@@ -57,6 +57,10 @@ urlpatterns = [
     path('dcuser/<int:pk>', views.DCUserView.as_view(), name='dcuser'),
     path('govdoc/<int:pk>', views.pdf_view, name='govdoc'),
     path('govdoc/meta/<int:pk>', views.GovernanceView.as_view(), name='govdocmeta'),
+    path('govdoc/projectlist/<int:pk>', 
+         views.AllProjectGovDocsView.as_view(), 
+         name='prjgovdocs'
+    ),
     
     # add, modify, remove user
     url(r'^dcuser/add/$', views.DC_UserCreate.as_view(), name='dc_user-add'),
