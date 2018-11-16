@@ -1,4 +1,6 @@
 {% load project_tags %}
+{% load bootstrap4 %}
+{% load static %}
 
 {% if project_list %}
 <table class="table table-striped table-hover">
@@ -9,7 +11,8 @@
     <th>PI</th>
     <th>Administrator</th>
     <th># users</th>
-    <th>Expected completion</th>
+    <th>Start Date</th>
+    <th><img src="{% static 'img/information.svg' %}" height="20" width="20"></th>
 </tr>
 </thead>
 
@@ -55,7 +58,24 @@
             <td>
             {{ project.requested_launch }}</td>
         {% endif %}
+        
+        <!-- Display info icon if comments have been added --!>
+        <td>
+            {% if project.dynamic_comments.count > 0 %}
+            <div data-toggle="tooltip" 
+               data-html="true"
+               data-trigger="click"
+               data-placement="left"
+               data-container="body"
+               title="{% for cmt in project.dynamic_comments.all %}
+                        {{ cmt|linebreaks }}
+                      {% endfor %}">
+            <img src="{% static 'img/information.svg' %}" height="20" width="20">
+            </div>
             
+            {% endif %}
+            
+        </td>    
          
       </tr>
     {% endfor %}
