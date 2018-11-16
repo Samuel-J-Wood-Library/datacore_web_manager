@@ -17,7 +17,8 @@
         <td><a href="{% url 'dc_management:dcuser' u.pk %}">
                 {{ u.first_name }} {{ u.last_name }}</a>
             <span style="float:right" class="label 
-                {% if u in fully_validated %}label-success">valid
+                {% if u.role == 'DC' %}label-success">valid
+                {% elif u in fully_validated %}label-success">valid
                 {% elif u in partially_validated %}label-warning">partial
                 {% else %}label-danger">invalid{% endif %}
             </span>
