@@ -515,17 +515,36 @@ class ProjectView(LoginRequiredMixin, generic.DetailView):
         else:
             available_sw = []            
         
+        # create other lists for display:
         current_gov_docs = self.object.governance_doc_set.all(
-                                                    ).exclude(superseded_by__isnull=False
-                                                    ).exclude(defers_to_doc__isnull=False
-                                                    )
+                                ).exclude(superseded_by__isnull=False
+                                ).exclude(defers_to_doc__isnull=False
+                                )
+        current_irbs = current_gov_docs.filter(governance_type='IR')
+        irb_users = set([ u for gd in current_irbs for u in gd.users_permitted.all() 
+                        ])
         
-        # update context        
+        current_duas = current_gov_docs.filter(governance_type='DU' )
+        dua_users = set([ u for gd in current_duas for u in gd.users_permitted.all()
+                         ])
+        
+        current_dcuas = current_gov_docs.filter(governance_type='DC' )
+        dcua_users = set([ u for gd in current_dcuas for u in gd.users_permitted.all()
+                         ])
+        
+        if len(current_duas) == 0:
+            fully_validated = irb_users.intersection(dcua_users)
+        else:
+            fully_validated = irb_users.intersection(dua_users).intersection(dcua_users)
+        partially_validated = dcua_users.intersection(dua_users).intersection(irb_users)
+        
+        ## update context        
         context = super(ProjectView, self).get_context_data(**kwargs)
         context.update({
                         'project_costs': project_costs,
                         'available_software':available_sw,
                         'current_gov_docs':current_gov_docs,
+                        'fully_validated':fully_validated,
         })
         return context
 

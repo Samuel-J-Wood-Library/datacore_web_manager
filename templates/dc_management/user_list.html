@@ -14,7 +14,14 @@
     
     {% for u in project.users.all %}
      <tr>    
-        <td><a href="{% url 'dc_management:dcuser' u.pk %}">{{ u.first_name }} {{ u.last_name }}</a></td>
+        <td><a href="{% url 'dc_management:dcuser' u.pk %}">
+                {{ u.first_name }} {{ u.last_name }}</a>
+            <span style="float:right" class="label 
+                {% if u in fully_validated %}label-success">valid
+                {% elif u in partially_validated %}label-warning">partial
+                {% else %}label-danger">invalid{% endif %}
+            </span>
+        </td>
         <td>{{ u.cwid }}</td>
         <td>{{ u.project_set.all|length }}</td>
         <td>{{ u.get_affiliation_display }}</td>
