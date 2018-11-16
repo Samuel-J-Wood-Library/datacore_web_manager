@@ -520,23 +520,24 @@ class ProjectView(LoginRequiredMixin, generic.DetailView):
                                 ).exclude(superseded_by__isnull=False
                                 ).exclude(defers_to_doc__isnull=False
                                 )
-        current_irbs = current_gov_docs.filter(governance_type='IR')
-        irb_users = set([ u for gd in current_irbs for u in gd.users_permitted.all() 
-                        ])
+        irb_users = DC_User.objects.filter(Q(governance_doc__governance_type='IR') &
+                                         Q(governance_doc__project=self.object.pk)
+                                ).distinct()
+        dcua_users = DC_User.objects.filter(Q(governance_doc__governance_type='DC') &
+                                         Q(governance_doc__project=self.object.pk)
+                                ).distinct()
+        dua_users = DC_User.objects.filter(Q(governance_doc__governance_type='DU') &
+                                         Q(governance_doc__project=self.object.pk)
+                                ).distinct()
         
-        current_duas = current_gov_docs.filter(governance_type='DU' )
-        dua_users = set([ u for gd in current_duas for u in gd.users_permitted.all()
-                         ])
         
-        current_dcuas = current_gov_docs.filter(governance_type='DC' )
-        dcua_users = set([ u for gd in current_dcuas for u in gd.users_permitted.all()
-                         ])
-        
-        if len(current_duas) == 0:
-            fully_validated = irb_users.intersection(dcua_users)
+        if current_gov_docs.filter(governance_type='DU').count() == 0:
+            fully_validated = irb_users & dcua_users
         else:
-            fully_validated = irb_users.intersection(dua_users).intersection(dcua_users)
-        partially_validated = dcua_users.intersection(dua_users).intersection(irb_users)
+            fully_validated = irb_users & dua_users & dcua_users
+        
+        partially_validated = dcua_users | dua_users | irb_users
+        unconnected_users = fully_validated.exclude(pk__in=self.object.users.all())
         
         ## update context        
         context = super(ProjectView, self).get_context_data(**kwargs)
@@ -545,6 +546,11 @@ class ProjectView(LoginRequiredMixin, generic.DetailView):
                         'available_software':available_sw,
                         'current_gov_docs':current_gov_docs,
                         'fully_validated':fully_validated,
+                        'partially_validated':partially_validated,
+                        'irb_users':irb_users,
+                        'dua_users':dua_users,
+                        'dcua_users':dcua_users,
+                        'unconnected_users':unconnected_users,
         })
         return context
 

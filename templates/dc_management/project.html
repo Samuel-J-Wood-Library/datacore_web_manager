@@ -298,8 +298,11 @@
     </h4>
   </div>
   <div class="panel-body">
-    {{ fully_validated }}
     {% include "dc_management/user_list.html" %}
+    <h4>{{ unconnected_users|length }} unconnected, valid users:</h4>
+    {% for u in unconnected_users %}
+        {{ u }},
+    {% endfor %}
   </div>
  </div>
 </div>
@@ -327,6 +330,14 @@
     {% with current_gov_docs as gov_doc_list %}
         {% include "dc_management/gov_docs_list.html" %}
     {% endwith %}
+    <h4>Summary:</h4>
+    <ul>
+     <li>{{ fully_validated|length }} fully validated users</li>
+     <li>{{ unconnected_users|length }} unconnected users</li>
+     <li>{{ irb_users|length }} users on IRB</li>
+     <li>{{ dcua_users|length }} users with DCUA</li>
+     <li>{{ dua_users|length }} users on DUA </li>
+    </ul>
   </div>
  </div>
 </div>
