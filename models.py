@@ -488,6 +488,7 @@ class Project(models.Model):
     prj_dns = models.CharField('project-specific DNS', 
                                 max_length=64, null=True, blank=True,
     )
+    myapp = models.NullBooleanField("MyApps RDP created")
     db = models.ForeignKey(Server, 
                             on_delete=models.CASCADE, 
                             related_name='db_host',
