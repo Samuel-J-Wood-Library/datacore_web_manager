@@ -2,9 +2,14 @@ import datetime
 
 from dal import autocomplete
 
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit, Layout, Div, Fieldset
+from crispy_forms.bootstrap import Field
+
 from django import forms
 from django.db.models import Q
 
+from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
 from .models import Server, Project, DC_User, Software, Software_Log, Project
@@ -229,6 +234,8 @@ class ProjectForm(forms.ModelForm):
                     'completion_ticket',
                     'completion_date',
                     'host',
+                    'prj_dns',
+                    'myapp',
                     'db',
                     
                 ]
@@ -276,6 +283,7 @@ class ProjectUpdateForm(forms.ModelForm):
                     'completion_date',
                     'host',
                     'prj_dns',
+                    'myapp',
                     'db',
                 ]
 
@@ -405,6 +413,41 @@ class BulkUserUploadForm(forms.Form):
                     label="Comment (will be appended to all users' comment fields)")
  
 class FileTransferForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(FileTransferForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = 'id-file-transfer-form'
+        self.helper.form_method = 'post'
+        self.helper.form_action = reverse_lazy('dc_management:sendtest')
+        self.helper.add_input(Submit('submit', 'Submit'))
+        self.helper.layout = Layout(
+                Fieldset('Source --> Destination',
+                            Div(
+                                Div('external_source', 
+                                    title="Indicate origin of data (eg abc2001@med).",
+                                    css_class="col-xs-6",
+                                ),
+                                Div('external_destination', 
+                                    title="Indicate destination (eg abc2001@med).",
+                                    css_class="col-xs-6",
+                                ),
+                                css_class='row-fluid',
+                            ),
+                            Div(
+                                Div(  'source', 
+                                    title="Use if source is a dcore project.",
+                                    css_class="col-xs-6",
+                                ),
+                                Div('destination', 
+                                    title="Use if destination is a dcore project.",
+                                    css_class="col-xs-6",
+                                ),
+                                css_class='row-fluid',
+                            ),
+                ),
+        )
+        
+        
     class Meta:
         model = FileTransfer
         fields = [  'change_date',

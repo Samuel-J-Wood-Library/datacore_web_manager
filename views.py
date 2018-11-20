@@ -1635,7 +1635,7 @@ class FileTransferView(LoginRequiredMixin, generic.DetailView):
 class FileTransferCreate(LoginRequiredMixin, CreateView):
     model = FileTransfer
     form_class = FileTransferForm
-    template_name = "dc_management/basic_form.html"
+    template_name = "dc_management/basic_crispy_form.html"
     success_url = reverse_lazy('dc_management:sendtest')
 
     def form_valid(self, form):
