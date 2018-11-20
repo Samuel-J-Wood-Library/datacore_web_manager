@@ -394,9 +394,10 @@ class IndexView(LoginRequiredMixin, generic.ListView):
         
         # all projects with valid IRB documentation
         irb_valid_projects = Project.objects.filter(
-                                governance_doc__governance_type='IR',
-                                governance_doc__expiry_date__gte=date.today(),
-                                                    )
+                                Q(governance_doc__governance_type='IR',
+                                  governance_doc__expiry_date__gte=date.today()) |
+                                Q(governance_doc__governance_type='IX')
+                                            )
         irb_invalid_projects = still_running.difference(irb_valid_projects)
         
         # get all projects with expired DUAs that DON'T have currently valid DUAs
@@ -530,8 +531,9 @@ class ProjectView(LoginRequiredMixin, generic.DetailView):
                                          Q(governance_doc__project=self.object.pk)
                                 ).distinct()
         
-        
-        if current_gov_docs.filter(governance_type='DU').count() == 0:
+        if current_gov_docs.filter(governance_type='IX').count() >= 1:
+            fully_validated = dcua_users
+        elif current_gov_docs.filter(governance_type='DU').count() == 0:
             fully_validated = irb_users & dcua_users
         else:
             fully_validated = irb_users & dua_users & dcua_users

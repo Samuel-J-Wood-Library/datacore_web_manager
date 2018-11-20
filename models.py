@@ -580,10 +580,10 @@ class Governance_Doc(models.Model):
     DCA = 'DC'
     ONBOARDING = 'ON'
     GOVERNANCE_TYPE_CHOICES = (
-                    (IRB, "IRB"),
+                    (IRB, "WCM IRB"),
                     (IRB_EXEMPTION, "IRB Exemption"),
                     (DUA, "DUA"),
-                    (DCA, "Data Core User Agreement"),
+                    (DCA, "D-Core User Agreement"),
                     (ONBOARDING, "Onboarding Form"),
     )
     governance_type = models.CharField(
