@@ -1027,7 +1027,8 @@ class FileTransfer(models.Model):
     ticket = models.CharField(max_length=32,null=True, blank=True)
     
     external_source = models.CharField(max_length=128,null=True, blank=True)
-    source = models.ForeignKey(Project, 
+    source = models.ForeignKey( Project, 
+                                verbose_name='Source project',
                                 null=True,
                                 blank=True,
                                 on_delete=models.CASCADE,
@@ -1036,17 +1037,21 @@ class FileTransfer(models.Model):
                                 
     external_destination = models.CharField(max_length=128,null=True, blank=True)
     destination = models.ForeignKey(Project, 
-                                null=True,
-                                blank=True,
-                                on_delete=models.CASCADE,
-                                related_name="destination_project",
-                                )
+                                    verbose_name='Destination project',
+                                    null=True,
+                                    blank=True,
+                                    on_delete=models.CASCADE,
+                                    related_name="destination_project",
+                                    )
+
+    filenames = models.TextField("source paths of files for transfer")
+    filepath_dest = models.TextField("destination paths of files for transfer")
+
     transfer_method = models.ForeignKey(TransferMethod, on_delete=models.CASCADE)
     
-
     requester = models.ForeignKey(DC_User, on_delete=models.CASCADE)
-    filenames = models.TextField("files for transfer")
-    file_num = models.IntegerField("number of files")
+    file_num = models.IntegerField(verbose_name="number of files", blank=True, null=True)
+    file_num_unknown = models.NullBooleanField(verbose_name='file number unknown')
     
     DEIDENTIFIED = 'DE'
     IDENTIFIED = 'ID'

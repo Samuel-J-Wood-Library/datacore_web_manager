@@ -3,7 +3,7 @@ import datetime
 from dal import autocomplete
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Div, Fieldset
+from crispy_forms.layout import Submit, Layout, Div, Fieldset, HTML
 from crispy_forms.bootstrap import Field
 
 from django import forms
@@ -421,30 +421,53 @@ class FileTransferForm(forms.ModelForm):
         self.helper.form_action = reverse_lazy('dc_management:sendtest')
         self.helper.add_input(Submit('submit', 'Submit'))
         self.helper.layout = Layout(
-                Fieldset('Source --> Destination',
+                'change_date',
+                'ticket',
+                'requester',
+                Fieldset('Data Source ⇨ Destination',
                             Div(
-                                Div('external_source', 
+                                Div('source', 
                                     title="Indicate origin of data (eg abc2001@med).",
-                                    css_class="col-xs-6",
+                                    css_class="row",
+                                ),
+                                Div('external_source', 
+                                    title="Indicate destination (eg abc2001@med).",
+                                    css_class="row",
+                                ),
+                                Div('filenames',
+                                    title="List the full directory path to all files.",
+                                    css_class="row",
+                                ),
+                                css_class='col-xs-5 alert alert-info',
+                            ),
+                            Div('transfer_method',
+                                HTML('⇨'),
+                                css_class="col-xs-2 text-center align-bottom row"
+                            ),
+                            Div(
+                                Div(  'destination', 
+                                    label='Data Core source',
+                                    title="Use if source is a dcore project.",
+                                    css_class="row",
                                 ),
                                 Div('external_destination', 
-                                    title="Indicate destination (eg abc2001@med).",
-                                    css_class="col-xs-6",
-                                ),
-                                css_class='row-fluid',
-                            ),
-                            Div(
-                                Div(  'source', 
-                                    title="Use if source is a dcore project.",
-                                    css_class="col-xs-6",
-                                ),
-                                Div('destination', 
                                     title="Use if destination is a dcore project.",
-                                    css_class="col-xs-6",
+                                    css_class="row",
                                 ),
-                                css_class='row-fluid',
+                                Div('filepath_dest',
+                                    title='List the full path to where files are being transferred.',
+                                    css_class='row',
+                                ),
+                                css_class='col-xs-5 alert alert-info',
                             ),
+                            style="color: blue;font-weight: bold;"
+                            
                 ),
+                'filenames',
+                'file_num',
+                'data_type',
+                'reviewed_by',
+                'comment',
         )
         
         
