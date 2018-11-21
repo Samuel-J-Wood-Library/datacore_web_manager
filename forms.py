@@ -421,9 +421,21 @@ class FileTransferForm(forms.ModelForm):
         self.helper.form_action = reverse_lazy('dc_management:sendtest')
         self.helper.add_input(Submit('submit', 'Submit'))
         self.helper.layout = Layout(
-                'change_date',
-                'ticket',
-                'requester',
+                Fieldset('File transfer request',
+                        Div(
+                                Div('change_date',
+                                    css_class='col-xs-4',
+                                ),
+                                Div('requester',
+                                    css_class='col-xs-4',
+                                ),
+                                Div('ticket',
+                                    css_class='col-xs-4',
+                                ),
+                                css_class="row"
+                        ),
+                        style="font-weight: bold;"
+                ),
                 Fieldset('Data Source ⇨ Destination',
                             Div(
                                 Div('source', 
@@ -455,7 +467,7 @@ class FileTransferForm(forms.ModelForm):
                                     css_class="row",
                                 ),
                                 Div('filepath_dest',
-                                    title='List the full path to where files are being transferred.',
+                                    title='List the full path to where files are being transferred. Write "transfer.med" or similar if exporting to user.',
                                     css_class='row',
                                 ),
                                 css_class='col-xs-5 alert alert-info',
@@ -463,10 +475,28 @@ class FileTransferForm(forms.ModelForm):
                             style="color: blue;font-weight: bold;"
                             
                 ),
-                'filenames',
-                'file_num',
-                'data_type',
-                'reviewed_by',
+                Fieldset('File information',
+                            Div(
+                                Div('file_num',
+                                    css_class='col-xs-6',
+                                ),
+                                Div('file_num_unknown',
+                                    css_class='col-xs-6',
+                                ),
+                                css_class="row"
+                            ),
+                            Div(
+                                Div('data_type',
+                                    css_class='col-xs-6',
+                                ),
+                                Div('reviewed_by',
+                                    css_class='col-xs-6',
+                                ),
+                                css_class="row"
+                            ),
+                            style="font-weight: bold;"
+                ),
+                
                 'comment',
         )
         
@@ -482,7 +512,9 @@ class FileTransferForm(forms.ModelForm):
                     'transfer_method',
                     'requester',
                     'filenames',
+                    'filepath_dest',
                     'file_num',
+                    'file_num_unknown',
                     'data_type',
                     'reviewed_by',
                     'comment',
