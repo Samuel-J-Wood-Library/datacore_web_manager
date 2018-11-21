@@ -284,6 +284,7 @@ class ProjectUpdateForm(forms.ModelForm):
                     'host',
                     'prj_dns',
                     'myapp',
+                    'myapp',
                     'db',
                 ]
 
