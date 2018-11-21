@@ -1688,20 +1688,23 @@ class FileTransferCreate(LoginRequiredMixin, CreateView):
 
 Please transfer the following {0} file{1} {2} {3}:
 
-{4}
+Source: {4}
+
+Destination: {7}
 
 {5}
 
 Kind regards,
 {6}'''
         subj_msg = subject_str.format(sbj_ticket, plural, src, dest)
-        body_msg = body_str.format(form.instance.file_num,
-                                    plural,
-                                    src,
-                                    dest,
-                                    form.instance.filenames,
-                                    form.instance.comment,
-                                    self.request.user.get_short_name(),
+        body_msg = body_str.format(form.instance.file_num,  # 0
+                                    plural,                 # 1
+                                    src,                    # 2
+                                    dest,                   # 3
+                                    form.instance.filenames,# 4
+                                    form.instance.comment,  # 5
+                                    self.request.user.get_short_name(), # 6
+                                    form.instance.filepath_dest,        # 7
                                     )
         
         email_dict = {  'subject'       :subj_msg,
