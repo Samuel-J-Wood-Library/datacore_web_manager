@@ -306,7 +306,6 @@ class ProjectUpdateForm(forms.ModelForm):
                     'software_requested' : autocomplete.ModelSelect2Multiple(
                                         url='dc_management:autocomplete-software'
                                         ),
-                                    
                     }
 
 class ServerForm(forms.ModelForm):
@@ -530,6 +529,7 @@ class FileTransferForm(forms.ModelForm):
                     'requester' : autocomplete.ModelSelect2(
                                         url='dc_management:autocomplete-user'
                                         ),
+                                        #CheckboxInput for  file_num_unknown                    
                     }
 
 class MigrationForm(forms.ModelForm):
