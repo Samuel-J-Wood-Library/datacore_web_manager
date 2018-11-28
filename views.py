@@ -240,7 +240,7 @@ class SendMail(LoginRequiredMixin, generic.TemplateView):
         #                                reverse('dc_management:gettoken'))
         #                                )
         access_token = 'disabled temporarily'
-        user_email = self.request.session['outlook_user_email']
+        user_email = "disabled@disabled"  #self.request.session['outlook_user_email']
         
         # get email parameters from session info (saved as json)
         email_details = json.loads(self.request.session['email_json'])
