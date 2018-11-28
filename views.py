@@ -233,11 +233,13 @@ class GetToken(LoginRequiredMixin, generic.TemplateView):
 class SendMail(LoginRequiredMixin, generic.TemplateView):
     template_name = 'dc_management/email_result.html'
     def get_context_data(self, **kwargs):
-        access_token = get_access_token(
-                            self.request,
-                            self.request.build_absolute_uri(
-                                        reverse('dc_management:gettoken'))
-                                        )
+        # disabling until SSL can be configured.
+        #access_token = get_access_token(
+        #                    self.request,
+        #                    self.request.build_absolute_uri(
+        #                                reverse('dc_management:gettoken'))
+        #                                )
+        access_token = 'disabled temporarily'
         user_email = self.request.session['outlook_user_email']
         
         # get email parameters from session info (saved as json)
@@ -271,7 +273,7 @@ class SendMail(LoginRequiredMixin, generic.TemplateView):
         context = super(SendMail, self).get_context_data(**kwargs)
         context.update({'email_details':email_details,
                         'gettoken': access_token,
-                        'sendtest': send_message(access_token,user_email,payload),
+                        'sendtest': "Email has been temporarily disabled." #send_message(access_token,user_email,payload),
         })
         return context
 
@@ -608,6 +610,7 @@ class BulkUserUpload(LoginRequiredMixin, FormView):
 class ProjectCreate(LoginRequiredMixin, CreateView):
     model = Project
     form_class = ProjectForm
+    template_name = "dc_management/basic_crispy_form.html"
     
     #success_url = reverse_lazy("dc_management:index" )
     # default success_url should be to the object page defined in model.
@@ -618,6 +621,8 @@ class ProjectCreate(LoginRequiredMixin, CreateView):
 class ProjectUpdate(LoginRequiredMixin, UpdateView):
     model = Project
     form_class = ProjectUpdateForm
+    template_name = "dc_management/basic_crispy_form.html"
+
     #success_url = reverse_lazy("dc_management:index" )
     #default success_url should be to the object page defined in model.
     def form_valid(self, form):
