@@ -11,10 +11,13 @@ from django.db.models import Q
 
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext_lazy as _
+from django.forms.widgets import SelectDateWidget
 
 from .models import Server, Project, DC_User, Software, Software_Log, Project
 from .models import DCUAGenerator, Storage_Log, StorageCost, Governance_Doc
 from .models import FileTransfer, MigrationLog, CommentLog
+
+
 
 """
 class CommentForm(forms.Form):
@@ -204,7 +207,45 @@ class GovernanceDocForm(forms.ModelForm):
         }
         
 class ProjectForm(forms.ModelForm):
-    
+    def __init__(self, *args, **kwargs):
+        super(ProjectForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = 'id-file-transfer-form'
+        self.helper.form_method = 'post'
+        #self.helper.form_action = reverse_lazy('dc_management:sendtest')
+        self.helper.add_input(Submit('submit', 'Submit'))
+        self.helper.layout = Layout(
+                                'dc_prj_id',
+                                'title', 
+                                'nickname', 
+                                'isolate_data', 
+                                'open_allowed', 
+                                'open_enabled',
+                                'fileshare_storage', 
+                                'direct_attach_storage', 
+                                'backup_storage',
+                                'requested_ram', 
+                                'requested_cpu', 
+                                'users',
+                                'pi',
+                                'software_requested',
+                                'env_type',
+                                'env_subtype',
+                                'requested_launch',
+                                'expected_completion',
+                                'status',
+                                'sn_tickets',
+                                'predata_ticket',
+                                'predata_date',
+                                'postdata_ticket',
+                                'postdata_date',
+                                'completion_ticket',
+                                'completion_date',
+                                'host',
+                                'prj_dns',
+                                'myapp',
+                                'db',
+        )    
     class Meta:
         model = Project
         fields = [  'dc_prj_id',
@@ -259,6 +300,117 @@ class ProjectForm(forms.ModelForm):
                     }
 
 class ProjectUpdateForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(ProjectUpdateForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = 'id-file-transfer-form'
+        self.helper.form_method = 'post'
+        #self.helper.form_action = reverse_lazy('dc_management:sendtest')
+        self.helper.add_input(Submit('submit', 'Submit'))
+        self.helper.layout = Layout(
+                Fieldset('Project details',
+                        'title', 
+                        'nickname',
+                        Div(
+                                Div('pi',
+                                    css_class='col-xs-6',
+                                ),
+                                Div('prj_admin',
+                                    css_class='col-xs-6',
+                                ),
+                                css_class="row"
+                        ),
+                        Div(
+                                Div('env_type',
+                                    css_class='col-xs-4',
+                                ),
+                                Div('env_subtype',
+                                    css_class='col-xs-4',
+                                ),
+                                Div('status',
+                                    css_class='col-xs-4',
+                                ),
+                                css_class="row"
+                        ),
+
+                        style="font-weight: bold;",
+                ),
+                Fieldset('Governance',
+                        Div(
+                                Div('open_allowed',
+                                    css_class='col-xs-4',
+                                ),
+                                Div('open_enabled',
+                                    css_class='col-xs-4',
+                                ),
+                                Div('isolate_data',
+                                    css_class='col-xs-4',
+                                ),
+                                css_class="row",
+                        ),
+                        style="font-weight: bold;"
+                ),
+                Fieldset('Environment',
+                        Div(
+                                Div('requested_ram',
+                                    css_class='col-xs-6',
+                                ),
+                                Div('requested_cpu',
+                                    css_class='col-xs-6',
+                                ),
+                                css_class="row"
+                        ),
+                        'software_requested',
+                        'host',
+                        Div(
+                                Div('prj_dns',
+                                    css_class='col-xs-6',
+                                ),
+                                Div('myapp',
+                                    css_class='col-xs-6',
+                                ),
+                                css_class="row"
+                        ),
+                        'db',
+                        style="font-weight: bold;"
+                ),
+                Fieldset('Project dates',
+                        Div(
+                                Div('requested_launch',
+                                    css_class='col-xs-6',
+                                ),
+                                Div('expected_completion',
+                                    css_class='col-xs-6',
+                                ),
+                                css_class="row"
+                        ),
+                        Div(
+                                Div('wrapup_ticket',
+                                    css_class='col-xs-6',
+                                ),
+                                Div('wrapup_date',
+                                    css_class='col-xs-6',
+                                ),
+                                css_class="row"
+                        ),
+                        Div(
+                                Div('completion_ticket',
+                                    css_class='col-xs-6',
+                                ),
+                                Div('completion_date',
+                                    css_class='col-xs-6',
+                                ),
+                                css_class="row"
+                        ),
+
+                        style="font-weight: bold;",
+                ),
+                                
+                                
+                               
+                                
+        )
+        
     
     class Meta:
         model = Project
