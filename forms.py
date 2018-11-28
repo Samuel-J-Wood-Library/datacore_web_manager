@@ -11,7 +11,7 @@ from django.db.models import Q
 
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext_lazy as _
-from django.forms.widgets import SelectDateWidget
+from django.forms.widgets import SelectDateWidget, CheckboxInput
 
 from .models import Server, Project, DC_User, Software, Software_Log, Project
 from .models import DCUAGenerator, Storage_Log, StorageCost, Governance_Doc
@@ -205,96 +205,81 @@ class GovernanceDocForm(forms.ModelForm):
                                         url='dc_management:autocomplete-project'
                                         ),
         }
-        
-class ProjectForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(ProjectForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_id = 'id-file-transfer-form'
-        self.helper.form_method = 'post'
-        #self.helper.form_action = reverse_lazy('dc_management:sendtest')
-        self.helper.add_input(Submit('submit', 'Submit'))
-        self.helper.layout = Layout(
-                Fieldset('<span style="color: steelblue;">Project details</span>',
-                        'dc_prj_id',
-                        'title', 
-                        'nickname',
-                        Div(
-                                Div('pi',
-                                    css_class='col-xs-6',
-                                ),
-                                Div('prj_admin',
-                                    css_class='col-xs-6',
-                                ),
-                                css_class="row"
-                        ),
-                        'users',
-                        Div(
-                                Div('env_type',
-                                    css_class='col-xs-4',
-                                ),
-                                Div('env_subtype',
-                                    css_class='col-xs-4',
-                                ),
-                                Div('status',
-                                    css_class='col-xs-4',
-                                ),
-                                css_class="row"
-                        ),
 
-                        style="font-weight: bold;",
-                ),
-                Fieldset('<span style="color: steelblue;">Governance</span>',
-                        Div(
-                                Div('open_allowed',
-                                    css_class='col-xs-4',
-                                ),
-                                Div('open_enabled',
-                                    css_class='col-xs-4',
-                                ),
-                                Div('isolate_data',
-                                    css_class='col-xs-4',
-                                ),
-                                css_class="row",
+########################
+### Layout templates ###
+########################
+project_leaders = Div(
+                        Div('pi',
+                            css_class='col-xs-6',
                         ),
-                        style="font-weight: bold;"
-                ),
-                Fieldset('<span style="color: steelblue;">Environment</span>',
-                        Div(
-                                Div('requested_ram',
-                                    css_class='col-xs-6',
-                                ),
-                                Div('requested_cpu',
-                                    css_class='col-xs-6',
-                                ),
-                                css_class="row"
+                        Div('prj_admin',
+                            css_class='col-xs-6',
                         ),
-                        Div(
-                                Div('fileshare_storage',
-                                    css_class='col-xs-4',
-                                ),
-                                Div('direct_attach_storage',
-                                    css_class='col-xs-4',
-                                ),
-                                Div('backup_storage',
-                                    css_class='col-xs-4',
-                                ),
-                                css_class="row"
+                        css_class="row"
+                    )
+
+environment_type = Div(
+                        Div('env_type',
+                            css_class='col-xs-4',
                         ),
-                        'software_requested',
-                        Div(
-                                Div('prj_dns',
-                                    css_class='col-xs-6',
-                                ),
-                                Div('myapp',
-                                    css_class='col-xs-6',
-                                ),
-                                css_class="row"
+                        Div('env_subtype',
+                            css_class='col-xs-4',
                         ),
-                        'db',
-                        style="font-weight: bold;"
-                ),
-                Fieldset('<span style="color: steelblue;">Project dates</span>',
+                        Div('status',
+                            css_class='col-xs-4',
+                        ),
+                        css_class="row"
+                    )
+project_governance = Layout(
+                            Fieldset('<div class="alert alert-info">Governance</div>',
+                                    Div(
+                                            Div('open_allowed',
+                                                css_class='col-xs-4',
+                                            ),
+                                            Div('open_enabled',
+                                                css_class='col-xs-4',
+                                            ),
+                                            Div('isolate_data',
+                                                css_class='col-xs-4',
+                                            ),
+                                            css_class="row",
+                                    ),
+                                    style="font-weight: bold;"
+                            ),
+)
+project_compute = Div(
+                        Div('requested_ram',
+                            css_class='col-xs-6',
+                        ),
+                        Div('requested_cpu',
+                            css_class='col-xs-6',
+                        ),
+                        css_class="row"
+)
+project_storage = Div(
+                        Div('fileshare_storage',
+                            css_class='col-xs-4',
+                        ),
+                        Div('direct_attach_storage',
+                            css_class='col-xs-4',
+                        ),
+                        Div('backup_storage',
+                            css_class='col-xs-4',
+                        ),
+                        css_class="row"
+)  
+project_access = Div(
+                    Div('myapp',
+                        css_class='col-xs-3',
+                        style='font-size:100%;font-weight: bold;'
+                    ),
+                    Div('prj_dns',
+                        css_class='col-xs-9',
+                    ),
+                    css_class="row"
+)     
+project_dates = Layout(Fieldset('<div class="alert alert-info">Project dates</div>',
                         Div(
                                 Div('requested_launch',
                                     css_class='col-xs-6',
@@ -324,7 +309,37 @@ class ProjectForm(forms.ModelForm):
                         ),
 
                         style="font-weight: bold; ",
+                ),  
+)           
+                            
+class ProjectForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(ProjectForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = 'id-file-transfer-form'
+        self.helper.form_method = 'post'
+        #self.helper.form_action = reverse_lazy('dc_management:sendtest')
+        self.helper.add_input(Submit('submit', 'Submit'))
+        self.helper.layout = Layout(
+                Fieldset('<div class="alert alert-info">Project details</div>',
+                        'dc_prj_id',
+                        'title', 
+                        'nickname',
+                        project_leaders,
+                        'users',
+                        environment_type,
+                        style="font-weight: bold;",
                 ),
+                project_governance,
+                Fieldset('<div class="alert alert-info">Environment</div>',
+                        project_compute,
+                        project_storage,
+                        'software_requested',
+                        project_access,
+                        'db',
+                        style="font-weight: bold;"
+                ),
+                project_dates,
                 'sn_tickets',
                                 
                                 
@@ -346,6 +361,7 @@ class ProjectForm(forms.ModelForm):
                     'requested_cpu', 
                     'users',
                     'pi',
+                    'prj_admin',
                     'software_requested',
                     'env_type',
                     'env_subtype',
@@ -375,7 +391,7 @@ class ProjectForm(forms.ModelForm):
                     'software_requested' : autocomplete.ModelSelect2Multiple(
                                         url='dc_management:autocomplete-software'
                                         ),
-                                    
+                    'myapp' : CheckboxInput(),                
                     }
 
 class ProjectUpdateForm(forms.ModelForm):
@@ -390,103 +406,20 @@ class ProjectUpdateForm(forms.ModelForm):
                 Fieldset('Project details',
                         'title', 
                         'nickname',
-                        Div(
-                                Div('pi',
-                                    css_class='col-xs-6',
-                                ),
-                                Div('prj_admin',
-                                    css_class='col-xs-6',
-                                ),
-                                css_class="row"
-                        ),
-                        Div(
-                                Div('env_type',
-                                    css_class='col-xs-4',
-                                ),
-                                Div('env_subtype',
-                                    css_class='col-xs-4',
-                                ),
-                                Div('status',
-                                    css_class='col-xs-4',
-                                ),
-                                css_class="row"
-                        ),
+                        project_leaders,
+                        environment_type,
 
                         style="font-weight: bold;",
                 ),
-                Fieldset('Governance',
-                        Div(
-                                Div('open_allowed',
-                                    css_class='col-xs-4',
-                                ),
-                                Div('open_enabled',
-                                    css_class='col-xs-4',
-                                ),
-                                Div('isolate_data',
-                                    css_class='col-xs-4',
-                                ),
-                                css_class="row",
-                        ),
-                        style="font-weight: bold;"
-                ),
+                project_governance,
                 Fieldset('Environment',
-                        Div(
-                                Div('requested_ram',
-                                    css_class='col-xs-6',
-                                ),
-                                Div('requested_cpu',
-                                    css_class='col-xs-6',
-                                ),
-                                css_class="row"
-                        ),
+                        project_compute,
                         'software_requested',
-                        Div(
-                                Div('prj_dns',
-                                    css_class='col-xs-6',
-                                ),
-                                Div('myapp',
-                                    css_class='col-xs-6',
-                                ),
-                                css_class="row"
-                        ),
+                        project_access,
                         'db',
                         style="font-weight: bold;"
                 ),
-                Fieldset('Project dates',
-                        Div(
-                                Div('requested_launch',
-                                    css_class='col-xs-6',
-                                ),
-                                Div('expected_completion',
-                                    css_class='col-xs-6',
-                                ),
-                                css_class="row"
-                        ),
-                        Div(
-                                Div('wrapup_ticket',
-                                    css_class='col-xs-6',
-                                ),
-                                Div('wrapup_date',
-                                    css_class='col-xs-6',
-                                ),
-                                css_class="row"
-                        ),
-                        Div(
-                                Div('completion_ticket',
-                                    css_class='col-xs-6',
-                                ),
-                                Div('completion_date',
-                                    css_class='col-xs-6',
-                                ),
-                                css_class="row"
-                        ),
-
-                        style="font-weight: bold;",
-                ),
-                                
-                                
-                               
-                                
+                project_dates,
         )
         
     
@@ -536,6 +469,7 @@ class ProjectUpdateForm(forms.ModelForm):
                     'software_requested' : autocomplete.ModelSelect2Multiple(
                                         url='dc_management:autocomplete-software'
                                         ),
+                    'myapp' : CheckboxInput(),  
                     }
 
 class ServerForm(forms.ModelForm):
