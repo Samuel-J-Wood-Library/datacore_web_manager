@@ -403,7 +403,7 @@ class ProjectUpdateForm(forms.ModelForm):
         #self.helper.form_action = reverse_lazy('dc_management:sendtest')
         self.helper.add_input(Submit('submit', 'Submit'))
         self.helper.layout = Layout(
-                Fieldset('Project details',
+                Fieldset('<div class="alert alert-info">Project details</div>',
                         'title', 
                         'nickname',
                         project_leaders,
@@ -412,7 +412,7 @@ class ProjectUpdateForm(forms.ModelForm):
                         style="font-weight: bold;",
                 ),
                 project_governance,
-                Fieldset('Environment',
+                Fieldset('<div class="alert alert-info">Environment</div>',
                         project_compute,
                         'software_requested',
                         project_access,
