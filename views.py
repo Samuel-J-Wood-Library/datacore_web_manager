@@ -1664,8 +1664,9 @@ class FileTransferCreate(LoginRequiredMixin, CreateView):
             sbj_ticket = ""
             toemail = 'dcore-ticket@med.cornell.edu'
         
-            
-        if form.instance.file_num > 1:
+        if form.instance.file_num is None: 
+            plural = "(s)"
+        elif form.instance.file_num > 1:
             plural = "s"
         else:
             plural = ""

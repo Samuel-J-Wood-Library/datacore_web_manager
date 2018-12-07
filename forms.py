@@ -693,7 +693,7 @@ class FileTransferForm(forms.ModelForm):
                     'requester' : autocomplete.ModelSelect2(
                                         url='dc_management:autocomplete-user'
                                         ),
-                                        #CheckboxInput for  file_num_unknown                    
+                    'file_num_unknown' : CheckboxInput(),                   
                     }
 
 class MigrationForm(forms.ModelForm):
