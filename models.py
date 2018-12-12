@@ -16,11 +16,23 @@ import collections
 ############################
 
 class AlertTag(models.Model):
+    """
+    Alert Tags are for associating with projects/servers/users, to allow flagging of 
+    temporary events that need high level attention. 
+    """
+    # date the record was created
     record_creation = models.DateField(auto_now_add=True)
+    
+    # date the record was most recently modified
     record_update = models.DateField(auto_now=True)
+    
+    # the user who was signed in at time of record modification
     record_author = models.ForeignKey(User, on_delete=models.CASCADE)
     
+    # description of the alert or issue
     alertcomment = models.TextField()
+    
+    # date when the issue was resolved
     cleared = models.DateTimeField(blank=True, null=True)
     
     def __str__(self):
@@ -30,16 +42,30 @@ class AlertTag(models.Model):
             return "ACTIVE: {}".format(self.alertcomment)
         
 class CommentLog(models.Model):
+    """
+    A Comment Log is a comment associated with a project/server/governance doc/user, to 
+    describe any state that cannot be otherwise captured using the standard logs or 
+    fields. Comment Logs can themselves have comments, thus allowing a conversation
+    or history to be recorded. 
+    """
+    # date the record was created
     record_creation = models.DateField(auto_now_add=True)
+    
+    # date the record was most recently modified
     record_update = models.DateField(auto_now=True)
+    
+    # the user who was signed in at time of record modification
     record_author = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    # description of the event/change/issue
     comment = models.TextField()
+    
+    # comment for which this comment is a response or reply to
     parent_comment = models.ForeignKey('self', 
                                         on_delete=models.CASCADE,
                                         blank=True, 
                                         null=True
-                                        ) # for replies 
+                                        ) 
     def __str__(self):
         return "{}: {}".format(self.record_author, self.comment)
          
@@ -48,10 +74,24 @@ class CommentLog(models.Model):
 ############################
 
 class Software_License_Type(models.Model):
+    """
+    This model captures the details that define a type of license. This is not used to 
+    record specific licenses from a vendor, but will be referenced by these licenses.
+    """
+    # [DEPRECATE] ServiceNow ticket documenting/requesting license 
     sn_ticket = models.CharField(max_length=32, null=True, blank=True)
+    
+    # human-readable name for identifying this kind of license
     name = models.CharField(max_length=32, unique=True)
+    
+    # whether the license is specifically assigned to a single individual
     user_assigned = models.BooleanField()
+    
+    # whether the license allows concurrent access to software
     concurrent = models.BooleanField()
+    
+    # whether the license actively sends authentication requests, reports, or logs 
+    # to the vendor
     monitored = models.BooleanField()
 
     def __str__(self):
@@ -62,7 +102,13 @@ class Software_License_Type(models.Model):
         verbose_name_plural = 'Software License Types'
 
 class Software(models.Model):
+    """
+    This model defines software packages or applications.  
+    """
+    # date the record was created
     record_creation = models.DateField(auto_now_add=True)
+    
+    # date the record was most recently modified
     record_update = models.DateField(auto_now=True)
 
     name = models.CharField(max_length=64, unique=False)
@@ -101,7 +147,9 @@ class Software(models.Model):
         verbose_name_plural = 'Software'
 
 class SoftwareUnit(models.Model):
+    # date the record was created
     record_creation = models.DateField(auto_now_add=True)
+    # date the record was most recently modified
     record_update = models.DateField(auto_now=True)
     unit = models.CharField(max_length=64)
     
@@ -137,7 +185,9 @@ class SN_Ticket(models.Model):
         verbose_name_plural = 'SN Tickets'
                 
 class Server(models.Model):
+    # date the record was created
     record_creation = models.DateField(auto_now_add=True)
+    # date the record was most recently modified
     record_update = models.DateField(auto_now=True)
 
     ON = 'ON'
@@ -300,7 +350,9 @@ class Department(models.Model):
         return "{}".format(self.name)
    
 class DC_User(models.Model):
+    # date the record was created
     record_creation = models.DateField(auto_now_add=True)
+    # date the record was most recently modified
     record_update = models.DateField(auto_now=True)
 
     sn_ticket = models.CharField(max_length=32, null=True, blank=True)
@@ -386,7 +438,9 @@ class DC_User(models.Model):
 ############################
   
 class Project(models.Model):
+    # date the record was created
     record_creation = models.DateField(auto_now_add=True)
+    # date the record was most recently modified
     record_update = models.DateField(auto_now=True)
 
     dc_prj_id = models.CharField(max_length=8, unique=True)
@@ -564,8 +618,11 @@ def project_directory_path(instance, filename):
 ############################
 
 class Governance_Doc(models.Model):
+    # date the record was created
     record_creation = models.DateField(auto_now_add=True)
+    # date the record was most recently modified
     record_update = models.DateField(auto_now=True)
+    # the user who was signed in at time of record modification
     record_author = models.ForeignKey(User, on_delete=models.CASCADE)
     
     sn_ticket = models.CharField(max_length=32, null=True, blank=True)
@@ -666,8 +723,11 @@ class Governance_Doc(models.Model):
         verbose_name_plural = 'Governance Documents'
 
 class DC_Administrator(models.Model):
+    # date the record was created
     record_creation = models.DateField(auto_now_add=True)
+    # date the record was most recently modified
     record_update = models.DateField(auto_now=True)
+    # the user who was signed in at time of record modification
     record_author = models.ForeignKey(User, on_delete=models.CASCADE)
     
     sn_ticket = models.CharField(max_length=32, null=True, blank=True)
@@ -686,7 +746,9 @@ class DC_Administrator(models.Model):
         verbose_name_plural = 'Data Core Administrators'
 
 class DCUAGenerator(models.Model):
+    # date the record was created
     record_creation = models.DateField(auto_now_add=True)
+    # date the record was most recently modified
     record_update = models.DateField(auto_now=True)
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE, blank=True, null=True)
@@ -729,7 +791,9 @@ class DCUAGenerator(models.Model):
         return reverse('dc_management:url_result', kwargs={'pk': self.pk})
 
 class Protocols(models.Model):
+    # date the record was created
     record_creation = models.DateField(auto_now_add=True)
+    # date the record was most recently modified
     record_update = models.DateField(auto_now=True)
     created_by = models.ForeignKey(User, 
                                     on_delete=models.CASCADE,
@@ -747,8 +811,11 @@ class Protocols(models.Model):
 ############################
                           
 class SoftwareCost(models.Model):
+    # date the record was created
     record_creation = models.DateField(auto_now_add=True)
+    # date the record was most recently modified
     record_update = models.DateField(auto_now=True)
+    # the user who was signed in at time of record modification
     record_author = models.ForeignKey(User, on_delete=models.CASCADE)
     
     software = models.ForeignKey(Software, on_delete=models.CASCADE)
@@ -766,16 +833,22 @@ class SoftwareCost(models.Model):
                                         )
     
 class UserCost(models.Model):
+    # date the record was created
     record_creation = models.DateField(auto_now_add=True)
+    # date the record was most recently modified
     record_update = models.DateField(auto_now=True)
+    # the user who was signed in at time of record modification
     record_author = models.ForeignKey(User, on_delete=models.CASCADE)
  
     user_quantity = models.IntegerField()
     user_cost     = models.FloatField()
     
 class StorageCost(models.Model):
+    # date the record was created
     record_creation = models.DateField(auto_now_add=True)
+    # date the record was most recently modified
     record_update = models.DateField(auto_now=True)
+    # the user who was signed in at time of record modification
     record_author = models.ForeignKey(User, on_delete=models.CASCADE)
     
     storage_type = models.CharField(max_length=64)
@@ -789,8 +862,11 @@ class StorageCost(models.Model):
 ############################    
 
 class External_Access_Log(models.Model):
+    # date the record was created
     record_creation = models.DateField(auto_now_add=True)
+    # date the record was most recently modified
     record_update = models.DateField(auto_now=True)
+    # the user who was signed in at time of record modification
     record_author = models.ForeignKey(User, on_delete=models.CASCADE)
     
     sn_ticket = models.CharField(max_length=32, null=True, blank=True)
@@ -811,6 +887,7 @@ class External_Access_Log(models.Model):
 class Software_Log(models.Model):
     sn_ticket = models.CharField(max_length=32, null=True, blank=True)
     change_date = models.DateField(default=timezone.now)
+    # the user who was signed in at time of record modification
     record_author = models.ForeignKey(User, on_delete=models.CASCADE)
     
     applied_to_prj = models.ForeignKey(Project, 
@@ -853,8 +930,11 @@ class Software_Log(models.Model):
         verbose_name_plural = 'Software Logs'
     
 class Software_Purchase(models.Model):
+    # date the record was created
     record_creation = models.DateField(auto_now_add=True)
+    # date the record was most recently modified
     record_update = models.DateField(auto_now=True)
+    # the user who was signed in at time of record modification
     record_author = models.ForeignKey(User, on_delete=models.CASCADE)
     
     sn_ticket = models.CharField(max_length=32, null=True, blank=True)
@@ -900,8 +980,11 @@ class Software_Purchase(models.Model):
         return self.cost / self.num_units_purchased
 
 class Access_Log(models.Model):
+    # date the record was created
     record_creation = models.DateField(auto_now_add=True)
+    # date the record was most recently modified
     record_update = models.DateField(auto_now=True)
+    # the user who was signed in at time of record modification
     record_author = models.ForeignKey(User, on_delete=models.CASCADE)
 
     sn_ticket = models.CharField(max_length=32, null=True, blank=True)
@@ -928,8 +1011,11 @@ class Access_Log(models.Model):
         verbose_name_plural = 'Access Logs'
 
 class Audit_Log(models.Model):
+    # date the record was created
     record_creation = models.DateField(auto_now_add=True)
+    # date the record was most recently modified
     record_update = models.DateField(auto_now=True)
+    # the user who was signed in at time of record modification
     record_author = models.ForeignKey(User, on_delete=models.CASCADE)
     
     performed_by = models.ForeignKey(DC_Administrator, on_delete=models.CASCADE)
@@ -969,8 +1055,11 @@ class Audit_Log(models.Model):
         verbose_name_plural = 'Audit Logs'
 
 class Storage_Log(models.Model):
+    # date the record was created
     record_creation = models.DateField(auto_now_add=True)
+    # date the record was most recently modified
     record_update = models.DateField(auto_now=True)
+    # the user who was signed in at time of record modification
     record_author = models.ForeignKey(User, on_delete=models.CASCADE)
     
     sn_ticket = models.CharField(max_length=32, null=True, blank=True)
@@ -991,8 +1080,11 @@ class Storage_Log(models.Model):
         return reverse('dc_management:project', kwargs={'pk': self.project.pk})
 
 class ResourceLog(models.Model):
+    # date the record was created
     record_creation = models.DateField(auto_now_add=True)
+    # date the record was most recently modified
     record_update = models.DateField(auto_now=True)
+    # the user who was signed in at time of record modification
     record_author = models.ForeignKey(User, on_delete=models.CASCADE)
     
     sn_ticket = models.CharField(max_length=32, null=True, blank=True)
@@ -1019,8 +1111,11 @@ class TransferMethod(models.Model):
         return self.transfer_method
 
 class FileTransfer(models.Model):
+    # date the record was created
     record_creation = models.DateField(auto_now_add=True)
+    # date the record was most recently modified
     record_update = models.DateField(auto_now=True)
+    # the user who was signed in at time of record modification
     record_author = models.ForeignKey(User, on_delete=models.CASCADE)
   
     change_date = models.DateField(default=date.today)
@@ -1096,8 +1191,11 @@ class FileTransfer(models.Model):
         verbose_name_plural = 'File Transfer Logs'
 
 class Data_Log(models.Model):
+    # date the record was created
     record_creation = models.DateField(auto_now_add=True)
+    # date the record was most recently modified
     record_update = models.DateField(auto_now=True)
+    # the user who was signed in at time of record modification
     record_author = models.ForeignKey(User, on_delete=models.CASCADE)
     
     change_date = models.DateField()
@@ -1157,6 +1255,7 @@ class Data_Log(models.Model):
 class Server_Change_Log(models.Model):
     sn_ticket = models.CharField(max_length=32, null=True, blank=True)
     change_date = models.DateField()
+    # the user who was signed in at time of record modification
     record_author = models.ForeignKey(User, on_delete=models.CASCADE)
     
     node_changed = models.ForeignKey(Server, on_delete=models.CASCADE, null=True)
@@ -1202,8 +1301,11 @@ class AlertTagType(models.Model):
 
 
 class MigrationLog(models.Model):
+    # date the record was created
     record_creation = models.DateField(auto_now_add=True)
+    # date the record was most recently modified
     record_update = models.DateField(auto_now=True)
+    # the user who was signed in at time of record modification
     record_author = models.ForeignKey(User, on_delete=models.CASCADE)
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
