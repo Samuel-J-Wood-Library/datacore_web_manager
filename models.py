@@ -284,15 +284,31 @@ class Server(models.Model):
                             default = MWS2012,
     ) 
     
-    node = models.CharField(max_length=16, unique=True) # eg HPRP010
+    # the name given to the server node (eg vDCOREP023)
+    node = models.CharField(max_length=16, unique=True) 
+    
+    # link to the subfunction table
     sub_function = models.ForeignKey(SubFunction, on_delete=models.CASCADE)
-    name_address = models.CharField(max_length=32) # eg vITS-HPCP02.med.cornell.edu
-    ip_address = models.GenericIPAddressField() # eg 10.36.217.229
+    
+    # the FQDN assigned to the node (eg vITS-HPCP02.med.cornell.edu)
+    name_address = models.CharField(max_length=32) 
+    
+    # IP address of the server (eg 10.36.217.229)
+    ip_address = models.GenericIPAddressField() 
+    
+    # number of CPU allocated to the node
     processor_num = models.IntegerField()
-    ram = models.IntegerField() # to be entered in GB
-    disk_storage = models.IntegerField("System storage") # to be entered in GB
-    other_storage = models.IntegerField("Direct attach storage") # to be entered in GB    
+    
+    # amount of RAM (in GB) allocated to the node
+    ram = models.IntegerField()
+    
+    # amount of direct-attach system storage (ie C: drive)(in GB) allocated to the node
+    disk_storage = models.IntegerField("System storage") 
+    
+    # amount of direct-attach additional storage (E: drive) allocated to the node 
+    other_storage = models.IntegerField("Direct attach storage")    
 
+    # link to software table, for s/w that is installed on the node
     software_installed = models.ManyToManyField(
                                             Software,
                                             related_name='software_on_server',
@@ -300,18 +316,27 @@ class Server(models.Model):
                                             blank=True,
                                             )
 
+    # date the node was created and made available
     connection_date = models.DateField(default=date.today)
+    
+    # the FQDN assigned to the node (eg vITS-HPRP02.a.wcmc-ad.net)
     dns_name = models.CharField(
                         max_length=32, 
                         null=True, 
                         blank=True
-                        ) # eg vITS-HPRP02.a.wcmc-ad.net
+                        ) 
+                        
+    # the server host machine for this node (eg brbesx10.med.cornell.edu)
     host = models.CharField(
                         max_length=32, 
                         null=True, 
                         blank=True
-                        ) # eg brbesx10.med.cornell.edu
+                        )
+                        
+    # DEPRECATED: comments field. Superseded by dynamic_comments field
     comments = models.TextField(null=True, blank=True)
+    
+    # link to comment table for assigning multiple comments and replies to the nodes
     dynamic_comments = models.ManyToManyField(CommentLog, 
                                               blank=True, 
                                               related_name='server_comments'
