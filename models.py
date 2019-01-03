@@ -290,6 +290,9 @@ class Server(models.Model):
     # link to the subfunction table
     sub_function = models.ForeignKey(SubFunction, on_delete=models.CASCADE)
     
+    # whether or not the node is firewalled
+    firewalled = models.BooleanField(null=True)
+    
     # the FQDN assigned to the node (eg vITS-HPCP02.med.cornell.edu)
     name_address = models.CharField(max_length=32) 
     
@@ -346,8 +349,10 @@ class Server(models.Model):
             return self.node
 
     def get_all_active_users(self):
-        # pull all users from all projects. Return users/projects when a user
-        # is present in more than one project on the node
+        """
+        pull all users from all projects. Return users/projects when a user
+        is present in more than one project on the node
+        """
         mounted_projects = Project.objects.filter(host=self.pk
                                                 ).filter(
                                                     Q(status='RU') |
@@ -364,8 +369,10 @@ class Server(models.Model):
         return user_projects
     
     def duplicate_users(self):    
-        # return only those users/projects where there are more than one project,
-        # and the user is not data core staff:
+        """
+        return only those users/projects where there are more than one project,
+        and the user is not data core staff
+        """
         user_projects = self.get_all_active_users()
         duplicate_user_dict = {}
         for u in user_projects:
@@ -475,31 +482,59 @@ class Project(models.Model):
     record_creation = models.DateField(auto_now_add=True)
     # date the record was most recently modified
     record_update = models.DateField(auto_now=True)
-
+    
+    # the data core project ID (eg prj0023)
     dc_prj_id = models.CharField(max_length=8, unique=True)
+    
+    # full title of the project. Typically matches the IRB title.
     title = models.CharField(max_length=256)
+    
+    # short title for easier reference
     nickname = models.CharField(max_length=256, blank=True)
+    
+    # whether it is allowed to be open
     open_allowed = models.NullBooleanField("classification: public?")
+    
+    # whether or not the project actually has internet access
+    # this field will not be actively used, as this setting is configured at node level
     open_enabled = models.NullBooleanField("security: open?")
+    
+    # whether or not multiple data sources are allowed to be present in this project
     isolate_data = models.NullBooleanField("data isolation: isolate?")
     
+    # the requested amount of fileshare storage (Isilon) configured in Isilon
     fileshare_storage = models.IntegerField("Fileshare size (GB)",
                                             null=True, 
                                             blank=True)
+    
+    # the requested amount of direct attach (E: drive) storage. Configured at node
     direct_attach_storage = models.IntegerField("Direct attach size (GB)", 
                                                 null=True, 
                                                 blank=True)
+                                                
+    # requested encrypted backup
     backup_storage = models.IntegerField("Backup storage size (GB)", 
                                          null=True, 
                                          blank=True)
+                                         
+    # requested RAM (in GB) to be provisioned
     requested_ram = models.IntegerField("Requested RAM (GB)", null=True, blank=True)
+    
+    # requested CPU number to be provisioned
     requested_cpu = models.IntegerField(null=True, blank=True)
     
+    # link to table of data core users. All users who need access to the project.
+    # other roles (eg PI, admin) do not have to be listed as users.
     users = models.ManyToManyField(DC_User, blank=True)
+    
+    # the PI of the project. All decisions and communication will be from the PI
     pi = models.ForeignKey(
                     DC_User, 
                     on_delete=models.CASCADE,
                     related_name='project_pi')
+    
+    # the project administrator can be delegated by the PI to communicate or act on 
+    # behalf of the PI
     prj_admin = models.ForeignKey(
                     DC_User, 
                     on_delete=models.CASCADE,
@@ -507,19 +542,23 @@ class Project(models.Model):
                     blank=True,
                     related_name='prj_admin')
 
+    # link to software table. All s/w currently provisioned
     software_installed = models.ManyToManyField(
                                             Software,
                                             related_name='software_installed',
                                             db_table='prj_soft_install_tbl',
                                             blank=True,
                                             )
+    
+    # link to software table. All s/w requested for the project
     software_requested = models.ManyToManyField(
                                             Software,
                                             related_name='software_requested',
                                             db_table='prj_soft_request_tbl',
                                             blank=True,
                                             )
-                                            
+    
+    # the purpose of the project                                        
     THESIS = 'TH'
     RESEARCH = 'RE'
     CLASS = 'CL'
@@ -535,15 +574,21 @@ class Project(models.Model):
                             default = RESEARCH,
     ) 
     
+    # a more granular description of the project purpose
     env_subtype = models.ForeignKey(EnvtSubtype, on_delete=models.CASCADE)
+    
+    # the date access to the project is expected to be no longer required
     expected_completion = models.DateField()
+    
+    # the date access, software and data are required 
     requested_launch = models.DateField()
     
-    ONBOARDING = "ON"
-    RUNNING = "RU"
-    COMPLETED = "CO"
-    SUSPENDED = "SU"
-    SHUTTINGDOWN = "SD"
+    # current project status
+    ONBOARDING = "ON"   # project is being set up for first time
+    RUNNING = "RU"      # project is actively being accessed and consuming resources
+    COMPLETED = "CO"    # project is inaccessible, and not consuming resources
+    SUSPENDED = "SU"    # access has been temporarily suspended. Still charged for resrcs
+    SHUTTINGDOWN = "SD" # project is in process of being permanently removed.
     STATUS_CHOICES = (
             (ONBOARDING, "Onboarding"),
             (RUNNING, "Running"),
@@ -557,25 +602,51 @@ class Project(models.Model):
                             default = RUNNING,
     ) 
     
+    # not currently used. Allows reference of pertinent SN ticket ID
     sn_tickets = models.CharField(max_length=32, null=True, blank=True)
+    
+    # DEPRECATED: ticket in which pre-data access was confirmed
     predata_ticket = models.CharField(max_length=32, null=True, blank=True)
+    
+    # DEPRECATED: date in which pre-data access was confirmed
     predata_date = models.DateField(null=True, blank=True)
-    postdata_ticket = models.CharField("Ticket confirming data loaded", max_length=32, null=True, blank=True)
+    
+    # DEPRECATED: ticket in which data access was confirmed
+    postdata_ticket = models.CharField("Ticket confirming data loaded", 
+                                        max_length=32, null=True, blank=True
+    )
+                                        
+    # DEPRECATED: date in which data access was confirmed
     postdata_date = models.DateField("Date data load confirmed", null=True, blank=True)
+    
+    # ticket specifying date to close project
     wrapup_ticket = models.CharField("ticket for request to complete", 
                                         max_length=32, 
                                         null=True, 
                                         blank=True,
     )
+    
+    # date project requested to be shut down
     wrapup_date = models.DateField("date project close requested", null=True, blank=True)
+    
+    # ticket specifying that the project was successfully closed
     completion_ticket = models.CharField(max_length=32, null=True, blank=True)
+    
+    # date the project was successfully closed
     completion_date = models.DateField(null=True, blank=True)
     
+    # the node the project is mounted to
     host = models.ForeignKey(Server, on_delete=models.CASCADE, null=True, blank=True)
+    
+    # the FQDN of the project - will be mapped to the IP of the node project is mounted to
     prj_dns = models.CharField('project-specific DNS', 
                                 max_length=64, null=True, blank=True,
     )
+    
+    # boolean field to indicate whether a MyApps app has been created for the project
     myapp = models.NullBooleanField("MyApps RDP created")
+    
+    # links to server table, for any database utilized by the project
     db = models.ForeignKey(Server, 
                             on_delete=models.CASCADE, 
                             related_name='db_host',
@@ -583,7 +654,12 @@ class Project(models.Model):
                             blank=True,
     )
     
-    # finance fields
+    ######################
+    ### finance fields ###
+    ######################
+    
+    # set of fields for holding current billing information
+    
     user_cost = models.FloatField(null=True, blank=True)
     host_cost = models.FloatField(null=True, blank=True)
     db_cost = models.FloatField(null=True, blank=True)
@@ -593,7 +669,10 @@ class Project(models.Model):
     software_cost = models.FloatField(null=True, blank=True)
     project_total_cost = models.FloatField(null=True, blank=True)
     
+    # DEPRECATED: field for project-related comments. Replaced with dynamic_comments
     comments = models.TextField(null=True, blank=True)
+    
+    # links to comment table for assigning comments and their replies to the project
     dynamic_comments = models.ManyToManyField(CommentLog, 
                                               blank=True, 
                                               related_name='project_comments'

@@ -73,8 +73,8 @@
         style="padding:3px">
     SECURITY
     <span style="float:right" class="label 
-    {% if project.open_enabled == True %}label-danger">OPEN
-    {% elif project.open_enabled == None %}label-warning">UNDETERMINED
+    {% if project.host.firewalled == False %}label-danger">OPEN
+    {% elif project.host.firewalled == None %}label-warning">UNDETERMINED
     {% else %}label-success">FIREWALLED{% endif %}
     </span>
   </li>
