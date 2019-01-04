@@ -1675,19 +1675,30 @@ class FileTransferCreate(LoginRequiredMixin, CreateView):
             src = "from {} ({})".format(form.instance.source.dc_prj_id, 
                             form.instance.source.host.node,
                             )
+            basepath = "   \\\\hpr_datacore_{}\\".format(form.instance.source.dc_prj_id,)
+            src_path = "\n".join(
+                [ basepath + fn for fn in str(form.instance.filenames).split('\n') ]
+                                ) 
         elif re.search("email|ticket", str(form.instance.transfer_method).lower()):
             src = "attached to this ticket"
+            src_path = form.instance.filenames
         else:
             src = "from {}".format(form.instance.transfer_method)
+            src_path = form.instance.filenames
             
         if form.instance.destination:
             dest = "to {} ({})".format(form.instance.destination.dc_prj_id, 
                             form.instance.destination.host.node,
                             )
+            basepath = "   \\\\hpr_datacore_{}\\".format(form.instance.source.dc_prj_id,)
+            dest_path = "\n".join(
+                [ basepath + fn for fn in str(form.instance.filepath_dest).split('\n') ]
+                                ) 
         else: 
             dest = "to {} via {}".format(form.instance.external_destination, 
                                         form.instance.transfer_method,
                                         )
+            dest_path = form.instance.filepath_dest
         
         subject_str = '{}Transfer file{} {} {}'
         body_str = '''Dear OPs,
@@ -1703,14 +1714,15 @@ Destination: {7}
 Kind regards,
 {6}'''
         subj_msg = subject_str.format(sbj_ticket, plural, src, dest)
-        body_msg = body_str.format(form.instance.file_num,  # 0
-                                    plural,                 # 1
-                                    src,                    # 2
-                                    dest,                   # 3
-                                    form.instance.filenames,# 4
-                                    form.instance.comment,  # 5
+        body_msg = body_str.format(form.instance.file_num,              # 0
+                                    plural,                             # 1
+                                    src,                                # 2
+                                    dest,                               # 3
+                                    src_path,                           # 4
+                                    form.instance.comment,              # 5
                                     self.request.user.get_short_name(), # 6
-                                    form.instance.filepath_dest,        # 7
+                                    dest_path,                          # 7
+                                    form.instance.source.dc_prj_id      # 8
                                     )
         
         email_dict = {  'subject'       :subj_msg,
@@ -1749,8 +1761,19 @@ class MigrationCreate(LoginRequiredMixin, CreateView):
     
     # default success_url should be to the object page defined in model.
     def form_valid(self, form):
+        """
+        On successful submission, update the node for the project. 
+        """
         self.object = form.save(commit=False)
+        
+        # update who last edited record
         self.object.record_author = self.request.user
+        
+        # update the node the project is mounted on
+        self.object.project.host = self.object.node_destination
+        self.object.project.save()
+        
+        # save migration log changes
         self.object.save()
         return super(MigrationCreate, self).form_valid(form)
 
