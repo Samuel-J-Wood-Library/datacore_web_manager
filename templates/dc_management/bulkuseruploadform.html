@@ -40,7 +40,7 @@
 </ul>
 
 {{ form.media }}
-<form action="" method="post">{% csrf_token %}
+<form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
     {{ form|crispy }}
     <input type="submit" class="btn btn-primary" value="Create Users" />
 </form>

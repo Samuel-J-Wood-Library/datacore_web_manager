@@ -573,7 +573,7 @@ class AllProjectsView(LoginRequiredMixin, generic.ListView):
 class BulkUserUpload(LoginRequiredMixin, FormView):
     template_name = 'dc_management/bulkuseruploadform.html'
     form_class = BulkUserUploadForm
-    success_url = success_url = reverse_lazy('dc_management:home')
+    success_url = reverse_lazy('dc_management:index')
     
     def form_valid(self, form):
         # This method is called when valid form data has been POSTed.
@@ -581,29 +581,35 @@ class BulkUserUpload(LoginRequiredMixin, FormView):
         post_data = self.request.POST
         
         # Check if user in project, then connect user to project
-        users_csv = form.cleaned_data['users_csv']
+        users_csv_field = form.cleaned_data['users_csv']
+        users_csv = self.request.FILES['users_csv']
         extra_comment = form.cleaned_data['comment']
-        form.instance.record_author = self.request.user
+        
+        #form.instance.record_author = self.request.user
 
         # read file and create users.
-        handle = open(users_csv, "r")
-        for line in handle:
-            if len(line.strip().split(',')) == 6:
-                fn,ln,cw,af,ro,co = line.strip().split(',')
-                try:
-                    u = DC_User(first_name=fn, 
-                                last_name=ln, 
-                                cwid=cw, 
-                                affiliation=af, 
-                                role=ro,
-                                comments="\n".join([co,extra_comment]),
-                                )
-                    u.save()
-    
-                except IntegrityError:
-                    print("USER INTEGRITY ERROR ENCOUNTERED FOR {}. SKIPPING".format(cw))
-        
-        form.save()                
+        chunks = users_csv.chunks() # open(users_csv, "r")
+        for handle in chunks:
+            for line in str(handle).split('\\n'):
+                print(line)
+                if len(line.strip().split(',')) == 6:
+                    fn,ln,cw,af,ro,co = line.strip().split(',')
+                    print("First:{}\nLast:{}\nCWID:{}\nAffil:{}\nRole:{}\nComments:{}".format(fn,ln,cw,af,ro,co))
+                    if fn[:2] == "b'":  # from conversion of bytes to str
+                        fn = fn[2:]
+                    try:
+                        u = DC_User(first_name=fn.strip(), 
+                                    last_name=ln.strip(), 
+                                    cwid=cw.strip(), 
+                                    affiliation=af.strip(), 
+                                    role=ro.strip(),
+                                    comments="\n".join([co,extra_comment]),
+                                    )
+                        u.save()
+                    except DataError:
+                        print("USER DATA ERROR ENCOUNTERED FOR {}. SKIPPING".format(cw))
+                    except IntegrityError:
+                        print("USER INTEGRITY ERROR ENCOUNTERED FOR {}. SKIPPING".format(cw))               
                         
         return super(BulkUserUpload, self).form_valid(form)    
   
