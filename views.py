@@ -24,7 +24,7 @@ from django.urls import reverse_lazy
 from django.shortcuts import render, get_object_or_404, redirect
 
 from django.db.models import Q, Max, Sum
-from django.db.utils import IntegrityError
+from django.db.utils import IntegrityError, DataError
 
 from dc_management.authhelper import get_signin_url, get_token_from_code, get_access_token
 from dc_management.outlookservice import get_me, send_message
