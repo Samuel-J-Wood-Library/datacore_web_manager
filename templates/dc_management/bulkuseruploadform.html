@@ -5,6 +5,40 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
+
+<h2>Format of file for upload:</h2>
+<ul>
+<li>no header</li>
+<li>one row for each user</li>
+<li>use the columns in this order:</li>
+    <ul>
+        <li>first name, last name, cwid, affiliation, role, comments</li>
+    </ul>
+<li>for affiliation, you'll need to use the following two letter code:</li>
+    <ul>
+       <li>WCM = "WC"</li>
+       <li>NYP = "NP"</li>
+       <li>ROCKU = "RU"</li>
+       <li>MSKCC = "SK"</li>
+       <li>COLUMBIA = "CO"</li>
+       <li>OTHER = "OT"</li>
+    </ul>
+<li>for role, use the following two letter code:</li>
+    <ul>
+       <li>FACULTY = 'FC'</li>
+       <li>RESEARCHER = 'RE'</li>
+       <li>AFFILIATE = 'AF'</li>
+       <li>RESEARCH_COORDINATOR = 'RC'</li>
+       <li>STUDENT = 'ST'</li>
+       <li>STATISTICIAN = 'SN'</li>
+       <li>VOLUNTEER = 'VO'</li>
+       <li>STAFF = 'SF'</li>
+       <li>DATACORE = 'DC'</li>
+       <li>EXPIRED = 'EX'</li>
+       <li>OTHER = 'OT'</li>
+    </ul>
+</ul>
+
 {{ form.media }}
 <form action="" method="post">{% csrf_token %}
     {{ form|crispy }}
