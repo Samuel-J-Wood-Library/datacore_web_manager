@@ -595,7 +595,7 @@ class BulkUserUpload(LoginRequiredMixin, FormView):
                 if len(line.strip().split(',')) == 6:
                     fn,ln,cw,af,ro,co = line.strip().split(',')
                     print("First:{}\nLast:{}\nCWID:{}\nAffil:{}\nRole:{}\nComments:{}".format(fn,ln,cw,af,ro,co))
-                    if fn[:2] == "b'":  # from conversion of bytes to str
+                    if fn[:2] == "b'":      # from conversion of bytes to str
                         fn = fn[2:]
                     try:
                         u = DC_User(first_name=fn.strip(), 
@@ -606,9 +606,9 @@ class BulkUserUpload(LoginRequiredMixin, FormView):
                                     comments="\n".join([co,extra_comment]),
                                     )
                         u.save()
-                    except DataError:
+                    except DataError:       # eg role has more than 2 chars
                         print("USER DATA ERROR ENCOUNTERED FOR {}. SKIPPING".format(cw))
-                    except IntegrityError:
+                    except IntegrityError:  # eg CWID already exists
                         print("USER INTEGRITY ERROR ENCOUNTERED FOR {}. SKIPPING".format(cw))               
                         
         return super(BulkUserUpload, self).form_valid(form)    
