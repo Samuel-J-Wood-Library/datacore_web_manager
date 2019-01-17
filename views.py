@@ -29,7 +29,7 @@ from django.db.utils import IntegrityError, DataError
 from dc_management.authhelper import get_signin_url, get_token_from_code, get_access_token
 from dc_management.outlookservice import get_me, send_message
 
-from .models import Server, Project, DC_User, Access_Log, Governance_Doc
+from .models import Server, Project, Person, Access_Log, Governance_Doc
 from .models import Software, Software_Log, Storage_Log
 from .models import UserCost, SoftwareCost, StorageCost, DCUAGenerator
 from .models import FileTransfer, MigrationLog, CommentLog
@@ -87,7 +87,7 @@ class CommentView(LoginRequiredMixin, CreateView):
         elif model_type == 'server':
             inst = Server.objects.get(pk=inst_pk)
         elif model_type == 'dc_user':
-            inst = DC_User.objects.get(pk=inst_pk)
+            inst = Person.objects.get(pk=inst_pk)
         elif model_type == 'software':
             inst = Software.objects.get(pk=inst_pk)
         elif model_type == 'governance_doc':
@@ -106,7 +106,7 @@ class CommentView(LoginRequiredMixin, CreateView):
 
 class DCUserAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
     def get_queryset(self):
-        qs = DC_User.objects.all()
+        qs = Person.objects.all()
 
         if self.q:
             qs = qs.filter(
@@ -309,7 +309,7 @@ class IndexUserView(LoginRequiredMixin, generic.ListView):
 
     def get_queryset(self):
         """Return  all active projects."""
-        return  DC_User.objects.filter(project_pi__isnull=False,
+        return  Person.objects.filter(project_pi__isnull=False,
                                         ).distinct().order_by('first_name')
 
     def get_context_data(self, **kwargs):
@@ -453,7 +453,7 @@ class IndexView(LoginRequiredMixin, generic.ListView):
                                             function="PR"
                                         ).order_by('node'),
             'unsigned_user_list':[],
-            'undoc_user_list'   :DC_User.objects.exclude(
+            'undoc_user_list'   :Person.objects.exclude(
                 governance_doc__date_issued__gte=date.today()-timedelta(days=360),
                                         ).filter(
                 project__status__in=['RU', 'SD'],
@@ -469,14 +469,14 @@ class AllDCUserView(LoginRequiredMixin, generic.ListView):
 
     def get_queryset(self):
         """Return  all active projects."""
-        return DC_User.objects.all().order_by('first_name')
+        return Person.objects.all().order_by('first_name')
        
 class DCUserView(LoginRequiredMixin, generic.DetailView):
-    model = DC_User
+    model = Person
     template_name = 'dc_management/dcuser.html'
 
-class DC_UserCreate(LoginRequiredMixin, CreateView):
-    model = DC_User
+class PersonCreate(LoginRequiredMixin, CreateView):
+    model = Person
     fields = ['first_name', 'last_name', 'cwid', 'affiliation', 'role', 'comments']
     success_url = reverse_lazy("dc_management:index" )
     def form_valid(self, form):
@@ -484,10 +484,10 @@ class DC_UserCreate(LoginRequiredMixin, CreateView):
         #self.object.user = self.request.user
         #self.object.post_date = datetime.now()
         self.object.save()
-        return super(DC_UserCreate, self).form_valid(form)
+        return super(PersonCreate, self).form_valid(form)
 
-class DC_UserUpdate(LoginRequiredMixin, UpdateView):
-    model = DC_User
+class PersonUpdate(LoginRequiredMixin, UpdateView):
+    model = Person
     fields = ['first_name', 
                 'last_name', 
                 'cwid', 
@@ -523,13 +523,13 @@ class ProjectView(LoginRequiredMixin, generic.DetailView):
                                 ).exclude(superseded_by__isnull=False
                                 ).exclude(defers_to_doc__isnull=False
                                 )
-        irb_users = DC_User.objects.filter(Q(governance_doc__governance_type='IR') &
+        irb_users = Person.objects.filter(Q(governance_doc__governance_type='IR') &
                                          Q(governance_doc__project=self.object.pk)
                                 ).distinct()
-        dcua_users = DC_User.objects.filter(Q(governance_doc__governance_type='DC') &
+        dcua_users = Person.objects.filter(Q(governance_doc__governance_type='DC') &
                                          Q(governance_doc__project=self.object.pk)
                                 ).distinct()
-        dua_users = DC_User.objects.filter(Q(governance_doc__governance_type='DU') &
+        dua_users = Person.objects.filter(Q(governance_doc__governance_type='DU') &
                                          Q(governance_doc__project=self.object.pk)
                                 ).distinct()
         
@@ -598,7 +598,7 @@ class BulkUserUpload(LoginRequiredMixin, FormView):
                     if fn[:2] == "b'":      # from conversion of bytes to str
                         fn = fn[2:]
                     try:
-                        u = DC_User(first_name=fn.strip(), 
+                        u = Person(first_name=fn.strip(), 
                                     last_name=ln.strip(), 
                                     cwid=cw.strip(), 
                                     affiliation=af.strip(), 
@@ -783,7 +783,7 @@ class ServerView(LoginRequiredMixin, generic.DetailView):
 
     def get_context_data(self, **kwargs):
         # get a non-redundant list of all users on the server
-        server_users =  DC_User.objects.filter(project__host=self.kwargs['pk']
+        server_users =  Person.objects.filter(project__host=self.kwargs['pk']
                         ).order_by('first_name').distinct()
         
         # get a list of all software installed for various projects:
@@ -1066,13 +1066,13 @@ class AddThisUserToProject(AddUserToProject):
     template_name = 'dc_management/addusertoproject.html'
     form_class = AddUserToProjectForm
     success_url = reverse_lazy('dc_management:all_projects')
-    #chosen_user = DC_User.objects.get(pk=self.kwargs['pk'])
+    #chosen_user = Person.objects.get(pk=self.kwargs['pk'])
     #success_url = reverse_lazy('dc_management:dcuser', self.kwargs['pk'])
     
     def get_initial(self):
         initial = super(AddThisUserToProject, self).get_initial()
         # get the user from the url
-        chosen_user = DC_User.objects.get(pk=self.kwargs['pk'])
+        chosen_user = Person.objects.get(pk=self.kwargs['pk'])
         # update initial field defaults with custom set default values:
         initial.update({'dcuser': chosen_user, })
         return initial
@@ -1348,13 +1348,13 @@ class ExportFromThisProject(ExportRequest):
     template_name = 'dc_management/addusertoproject.html'
     form_class = ExportFileForm
     success_url = reverse_lazy('dc_management:all_projects')
-    #chosen_user = DC_User.objects.get(pk=self.kwargs['pk'])
+    #chosen_user = Person.objects.get(pk=self.kwargs['pk'])
     #success_url = reverse_lazy('dc_management:dcuser', self.kwargs['pk'])
     
     def get_initial(self):
         initial = super(AddThisUserToProject, self).get_initial()
         # get the user from the url
-        chosen_user = DC_User.objects.get(pk=self.kwargs['pk'])
+        chosen_user = Person.objects.get(pk=self.kwargs['pk'])
         # update initial field defaults with custom set default values:
         initial.update({'dcuser': chosen_user, })
         return initial
@@ -1823,7 +1823,7 @@ class FullSearch(LoginRequiredMixin, generic.TemplateView):
                                 Q(nickname__icontains=st) |
                                 Q(comments__icontains=st)
         )
-        qs_usr = DC_User.objects.all()
+        qs_usr = Person.objects.all()
         qs_usr = qs_usr.filter( Q(first_name__icontains=st) |
                                 Q(last_name__icontains=st) |
                                 Q(cwid__icontains=st) |
