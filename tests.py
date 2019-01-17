@@ -10,7 +10,7 @@ from django.urls import reverse
 
 from django.utils import timezone
 
-from .models import Server, Project, DC_User, Access_Log, EnvtSubtype, SubFunction
+from .models import Server, Project, Person, Access_Log, EnvtSubtype, SubFunction
 from .models import StorageCost
 
 from .forms import StorageChangeForm
@@ -128,11 +128,11 @@ class ProjectTestCase(TestCase):
         cls.user = User.objects.create_user(
             username='testuser', email='pro2004@med.cornell.edu', password='top_secret')
         
-        cls.js = DC_User.objects.create(first_name='John', 
+        cls.js = Person.objects.create(first_name='John', 
                                         last_name='Smith', 
                                         cwid='jos1234',
                                         )
-        cls.jd = DC_User.objects.create(first_name='Jane', 
+        cls.jd = Person.objects.create(first_name='Jane', 
                                         last_name='Doe', 
                                         cwid='jed2001',
                                         )
@@ -202,7 +202,7 @@ class ProjectTestCase(TestCase):
         
     def test_unique_cwid(self):
         with self.assertRaises(IntegrityError):
-            newbie = DC_User.objects.create(first_name='Tim', 
+            newbie = Person.objects.create(first_name='Tim', 
                                             last_name='Taylor', 
                                             cwid='jos1234')
 
@@ -212,8 +212,8 @@ class StorageTestCase(TestCase):
         self.user = User.objects.create_user(
             username='testuser', email='pro2004@med.cornell.edu', password='top_secret')
         
-        js = DC_User.objects.create(first_name='John', last_name='Smith', cwid='jos1234')
-        jd = DC_User.objects.create(first_name='Jane', last_name='Doe', cwid='jed2001')
+        js = Person.objects.create(first_name='John', last_name='Smith', cwid='jos1234')
+        jd = Person.objects.create(first_name='Jane', last_name='Doe', cwid='jed2001')
         env = EnvtSubtype.objects.create(name='cool_research')
         subfn = SubFunction.objects.create(name='impo_subfn')
         host = Server.objects.create(   status = "ON",
@@ -280,7 +280,7 @@ class StorageTestCase(TestCase):
            
     def test_unique_cwid(self):
         with self.assertRaises(IntegrityError):
-            newbie = DC_User.objects.create(first_name='Tim', 
+            newbie = Person.objects.create(first_name='Tim', 
                                             last_name='Taylor', 
                                             cwid='jos1234')
     """        
