@@ -13,7 +13,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.forms.widgets import SelectDateWidget, CheckboxInput
 
-from .models import Server, Project, DC_User, Software, Software_Log, Project
+from .models import Server, Project, Person, Software, Software_Log, Project
 from .models import DCUAGenerator, Storage_Log, StorageCost, Governance_Doc
 from .models import FileTransfer, MigrationLog, CommentLog
 
@@ -31,7 +31,7 @@ class CommentForm(forms.ModelForm):
         
 class AddUserToProjectForm(forms.Form):
     dcusers = forms.ModelMultipleChoiceField(
-                                queryset=DC_User.objects.all(), 
+                                queryset=Person.objects.all(), 
                                 label="Data Core User",
                                 widget = autocomplete.ModelSelect2Multiple(
                                         url='dc_management:autocomplete-user'
@@ -57,7 +57,7 @@ class AddUserToProjectForm(forms.Form):
     
 class RemoveUserFromProjectForm(forms.Form):
     dcusers = forms.ModelMultipleChoiceField(
-                                queryset=DC_User.objects.none(), 
+                                queryset=Person.objects.none(), 
                                 label="Data Core User",
                                     )
     project = forms.ModelChoiceField(
@@ -81,7 +81,7 @@ class RemoveUserFromProjectForm(forms.Form):
     
 class ExportFileForm(forms.Form):
     dcuser = forms.ModelChoiceField(
-                                queryset=DC_User.objects.all(), 
+                                queryset=Person.objects.all(), 
                                 label="Data Core User"
                                     )
     project = forms.ModelChoiceField(
