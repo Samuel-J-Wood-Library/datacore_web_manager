@@ -97,7 +97,7 @@
 | --- | --- | --- |
 | name  | CharField | --- |   
 
-###  DC_User
+###  Person
 | FIELD | FIELD_TYPE | DESCRIPTION |
 | --- | --- | --- |
 | record_creation  | DateField | --- |
@@ -328,7 +328,7 @@
 | record_author  | ForeignKey | --- |
 | sn_ticket  | CharField | --- |
 | date_changed  | DateField | --- |
-| dc_user  | ForeignKey | --- |
+| person  | ForeignKey | --- |
 | prj_affected  | ForeignKey | --- |
 | change_type   | CharField | coded choices are ADD_ACCESS = 'AA'; REMOVE_ACCESS = 'RA'  |
 
@@ -341,7 +341,7 @@
 | performed_by  | ForeignKey | --- |
 | sn_ticket  | CharField | --- |
 | audit_date  | DateField | --- |
-| dc_user  | ForeignKey | --- |
+| person  | ForeignKey | --- |
 | project  | ForeignKey | --- |
 | node  | ForeignKey | --- |
 | governance_docs  | ForeignKey | --- |

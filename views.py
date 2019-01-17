@@ -54,7 +54,7 @@ class CommentView(LoginRequiredMixin, CreateView):
             return reverse('dc_management:project', args=(self.kwargs['inst_pk'],))
         if self.kwargs['model_type'] ==  'server':
             return reverse('dc_management:node', args=(self.kwargs['inst_pk'],))
-        if self.kwargs['model_type'] ==  'dc_user':
+        if self.kwargs['model_type'] ==  'person':
             return reverse('dc_management:dcuser', args=(self.kwargs['inst_pk'],))
         if self.kwargs['model_type'] ==  'software':
             return reverse('dc_management:software-detail',
@@ -86,7 +86,7 @@ class CommentView(LoginRequiredMixin, CreateView):
             inst = Project.objects.get(pk=inst_pk)
         elif model_type == 'server':
             inst = Server.objects.get(pk=inst_pk)
-        elif model_type == 'dc_user':
+        elif model_type == 'person':
             inst = Person.objects.get(pk=inst_pk)
         elif model_type == 'software':
             inst = Software.objects.get(pk=inst_pk)

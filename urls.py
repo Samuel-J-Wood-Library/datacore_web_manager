@@ -63,10 +63,10 @@ urlpatterns = [
     ),
     
     # add, modify, remove user
-    url(r'^dcuser/add/$', views.PersonCreate.as_view(), name='dc_user-add'),
+    url(r'^dcuser/add/$', views.PersonCreate.as_view(), name='person-add'),
     url(r'^dcuser/update/(?P<pk>[0-9]+)/$', 
         views.PersonUpdate.as_view(), 
-        name='dc_user-update',
+        name='person-update',
     ),
     path('dcuser/add/bulk', views.BulkUserUpload.as_view(), name='bulkuserupload'),
     

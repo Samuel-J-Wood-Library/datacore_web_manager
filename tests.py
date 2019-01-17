@@ -45,7 +45,7 @@ class TestAccess(TestCase):
         self.assertRedirects(response, '/login/?next=/info/')
         pages = ['all_users',
                  'all_projects',
-                 'dc_user-add',
+                 'person-add',
                  'url_generator',
                  'govdocmeta-add',
                  'usertoproject-add',
@@ -73,7 +73,7 @@ class TestAccess(TestCase):
                      'usertothisproject-add',
                      'usertothisproject-remove',
                      'url_result',
-                     'dc_user-update',
+                     'person-update',
                      'govdocmeta',
                     ]
         for p in argpages:
