@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import Access_Log, AccessPermission, Audit_Log, Data_Log
-from .models import DC_Administrator, DC_User, EnvtSubtype, External_Access_Log
+from .models import DC_Administrator, Person, EnvtSubtype, External_Access_Log
 from .models import Governance_Doc, Project, Server, Server_Change_Log, SN_Ticket
 from .models import Software, Software_License_Type, Software_Log, Software_Purchase
 from .models import Storage_Log, SubFunction, SoftwareCost, UserCost, StorageCost
@@ -114,8 +114,8 @@ class DCUAGeneratorAdmin(admin.ModelAdmin):
 					'url',
 					)
 
-@admin.register(DC_User)
-class DC_UserAdmin(admin.ModelAdmin):
+@admin.register(Person)
+class PersonAdmin(admin.ModelAdmin):
     list_display = ('first_name',
 					'last_name',
 					'cwid',
