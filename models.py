@@ -130,7 +130,7 @@ class Software(models.Model):
             return "{} (version {})".format(self.name, self.version)
     
     def swusers(self):
-        sw_users = DC_User.objects.filter(project__software_installed=self.pk
+        sw_users = Person.objects.filter(project__software_installed=self.pk
                                         ).exclude(project__status='CO'
                                         ).distinct()    
         return sw_users
@@ -389,7 +389,7 @@ class Department(models.Model):
     def __str__(self):
         return "{}".format(self.name)
    
-class DC_User(models.Model):
+class Person(models.Model):
     # date the record was created
     record_creation = models.DateField(auto_now_add=True)
     # date the record was most recently modified
@@ -525,18 +525,18 @@ class Project(models.Model):
     
     # link to table of data core users. All users who need access to the project.
     # other roles (eg PI, admin) do not have to be listed as users.
-    users = models.ManyToManyField(DC_User, blank=True)
+    users = models.ManyToManyField(Person, blank=True)
     
     # the PI of the project. All decisions and communication will be from the PI
     pi = models.ForeignKey(
-                    DC_User, 
+                    Person, 
                     on_delete=models.CASCADE,
                     related_name='project_pi')
     
     # the project administrator can be delegated by the PI to communicate or act on 
     # behalf of the PI
     prj_admin = models.ForeignKey(
-                    DC_User, 
+                    Person, 
                     on_delete=models.CASCADE,
                     null=True,
                     blank=True,
@@ -692,7 +692,7 @@ class Project(models.Model):
         """
         when we need to ignore ITS staff who have been given access to dcore
         """
-        return DC_User.objects.filter(project=self.pk,).exclude(role='DC')
+        return Person.objects.filter(project=self.pk,).exclude(role='DC')
     
     def valid_nodes(self):
         """
@@ -741,7 +741,7 @@ class Governance_Doc(models.Model):
     doc_id = models.CharField(max_length=64)
     date_issued = models.DateField()
     expiry_date = models.DateField()
-    users_permitted = models.ManyToManyField(DC_User, blank=True)
+    users_permitted = models.ManyToManyField(Person, blank=True)
     access_allowed = models.ForeignKey(AccessPermission, on_delete=models.CASCADE)
     
     IRB = 'IR'
@@ -984,7 +984,7 @@ class External_Access_Log(models.Model):
     sn_ticket = models.CharField(max_length=32, null=True, blank=True)
     date_connected = models.DateField()
     date_disconnected = models.DateField()
-    user_requesting = models.ForeignKey(DC_User, on_delete=models.CASCADE)
+    user_requesting = models.ForeignKey(Person, on_delete=models.CASCADE)
     project_connected = models.ForeignKey(Project, on_delete=models.CASCADE)
     setup_charge = models.BooleanField()
     hosting_charge = models.BooleanField()
@@ -1012,7 +1012,7 @@ class Software_Log(models.Model):
                                         null=True,
                                         blank=True,
                                         )
-    applied_to_user = models.ForeignKey(DC_User, 
+    applied_to_user = models.ForeignKey(Person, 
                                         on_delete=models.CASCADE,
                                         null=True,
                                         blank=True,
@@ -1101,7 +1101,7 @@ class Access_Log(models.Model):
 
     sn_ticket = models.CharField(max_length=32, null=True, blank=True)
     date_changed = models.DateField()
-    dc_user = models.ForeignKey(DC_User, on_delete=models.CASCADE)
+    dc_user = models.ForeignKey(Person, on_delete=models.CASCADE)
     prj_affected = models.ForeignKey(Project, on_delete=models.CASCADE)
     ADD_ACCESS = 'AA'
     REMOVE_ACCESS = 'RA'
@@ -1134,7 +1134,7 @@ class Audit_Log(models.Model):
     sn_ticket = models.CharField(max_length=32, null=True, blank=True)
     audit_date = models.DateField()
     dc_user = models.ForeignKey(
-                        DC_User, 
+                        Person, 
                         null=True, 
                         blank=True, 
                         on_delete=models.CASCADE,
@@ -1256,7 +1256,7 @@ class FileTransfer(models.Model):
 
     transfer_method = models.ForeignKey(TransferMethod, on_delete=models.CASCADE)
     
-    requester = models.ForeignKey(DC_User, on_delete=models.CASCADE)
+    requester = models.ForeignKey(Person, on_delete=models.CASCADE)
     file_num = models.IntegerField(verbose_name="number of files", blank=True, null=True)
     file_num_unknown = models.NullBooleanField(verbose_name='file number unknown')
     
