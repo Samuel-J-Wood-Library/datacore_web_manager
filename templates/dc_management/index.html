@@ -32,7 +32,7 @@
      </div>
     </div>
     
-    {% if onboarding_prj_list|length > 0 %}
+    {% if onboarding_prj_list|length > 0 or onboarding_list|length > 0 %}
     <div class="container">
      <div class="panel panel-info">
       <div class="panel-heading">
@@ -42,12 +42,15 @@
         {% with onboarding_prj_list as project_list %}
             {% include "dc_management/onboarding_projects_list.html" %}
         {% endwith %}
-        </br>
-        {% with onboarding_list as migration_list %}
-        {% with True as startdate %}
-            {% include "dc_management/migration_tracking.html" %}
-        {% endwith %}
-        {% endwith %}
+        
+        {% if onboarding_list|length > 0 %}
+            </br>
+            {% with onboarding_list as migration_list %}
+            {% with True as startdate %}
+                {% include "dc_management/migration_tracking.html" %}
+            {% endwith %}
+            {% endwith %}
+        {% endif %}
       </div>
      </div>
     </div>
