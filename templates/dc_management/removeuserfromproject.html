@@ -6,7 +6,7 @@
 
 {% block content %}
 <h2>Remove a user from a project</h2>
-<a type="button" class="btn btn-primary" href="{% url 'dc_management:dc_user-add' %}">Create user</a>
+<a type="button" class="btn btn-primary" href="{% url 'dc_management:person-add' %}">Create user</a>
 
 {{ form.media }}
 <form action="" method="post">{% csrf_token %}

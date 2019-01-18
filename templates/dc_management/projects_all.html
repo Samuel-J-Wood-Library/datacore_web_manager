@@ -4,7 +4,7 @@
 
 {% block content %}
 <h2>All Projects ({{ project_list.count }})</h2>
-<a type="button" class="btn btn-primary" href="{% url 'dc_management:dc_user-add' %}">Create user</a>
+<a type="button" class="btn btn-primary" href="{% url 'dc_management:person-add' %}">Create user</a>
 
     {% with 'dc_management/project_list.html' as passthroughhtml %}
         {% include 'dc_management/project_list_template.html' %}

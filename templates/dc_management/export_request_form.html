@@ -6,7 +6,7 @@
 
 {% block content %}
 <h2>Add a user to a project</h2>
-<a type="button" class="btn btn-primary" href="{% url 'dc_management:dc_user-add' %}">Create user</a>
+<a type="button" class="btn btn-primary" href="{% url 'dc_management:person-add' %}">Create user</a>
 <form action="" method="post">{% csrf_token %}
     {{ form|crispy }}
     <input type="submit" class="btn btn-danger" value="Create request" />

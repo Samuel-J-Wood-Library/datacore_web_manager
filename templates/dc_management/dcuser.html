@@ -27,12 +27,12 @@
 
 
 <h1>
-    {{ dc_user.first_name }} {{ dc_user.last_name }}
-<small class="text-muted">{{ dc_user.cwid }}</small>
+    {{ person.first_name }} {{ person.last_name }}
+<small class="text-muted">{{ person.cwid }}</small>
 </h1>
-{% if dc_user.department %}
+{% if person.department %}
 <h2>
-    <small class="text-muted">{{ dc_user.department }}</small>
+    <small class="text-muted">{{ person.department }}</small>
 </h2>
 {% endif %}
 
@@ -49,17 +49,17 @@
     </thead>
 
     <tr>
-        <td>{{ dc_user.cwid }}</td>
-        <td>{{ dc_user.get_role_display }}</td>
-        <td>{{ dc_user.get_affiliation_display }}</td>
-        <td>{{ dc_user.email }}</td>
+        <td>{{ person.cwid }}</td>
+        <td>{{ person.get_role_display }}</td>
+        <td>{{ person.get_affiliation_display }}</td>
+        <td>{{ person.email }}</td>
     </tr>
 </table>
 
 
-<a type="button" class="btn btn-primary" href="{% url 'dc_management:dc_user-update' dc_user.pk %}">Update user details</a>
+<a type="button" class="btn btn-primary" href="{% url 'dc_management:person-update' person.pk %}">Update user details</a>
 
-<a type="button" class="btn btn-danger" href="{% url 'dc_management:thisusertoproject-add' dc_user.pk %}">Add user to project</a>
+<a type="button" class="btn btn-danger" href="{% url 'dc_management:thisusertoproject-add' person.pk %}">Add user to project</a>
 
 </br></br>
 
@@ -84,39 +84,39 @@
 <div class="tab-pane active" id="details">
 
 
-<h2>User for {{ dc_user.project_set.all.count }} projects</h2>
+<h2>User for {{ person.project_set.all.count }} projects</h2>
 
-{% with dc_user.project_set.all as project_list %}
+{% with person.project_set.all as project_list %}
     {% with 'dc_management/project_list.html' as passthroughhtml %}
         {% include 'dc_management/project_list_template.html' %}
     {% endwith %}
 {% endwith %}
 
-<h2>PI for {{ dc_user.project_pi.all.count }} projects</h2>
+<h2>PI for {{ person.project_pi.all.count }} projects</h2>
 
-{% with dc_user.project_pi.all as project_list %}
+{% with person.project_pi.all as project_list %}
     {% with 'dc_management/project_list.html' as passthroughhtml %}
         {% include 'dc_management/project_list_template.html' %}
     {% endwith %}
 {% endwith %}
 
-<h2>Administrator for {{ dc_user.prj_admin.all.count }} projects</h2>
+<h2>Administrator for {{ person.prj_admin.all.count }} projects</h2>
 
-{% with dc_user.prj_admin.all as project_list %}
+{% with person.prj_admin.all as project_list %}
     {% with 'dc_management/project_list.html' as passthroughhtml %}
         {% include 'dc_management/project_list_template.html' %}
     {% endwith %}
 {% endwith %}
 
 
-<h2>Listed on {{ dc_user.governance_doc_set.all.count }} governance documents</h2>
+<h2>Listed on {{ person.governance_doc_set.all.count }} governance documents</h2>
 
-{% with dc_user.governance_doc_set.all as gov_doc_list %}
+{% with person.governance_doc_set.all as gov_doc_list %}
     {% include "dc_management/gov_docs_list.html" %}
 {% endwith %}
 
-{% with dc_user as model_instance  %}
-{% with 'dc_user' as  model_type %}
+{% with person as model_instance  %}
+{% with 'person' as  model_type %}
 {% include 'dc_management/comment_list.html' %}
 {% endwith %}
 {% endwith %}
@@ -144,7 +144,7 @@
             <th>Change</th>
         </tr>
   </thead>
-  {% for l in dc_user.access_log_set.all %}
+  {% for l in person.access_log_set.all %}
    <tr><td>{{ l.record_creation }}</td>
        {% if l.sn_ticket %}
        <td>{{ l.sn_ticket }}</td>
@@ -190,7 +190,7 @@
             <th>Software</th>
         </tr>
   </thead>
-  {% for l in dc_user.software_log_set.all %}
+  {% for l in person.software_log_set.all %}
     <tr>
        {% if l.sn_ticket %}
        <td>{{ l.sn_ticket }}</td>
@@ -215,7 +215,7 @@
             <th>Comments</th>
         </tr>
   </thead>
-  {% for l in dc_user.storage_log_set.all %}
+  {% for l in person.storage_log_set.all %}
    <tr><td>{{ l.record_creation }}</td>
        {% if l.sn_ticket %}
        <td>{{ l.sn_ticket }}</td>
@@ -244,7 +244,7 @@
             <th>Data</th>
         </tr>
   </thead>
-  {% for ft in dc_user.filetransfer_set.all %}
+  {% for ft in person.filetransfer_set.all %}
    <tr>
        <td>
             <a href="{% url 'dc_management:file-transfer-view' ft.pk %}">
@@ -290,7 +290,7 @@
             <th>Comments</th>
         </tr>
   </thead>
-  {% for l in dc_user.audit_log_set.all %}
+  {% for l in person.audit_log_set.all %}
    <tr><td>{{ l.record_creation }}</td>
        {% if l.sn_ticket %}
        <td>{{ l.sn_ticket }}</td>

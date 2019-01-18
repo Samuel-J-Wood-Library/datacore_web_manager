@@ -254,7 +254,7 @@
   <div class="tab-pane" id="users">
     <h2>{{ user_list|length }} Data Core PIs</h2>
     <a type="button" class="btn btn-info" href="{% url 'dc_management:all_users' %}">View all users</a>
-    <a type="button" class="btn btn-primary" href="{% url 'dc_management:dc_user-add' %}">Create user</a>
+    <a type="button" class="btn btn-primary" href="{% url 'dc_management:person-add' %}">Create user</a>
     <a type="button" class="btn btn-info" href="{% url 'dc_management:bulkuserupload' %}">Create users (bulk upload)</a>
     {% include "dc_management/user_list_multiproject.html" %}
     </br>
