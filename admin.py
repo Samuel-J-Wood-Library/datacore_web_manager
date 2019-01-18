@@ -132,7 +132,10 @@ class MigrationLogAdmin(admin.ModelAdmin):
 					'comments',
 					)
 
-    search_fields = ('project', 'node_origin', 'node_destination','comments')
+    search_fields = ('project__dc_prj_id', 
+                     'node_origin__node', 
+                     'node_destination__node',
+                     'comments')
 
 
 
