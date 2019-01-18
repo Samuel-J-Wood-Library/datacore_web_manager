@@ -1709,7 +1709,7 @@ class FileTransferCreate(LoginRequiredMixin, CreateView):
         subject_str = '{}Transfer file{} {} {}'
         body_str = '''Dear OPs,
 
-Please transfer the following {0} file{1} {2} {3}:
+Please copy the following {0} file{1} {2} {3}:
 
 Source: {4}
 
