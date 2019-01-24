@@ -1730,7 +1730,7 @@ Kind regards,
                                     form.instance.comment,              # 5
                                     self.request.user.get_short_name(), # 6
                                     dest_path,                          # 7
-                                    form.instance.source.dc_prj_id      # 8
+                                    #form.instance.source.dc_prj_id      # 8
                                     )
         
         email_dict = {  'subject'       :subj_msg,
