@@ -1225,15 +1225,23 @@ class TransferMethod(models.Model):
 class FileTransfer(models.Model):
     # date the record was created
     record_creation = models.DateField(auto_now_add=True)
+    
     # date the record was most recently modified
     record_update = models.DateField(auto_now=True)
+    
     # the user who was signed in at time of record modification
     record_author = models.ForeignKey(User, on_delete=models.CASCADE)
-  
+    
+    # the date the file transfer was requested
     change_date = models.DateField(default=date.today)
+    
+    # ticket requesting the transfer
     ticket = models.CharField(max_length=32,null=True, blank=True)
     
+    # if source of data is not within data core, it is specified here (eg email)
     external_source = models.CharField(max_length=128,null=True, blank=True)
+    
+    # if source of data is within data core, the project is specified here
     source = models.ForeignKey( Project, 
                                 verbose_name='Source project',
                                 null=True,
@@ -1241,8 +1249,11 @@ class FileTransfer(models.Model):
                                 on_delete=models.CASCADE,
                                 related_name="source_project",
                                 )
-                                
+    
+    # if destination is external to data core, then it is specified here (eg email)                            
     external_destination = models.CharField(max_length=128,null=True, blank=True)
+    
+    # if destination is within Data Core, then the project is specified here
     destination = models.ForeignKey(Project, 
                                     verbose_name='Destination project',
                                     null=True,
@@ -1251,15 +1262,25 @@ class FileTransfer(models.Model):
                                     related_name="destination_project",
                                     )
 
+    # source filepath(s) 
     filenames = models.TextField("source paths of files for transfer")
+    
+    # destination filepaths(s)
     filepath_dest = models.TextField("destination paths of files for transfer")
 
+    # references one of the means of transfer (eg FTP, transfer.med)
     transfer_method = models.ForeignKey(TransferMethod, on_delete=models.CASCADE)
     
+    # person requesting the file transfer 
     requester = models.ForeignKey(Person, on_delete=models.CASCADE)
+    
+    # the number of files being transferred
     file_num = models.IntegerField(verbose_name="number of files", blank=True, null=True)
+    
+    # if the number of files being transferred is unknown, this field is True
     file_num_unknown = models.NullBooleanField(verbose_name='file number unknown')
     
+    # specification of presence of protected information in data
     DEIDENTIFIED = 'DE'
     IDENTIFIED = 'ID'
     LIMITED = 'LM'
@@ -1275,6 +1296,8 @@ class FileTransfer(models.Model):
                             choices = DATA_TYPE_CHOICES,
                             default = NOTDETERMINED,
     )
+    
+    # individual who reviewed the data to determine the PPI status
     reviewed_by = models.ForeignKey(
                             User, 
                             on_delete=models.CASCADE,
@@ -1282,7 +1305,8 @@ class FileTransfer(models.Model):
                             blank=True,
                             null=True,
                             )
-
+    
+    # field for comments relating to the file transfer being requested
     comment = models.TextField(null=True, blank=True)
 
     def __str__(self):

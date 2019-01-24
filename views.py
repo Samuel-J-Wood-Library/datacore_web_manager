@@ -1696,7 +1696,9 @@ class FileTransferCreate(LoginRequiredMixin, CreateView):
             dest = "to {} ({})".format(form.instance.destination.dc_prj_id, 
                             form.instance.destination.host.node,
                             )
-            basepath = "   \\\\hpr_datacore_{}\\".format(form.instance.source.dc_prj_id,)
+            basepath = "   \\\\hpr_datacore_{}\\".format( 
+                                                form.instance.destination.dc_prj_id,
+                                                )
             dest_path = "\n".join(
                 [ basepath + fn for fn in str(form.instance.filepath_dest).split('\n') ]
                                 ) 
