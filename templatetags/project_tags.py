@@ -28,3 +28,8 @@ def account_format(dollar):
         return "${:>10,.2f}".format(dollar)
     else:
         return "${:>10,.2f}".format(0.00)
+
+        
+@register.filter(name='has_group') 
+def has_group(user, group_name):
+    return user.groups.filter(name=group_name).exists() 
