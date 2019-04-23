@@ -986,8 +986,49 @@ class StorageCost(models.Model):
     def __str__(self):
         return "{} (${}/GB)".format( self.storage_type, self.st_cost_per_gb)
 
+class ProjectBillingRecord(models.Model):
+    # date the record was created
+    record_creation = models.DateField(auto_now_add=True)
 
+    # date the record was most recently modified
+    record_update = models.DateField(auto_now=True)
 
+    # the user who was signed in at time of record modification
+    record_author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    # project to be billed
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    
+    # billing date (typically, will be done as billable months)
+    billing_date = models.DateField()
+    
+    # base rate
+    base_expense = models.FloatField(null=True, blank=True)
+    
+    # storage costs
+    storage_expense = models.FloatField(null=True, blank=True)
+    
+    # software
+    sw_expense = models.FloatField(null=True, blank=True)
+        
+    # additional hosting resources (RAM & CPU)
+    hosting_expense = models.FloatField(null=True, blank=True)
+        
+    # database server costs
+    db_expense = models.FloatField(null=True, blank=True)   
+    
+    # comments
+    comments = models.ManyToManyField(CommentLog, 
+                                      blank=True, 
+                                      related_name='billing_comments'
+                                      )
+    
+    def monthly_total(self):
+        """
+        This function returns the total of all billable fields for instance.
+        """
+        total = False
+        return total
 ############################
 #### Log / Audit Models ####
 ############################    
