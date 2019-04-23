@@ -986,6 +986,38 @@ class StorageCost(models.Model):
     def __str__(self):
         return "{} (${}/GB)".format( self.storage_type, self.st_cost_per_gb)
 
+class ExtraResourceCost(models.Model):
+    # date the record was created
+    record_creation = models.DateField(auto_now_add=True)
+
+    # date the record was most recently modified
+    record_update = models.DateField(auto_now=True)
+
+    # the user who was signed in at time of record modification
+    record_author = models.ForeignKey(User, on_delete=models.CASCADE)
+ 
+    # number of additional CPU + RAM (note most provisions will be multiples of two)
+    extra_cpu    = models.IntegerField()
+
+    # total cost for the amount of extra_cpu
+    cpu_cost     = models.FloatField()
+
+class DatabaseCost(models.Model):
+    # date the record was created
+    record_creation = models.DateField(auto_now_add=True)
+
+    # date the record was most recently modified
+    record_update = models.DateField(auto_now=True)
+
+    # the user who was signed in at time of record modification
+    record_author = models.ForeignKey(User, on_delete=models.CASCADE)
+ 
+    # cost for initial setup 
+    setup_cost  = models.FloatField(null=True, blank=True)
+
+    # monthly cost for running db
+    db_cost     = models.FloatField()
+    
 class ProjectBillingRecord(models.Model):
     # date the record was created
     record_creation = models.DateField(auto_now_add=True)
