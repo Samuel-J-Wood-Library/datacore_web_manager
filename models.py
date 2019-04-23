@@ -1017,9 +1017,13 @@ class ProjectBillingRecord(models.Model):
     # database server costs
     db_expense = models.FloatField(null=True, blank=True)   
     
+    # multiplier value allows for partial-month billing (or penalty billing)
+    multiplier = models.FloatField(null=True, blank=True)
+    
     # comments using dynamic comment class (allows replies)
     comments = models.ManyToManyField(CommentLog, 
-                                      blank=True, 
+                                      blank=True,
+                                      null=True, 
                                       related_name='billing_comments'
                                       )
     
@@ -1037,6 +1041,11 @@ class ProjectBillingRecord(models.Model):
         
         # remove NaN values and get sum:
         total = x[~numpy.isnan(x)].sum()
+        
+        # modify if multiplier is present:
+        if self.multiplier:
+            total = total * self.multiplier
+            
         return total
         
 ############################
