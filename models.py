@@ -1030,22 +1030,22 @@ class ProjectBillingRecord(models.Model):
     base_expense = models.FloatField(null=True, blank=True)
     
     # this captures the storage type, amount and charge from storage cost class
-    storage_1_type    = models.CharField(null=True, blank=True)
+    storage_1_type    = models.CharField(null=True, blank=True, max_length=256)
     storage_1_value   = models.IntegerField(null=True, blank=True)
     storage_1_rate    = models.FloatField(null=True, blank=True)
     storage_1_expense = models.FloatField(null=True, blank=True)
     
-    storage_2_type    = models.CharField(null=True, blank=True)
+    storage_2_type    = models.CharField(null=True, blank=True, max_length=256)
     storage_2_value   = models.IntegerField(null=True, blank=True)
     storage_2_rate    = models.FloatField(null=True, blank=True)
     storage_2_expense = models.FloatField(null=True, blank=True)
 
-    storage_3_type    = models.CharField(null=True, blank=True)
+    storage_3_type    = models.CharField(null=True, blank=True, max_length=256)
     storage_3_value   = models.IntegerField(null=True, blank=True)
     storage_3_rate    = models.FloatField(null=True, blank=True)
     storage_3_expense = models.FloatField(null=True, blank=True)
 
-    storage_4_type    = models.CharField(null=True, blank=True)
+    storage_4_type    = models.CharField(null=True, blank=True, max_length=256)
     storage_4_value   = models.IntegerField(null=True, blank=True)
     storage_4_rate    = models.FloatField(null=True, blank=True)
     storage_4_expense = models.FloatField(null=True, blank=True)
