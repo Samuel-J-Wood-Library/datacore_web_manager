@@ -858,6 +858,11 @@ class DC_Administrator(models.Model):
         verbose_name_plural = 'Data Core Administrators'
 
 class DCUAGenerator(models.Model):
+    """
+    This class allows the creation of Data Core User Agreements (DCUAs) for users to 
+    sign prior to being granted access to Data Core.
+    """
+    
     # date the record was created
     record_creation = models.DateField(auto_now_add=True)
     # date the record was most recently modified
@@ -925,8 +930,10 @@ class Protocols(models.Model):
 class SoftwareCost(models.Model):
     # date the record was created
     record_creation = models.DateField(auto_now_add=True)
+
     # date the record was most recently modified
     record_update = models.DateField(auto_now=True)
+
     # the user who was signed in at time of record modification
     record_author = models.ForeignKey(User, on_delete=models.CASCADE)
     
@@ -947,27 +954,39 @@ class SoftwareCost(models.Model):
 class UserCost(models.Model):
     # date the record was created
     record_creation = models.DateField(auto_now_add=True)
+
     # date the record was most recently modified
     record_update = models.DateField(auto_now=True)
+
     # the user who was signed in at time of record modification
     record_author = models.ForeignKey(User, on_delete=models.CASCADE)
  
+    # number of users on a project
     user_quantity = models.IntegerField()
+
+    # total cost for the number of users indicated in user_quantity
     user_cost     = models.FloatField()
     
 class StorageCost(models.Model):
     # date the record was created
     record_creation = models.DateField(auto_now_add=True)
+    
     # date the record was most recently modified
     record_update = models.DateField(auto_now=True)
+    
     # the user who was signed in at time of record modification
     record_author = models.ForeignKey(User, on_delete=models.CASCADE)
     
+    # description of the type of storage
     storage_type = models.CharField(max_length=64)
+
+    # cost per GB per month
     st_cost_per_gb = models.FloatField()
 
     def __str__(self):
         return "{} (${}/GB)".format( self.storage_type, self.st_cost_per_gb)
+
+
 
 ############################
 #### Log / Audit Models ####
