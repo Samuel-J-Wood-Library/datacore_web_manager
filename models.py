@@ -607,21 +607,7 @@ class Project(models.Model):
     
     # not currently used. Allows reference of pertinent SN ticket ID
     sn_tickets = models.CharField(max_length=32, null=True, blank=True)
-    
-    # DEPRECATED: ticket in which pre-data access was confirmed
-    predata_ticket = models.CharField(max_length=32, null=True, blank=True)
-    
-    # DEPRECATED: date in which pre-data access was confirmed
-    predata_date = models.DateField(null=True, blank=True)
-    
-    # DEPRECATED: ticket in which data access was confirmed
-    postdata_ticket = models.CharField("Ticket confirming data loaded", 
-                                        max_length=32, null=True, blank=True
-    )
-                                        
-    # DEPRECATED: date in which data access was confirmed
-    postdata_date = models.DateField("Date data load confirmed", null=True, blank=True)
-    
+        
     # ticket specifying date to close project
     wrapup_ticket = models.CharField("ticket for request to complete", 
                                         max_length=32, 
@@ -671,10 +657,7 @@ class Project(models.Model):
     backup_cost = models.FloatField(null=True, blank=True)
     software_cost = models.FloatField(null=True, blank=True)
     project_total_cost = models.FloatField(null=True, blank=True)
-    
-    # DEPRECATED: field for project-related comments. Replaced with dynamic_comments
-    comments = models.TextField(null=True, blank=True)
-    
+        
     # links to comment table for assigning comments and their replies to the project
     dynamic_comments = models.ManyToManyField(CommentLog, 
                                               blank=True, 
