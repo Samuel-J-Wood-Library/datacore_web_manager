@@ -577,6 +577,9 @@ class Project(models.Model):
     # a more granular description of the project purpose
     env_subtype = models.ForeignKey(EnvtSubtype, on_delete=models.CASCADE)
     
+    # the date the project officially began (and is therefore billed from)
+    start_date = models.DateField(null=True, blank=True)
+    
     # the date access to the project is expected to be no longer required
     expected_completion = models.DateField()
     
