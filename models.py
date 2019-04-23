@@ -10,6 +10,7 @@ from datetime import date
 
 import collections
 
+import numpy as np
 
 ############################
 ####  Comment Models    ####
@@ -1082,20 +1083,26 @@ class ProjectBillingRecord(models.Model):
         """
         # convert values to array:
         x = np.array([self.base_expense,
-                      self.storage_expense,
+                      self.storage_1_expense,
+                      self.storage_2_expense, 
+                      self.storage_3_expense,
+                      self.storage_4_expense,
                       self.sw_expense,
                       self.hosting_expense,
                       self.db_expense,
         ])
         
         # remove NaN values and get sum:
-        total = x[~numpy.isnan(x)].sum()
+        total = x[x != np.array(None)].sum()
         
         # modify if multiplier is present:
         if self.multiplier:
             total = total * self.multiplier
             
         return total
+    
+    def get_absolute_url(self): 
+        return reverse('dc_management:project', kwargs={'pk': self.project.pk})
         
 ############################
 #### Log / Audit Models ####

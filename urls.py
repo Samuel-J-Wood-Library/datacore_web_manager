@@ -125,10 +125,14 @@ urlpatterns = [
     # finance views:
     url(r'finances/$', views.ActiveProjectFinances.as_view(), name='finances-active'),
     path('finances/<int:pk>',
-         views.ProjectMonthlyBill.as_view(),
+         views.ProjectMonthlyBillView.as_view(),
          name='project-bill',
     ),
-    
+    path('finances/create',
+         views.ProjectMonthlyBillCreate.as_view(),
+         name='project-bill-add',
+    ),
+
     # log views:
     path('logs/filetransfer/<int:pk>', 
             views.FileTransferView.as_view(), 

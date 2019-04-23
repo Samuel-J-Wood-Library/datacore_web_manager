@@ -1,0 +1,36 @@
+
+<table class="table table-striped table-hover">
+    <thead class="thead-default">
+    <tr>
+        <th>Date</th>
+        <th>Base</th>
+        <th>Storage 1</th>
+        <th>Storage 2</th>
+        <th>Storage 3</th>
+        <th>Storage 4</th>
+        <th>Software</th>
+        <th>DB setup</th>
+        <th>DB</th>
+        <th>+CPU/ RAM</th>
+        <th>TOTAL</th>
+    </tr>
+    </thead>
+
+    {% for bz in bill_zip %}
+    <tr>
+      <td>{{ bz.0.billing_date }}</td>
+      <td>${{ bz.0.base_expense}}</td>
+      <td>${{ bz.0.storage_1_expense }}</td>
+      <td>${{ bz.0.storage_2_expense }}</td>
+      <td>${{ bz.0.storage_3_expense }}</td>
+      <td>${{ bz.0.storage_4_expense }}</td>
+      <td>${{ bz.0.sw_expense }}</td>
+      <td>${{ bz.0.db_setup }}</td>
+      <td>${{ bz.0.db_expense }}</td>
+      <td>${{ bz.0.cpu_expense }}</td>
+      <td>${{ bz.1 }}</td>
+    </tr>
+    {% endfor %}
+
+
+</table>

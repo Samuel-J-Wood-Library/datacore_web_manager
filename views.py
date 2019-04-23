@@ -534,6 +534,21 @@ class ProjectView(LoginRequiredMixin, generic.DetailView):
                                          Q(governance_doc__project=self.object.pk)
                                 ).distinct()
         
+        project_bills = ProjectBillingRecord.objects.filter(project=self.object.pk
+                                ).order_by('-billing_date')
+        # calculate monthly bill totals and zip them with the monthly bill.
+        bill_zip = zip(project_bills, [ pb.monthly_total() for pb in project_bills ])
+        
+        try:
+            latest_bill = project_bills.latest('billing_date')
+        except ProjectBillingRecord.DoesNotExist:
+            latest_bill = None
+        
+        if latest_bill:
+            bill_total = latest_bill.monthly_total()
+        else:
+            bill_total = 0
+        
         if current_gov_docs.filter(governance_type='IX').count() >= 1:
             fully_validated = dcua_users
         elif current_gov_docs.filter(governance_type='DU').count() == 0:
@@ -556,6 +571,10 @@ class ProjectView(LoginRequiredMixin, generic.DetailView):
                         'dua_users':dua_users,
                         'dcua_users':dcua_users,
                         'unconnected_users':unconnected_users,
+                        'bill':latest_bill,
+                        'bill_total':bill_total,
+                        'all_bills':project_bills,
+                        'bill_zip':bill_zip,
         })
         return context
 
@@ -1429,9 +1448,56 @@ class GovernanceUpdate(LoginRequiredMixin, UpdateView):
 ######  FINANCE  VIEWS   ######
 ###############################
 
-class ProjectMonthlyBill(LoginRequiredMixin, generic.DetailView):
+class ProjectMonthlyBillView(LoginRequiredMixin, generic.DetailView):
     model = ProjectBillingRecord
-    template_name = 'dc_management/project_monthly_bill.html'
+    template_name = 'dc_management/project_billing.html'
+
+class ProjectMonthlyBillCreate(LoginRequiredMixin, CreateView):
+    model = ProjectBillingRecord
+    template_name = 'dc_management/basic_form.html'
+    fields=['project',
+            'billing_date',
+            'base_value',
+            'base_rate',
+            'base_expense',
+            'storage_1_type',
+            'storage_1_value',
+            'storage_1_rate',
+            'storage_1_expense',
+            'storage_2_type',
+            'storage_2_value',
+            'storage_2_rate',
+            'storage_2_expense',
+            'storage_3_type',
+            'storage_3_value',
+            'storage_3_rate',
+            'storage_3_expense',
+            'storage_4_type',
+            'storage_4_value',
+            'storage_4_rate',
+            'storage_4_expense',
+            'sw_value',
+            'sw_rates',
+            'sw_expense',
+            'hosting_value',
+            'hosting_rate',
+            'hosting_expense',
+            'db_value',
+            'db_rate',
+            'db_expense',
+            'db_setup',
+            'multiplier',
+            'comments',
+            ]
+    #template_name = 'dc_management/governance_form.html'
+    # default success_url should be to the object page defined in model.
+    def form_valid(self, form):
+        # add the logged in user as the record author
+        form.instance.record_author = self.request.user
+        
+        self.object = form.save(commit=False)
+        return super(ProjectMonthlyBillCreate, self).form_valid(form)
+
 
 class ActiveProjectFinances(LoginRequiredMixin, generic.ListView):
     template_name = 'dc_management/finances_global.html'

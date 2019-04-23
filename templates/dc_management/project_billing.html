@@ -5,80 +5,89 @@
     <thead class="thead-default">
     <tr>
         <th>Item</th>
-        <th>Value</th>
-        <th>Price</th>
+        <th>Amount</th>
+        <th>Rate</th>
         <th>Monthly cost</th>
     </tr>
     </thead>
 
+    {% if bill.base_expense > 0 %}
     <tr>
       <td>Base cost</td>
       <td>{{ bill.base_value }} users</td>
       <td>${{ bill.base_rate|floatformat:2 }}</td>
-      <td>${{ bill.base_expense|floatformat:2 }}</td>
+      <td>$<span style="float: right">{{ bill.base_expense|floatformat:2 }}</span></td>
     </tr>
+    {% endif %}
+    {% if bill.storage_1_expense > 0 %}
     <tr>
       <td>{{ bill.storage_1_type }}</td>
       <td>{{ bill.storage_1_value }} GB</td>
       <td>${{ bill.storage_1_rate|floatformat:2 }} /GB</td>
-      <td>${{ bill.storage_1_expense|floatformat:2 }}</td>
-      <td>$</td>
+      <td>$<span style="float: right">{{ bill.storage_1_expense|floatformat:2 }}</span></td>
     </tr>
+    {% endif %}
+    {% if bill.storage_2_expense > 0 %}
     <tr>
       <td>{{ bill.storage_2_type }}</td>
       <td>{{ bill.storage_2_value }} GB</td>
       <td>${{ bill.storage_2_rate|floatformat:2 }} /GB</td>
-      <td>${{ bill.storage_2_expense|floatformat:2 }}</td>
-      <td>$</td>
+      <td>$<span style="float: right">{{ bill.storage_2_expense|floatformat:2 }}</span></td>
     </tr>
+    {% endif %}
+    {% if bill.storage_3_expense > 0 %}
     <tr>
       <td>{{ bill.storage_3_type }}</td>
       <td>{{ bill.storage_3_value }} GB</td>
       <td>${{ bill.storage_3_rate|floatformat:2 }} /GB</td>
-      <td>${{ bill.storage_3_expense|floatformat:2 }}</td>
-      <td>$</td>
+      <td>$<span style="float: right">{{ bill.storage_3_expense|floatformat:2 }}</span></td>
     </tr>
+    {% endif %}
+    {% if bill.storage_4_expense > 0 %}
     <tr>
       <td>{{ bill.storage_4_type }}</td>
       <td>{{ bill.storage_4_value }} GB</td>
       <td>${{ bill.storage_4_rate|floatformat:2 }} /GB</td>
-      <td>${{ bill.storage_4_expense|floatformat:2 }}</td>
-      <td>$</td>
+      <td>$<span style="float: right">{{ bill.storage_4_expense|floatformat:2 }}</span></td>
     </tr>
-
+    {% endif %}
+    {% if bill.cpu_expense > 0 %}
     <tr>
       <td>Extra CPU + RAM</td>
       <td>{{ bill.cpu_value }} CPUs</td>
       <td>${{ bill.cpu_rate|floatformat:2 }} /CPU</td>
-      <td>${{ bill.cpu_expense|floatformat:2 }}</td>
+      <td>$<span style="float: right">{{ bill.cpu_expense|floatformat:2 }}</span></td>
     </tr>
+    {% endif %}
     {% if bill.db_setup %}
     <tr>
       <td>Database Setup</td>
       <td>Setup cost</td>
       <td>${{ bill.db_setup|floatformat:2 }}</td>
-      <td>${{ bill.db_setup|floatformat:2 }}</td>
+      <td>$<span style="float: right">{{ bill.db_setup|floatformat:2 }}</span></td>
     </tr>
     {% endif %}
+    {% if bill.db_expense > 0 %}
     <tr>
       <td>Database</td>
       <td>{{ bill.db_value}} DBs</td>
       <td>${{ bill.db_rate|floatformat:2 }} /DB</td>
-      <td>${{ bill.db_expense|floatformat:2 }}</td>
+      <td>$<span style="float: right">{{ bill.db_expense|floatformat:2 }}</span></td>
     </tr>
-
+    {% endif %}
+    {% if bill.sw_expense > 0 %}
     <tr>
       <td>Software</td>
       <td>{{ bill.sw_value }}</td>
       <td>${{ bill.sw_rate|floatformat:2 }} / user</td>
-      <td>${{ bill.sw_expense|floatformat:2}}</td>
+      <td>$<span style="float: right">{{ bill.sw_expense|floatformat:2}}</span></td>
     </tr>
+    {% endif %}
     <tr>
       <th class="bg-warning">TOTAL</th>
       <td class="bg-warning"></td>
       <td class="bg-warning"></td>
-      <th class="bg-warning">$</th>
-      <th class="bg-warning">$</th>
+      <th class="bg-warning">$<span style="float: right">{{ bill_total|floatformat:2 }}</span></th>
     </tr>
 
 
