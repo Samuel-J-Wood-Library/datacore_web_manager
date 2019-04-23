@@ -1017,7 +1017,7 @@ class ProjectBillingRecord(models.Model):
     # database server costs
     db_expense = models.FloatField(null=True, blank=True)   
     
-    # comments
+    # comments using dynamic comment class (allows replies)
     comments = models.ManyToManyField(CommentLog, 
                                       blank=True, 
                                       related_name='billing_comments'
@@ -1027,8 +1027,18 @@ class ProjectBillingRecord(models.Model):
         """
         This function returns the total of all billable fields for instance.
         """
-        total = False
+        # convert values to array:
+        x = np.array([self.base_expense,
+                      self.storage_expense,
+                      self.sw_expense,
+                      self.hosting_expense,
+                      self.db_expense,
+        ])
+        
+        # remove NaN values and get sum:
+        total = x[~numpy.isnan(x)].sum()
         return total
+        
 ############################
 #### Log / Audit Models ####
 ############################    
