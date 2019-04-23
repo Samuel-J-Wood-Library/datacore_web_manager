@@ -33,6 +33,7 @@ from .models import Server, Project, Person, Access_Log, Governance_Doc
 from .models import Software, Software_Log, Storage_Log
 from .models import UserCost, SoftwareCost, StorageCost, DCUAGenerator
 from .models import FileTransfer, MigrationLog, CommentLog
+from .models import ProjectBillingRecord
 
 from .forms import AddUserToProjectForm, RemoveUserFromProjectForm
 from .forms import ExportFileForm, CreateDCAgreementURLForm
@@ -1427,6 +1428,10 @@ class GovernanceUpdate(LoginRequiredMixin, UpdateView):
 ###############################
 ######  FINANCE  VIEWS   ######
 ###############################
+
+class ProjectMonthlyBill(LoginRequiredMixin, generic.DetailView):
+    model = ProjectBillingRecord
+    template_name = 'dc_management/project_monthly_bill.html'
 
 class ActiveProjectFinances(LoginRequiredMixin, generic.ListView):
     template_name = 'dc_management/finances_global.html'

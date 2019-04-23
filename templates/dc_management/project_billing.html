@@ -8,65 +8,70 @@
         <th>Value</th>
         <th>Price</th>
         <th>Monthly cost</th>
-        <th>Yearly cost</th>
     </tr>
     </thead>
 
     <tr>
       <td>Base cost</td>
-      <td>{{ project.users.count }} users</td>
-      <td>$ / </td>
-      <td>$</td>
+      <td>{{ bill.base_value }} users</td>
+      <td>${{ bill.base_rate|floatformat:2 }}</td>
+      <td>${{ bill.base_expense|floatformat:2 }}</td>
+    </tr>
+    <tr>
+      <td>{{ bill.storage_1_type }}</td>
+      <td>{{ bill.storage_1_value }} GB</td>
+      <td>${{ bill.storage_1_rate|floatformat:2 }} /GB</td>
+      <td>${{ bill.storage_1_expense|floatformat:2 }}</td>
       <td>$</td>
     </tr>
     <tr>
-      <td>Extra CPU</td>
-      <td> CPUs</td>
-      <td>$ /CPU</td>
-      <td>$</td>
+      <td>{{ bill.storage_2_type }}</td>
+      <td>{{ bill.storage_2_value }} GB</td>
+      <td>${{ bill.storage_2_rate|floatformat:2 }} /GB</td>
+      <td>${{ bill.storage_2_expense|floatformat:2 }}</td>
       <td>$</td>
     </tr>
     <tr>
-      <td>Extra RAM</td>
-      <td> GB</td>
-      <td>$ /GB </td>
-      <td>$</td>
+      <td>{{ bill.storage_3_type }}</td>
+      <td>{{ bill.storage_3_value }} GB</td>
+      <td>${{ bill.storage_3_rate|floatformat:2 }} /GB</td>
+      <td>${{ bill.storage_3_expense|floatformat:2 }}</td>
       <td>$</td>
     </tr>
+    <tr>
+      <td>{{ bill.storage_4_type }}</td>
+      <td>{{ bill.storage_4_value }} GB</td>
+      <td>${{ bill.storage_4_rate|floatformat:2 }} /GB</td>
+      <td>${{ bill.storage_4_expense|floatformat:2 }}</td>
+      <td>$</td>
+    </tr>
+
+    <tr>
+      <td>Extra CPU + RAM</td>
+      <td>{{ bill.cpu_value }} CPUs</td>
+      <td>${{ bill.cpu_rate|floatformat:2 }} /CPU</td>
+      <td>${{ bill.cpu_expense|floatformat:2 }}</td>
+    </tr>
+    {% if bill.db_setup %}
+    <tr>
+      <td>Database Setup</td>
+      <td>Setup cost</td>
+      <td>${{ bill.db_setup|floatformat:2 }}</td>
+      <td>${{ bill.db_setup|floatformat:2 }}</td>
+    </tr>
+    {% endif %}
     <tr>
       <td>Database</td>
-      <td> DBs</td>
-      <td>$ /DB</td>
-      <td>$</td>
-      <td>$</td>
+      <td>{{ bill.db_value}} DBs</td>
+      <td>${{ bill.db_rate|floatformat:2 }} /DB</td>
+      <td>${{ bill.db_expense|floatformat:2 }}</td>
     </tr>
-    <tr>
-      <td>Fileshare</td>
-      <td>{{ project.fileshare_storage }} GB</td>
-      <td>$ /GB</td>
-      <td>$</td>
-      <td>$</td>
-    </tr>
-    <tr>
-      <td>Versioned backup</td>
-      <td>{{ project.backup_storage }} GB</td>
-      <td>$ /GB</td>
-      <td>$</td>
-      <td>$</td>
-    </tr>
-    <tr>
-      <td>Direct attach storage</td>
-      <td>{{ project.direct_attach_storage }} GB</td>
-      <td>$ /GB</td>
-      <td>$</td>
-      <td>$</td>
-    </tr>
+
     <tr>
       <td>Software</td>
-      <td></td>
-      <td>$ / user</td>
-      <td>$</td>
-      <td>$</td>
+      <td>{{ bill.sw_value }}</td>
+      <td>${{ bill.sw_rate|floatformat:2 }} / user</td>
+      <td>${{ bill.sw_expense|floatformat:2}}</td>
     </tr>
     <tr>
       <th class="bg-warning">TOTAL</th>

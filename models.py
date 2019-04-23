@@ -1020,20 +1020,51 @@ class ProjectBillingRecord(models.Model):
     # billing date (typically, will be done as billable months)
     billing_date = models.DateField()
     
+    # base value
+    base_value = models.IntegerField(null=True, blank=True)
+    
     # base rate
+    base_rate = models.FloatField(null=True, blank=True)
+    
+    # base cost
     base_expense = models.FloatField(null=True, blank=True)
     
-    # storage costs
-    storage_expense = models.FloatField(null=True, blank=True)
+    # this captures the storage type, amount and charge from storage cost class
+    storage_1_type    = models.CharField(null=True, blank=True)
+    storage_1_value   = models.IntegerField(null=True, blank=True)
+    storage_1_rate    = models.FloatField(null=True, blank=True)
+    storage_1_expense = models.FloatField(null=True, blank=True)
+    
+    storage_2_type    = models.CharField(null=True, blank=True)
+    storage_2_value   = models.IntegerField(null=True, blank=True)
+    storage_2_rate    = models.FloatField(null=True, blank=True)
+    storage_2_expense = models.FloatField(null=True, blank=True)
+
+    storage_3_type    = models.CharField(null=True, blank=True)
+    storage_3_value   = models.IntegerField(null=True, blank=True)
+    storage_3_rate    = models.FloatField(null=True, blank=True)
+    storage_3_expense = models.FloatField(null=True, blank=True)
+
+    storage_4_type    = models.CharField(null=True, blank=True)
+    storage_4_value   = models.IntegerField(null=True, blank=True)
+    storage_4_rate    = models.FloatField(null=True, blank=True)
+    storage_4_expense = models.FloatField(null=True, blank=True)
     
     # software
+    sw_value   = models.TextField(null=True, blank=True)
+    sw_rates   = models.TextField(null=True, blank=True)
     sw_expense = models.FloatField(null=True, blank=True)
         
     # additional hosting resources (RAM & CPU)
+    hosting_value   = models.IntegerField(null=True, blank=True)
+    hosting_rate    = models.FloatField(null=True, blank=True)
     hosting_expense = models.FloatField(null=True, blank=True)
         
     # database server costs
+    db_value   = models.IntegerField(null=True, blank=True)
+    db_rate    = models.FloatField(null=True, blank=True)
     db_expense = models.FloatField(null=True, blank=True)   
+    db_setup   = models.FloatField(null=True, blank=True)  
     
     # multiplier value allows for partial-month billing (or penalty billing)
     multiplier = models.FloatField(null=True, blank=True)
