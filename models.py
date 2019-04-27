@@ -644,6 +644,9 @@ class Project(models.Model):
                             blank=True,
     )
     
+    # register of database name 
+    db_name = models.CharField(max_length=128, null=True, blank=True)
+    
     ######################
     ### finance fields ###
     ######################
