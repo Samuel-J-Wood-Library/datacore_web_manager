@@ -281,6 +281,12 @@ project_access = Div(
 )     
 project_dates = Layout(Fieldset('<div class="alert alert-info">Project dates</div>',
                         Div(
+                                Div('start_date',
+                                    css_class='col-xs-6',
+                                ),
+                                css_class="row"
+                        ),
+                        Div(
                                 Div('requested_launch',
                                     css_class='col-xs-6',
                                 ),
@@ -315,6 +321,7 @@ project_dates = Layout(Fieldset('<div class="alert alert-info">Project dates</di
 class ProjectForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ProjectForm, self).__init__(*args, **kwargs)
+        self.fields['start_date'].label = "Official project start date"
         self.helper = FormHelper()
         self.helper.form_id = 'id-file-transfer-form'
         self.helper.form_method = 'post'
@@ -366,6 +373,7 @@ class ProjectForm(forms.ModelForm):
                     'env_type',
                     'env_subtype',
                     'requested_launch',
+                    'start_date',
                     'expected_completion',
                     'status',
                     'sn_tickets',
@@ -397,6 +405,7 @@ class ProjectForm(forms.ModelForm):
 class ProjectUpdateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ProjectUpdateForm, self).__init__(*args, **kwargs)
+        self.fields['start_date'].label = "Official project start date"
         self.helper = FormHelper()
         self.helper.form_id = 'id-file-transfer-form'
         self.helper.form_method = 'post'
@@ -438,6 +447,7 @@ class ProjectUpdateForm(forms.ModelForm):
                     'env_type',
                     'env_subtype',
                     'requested_launch',
+                    'start_date',
                     'expected_completion',
                     'status',
                     'wrapup_ticket',
