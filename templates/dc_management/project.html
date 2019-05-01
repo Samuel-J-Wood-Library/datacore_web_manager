@@ -157,7 +157,7 @@
     <table class="table table-striped">
         <thead class="thead-default">
         <tr>
-            <th></th><th>Value/Requested</th><th>Provisioned</th>
+            <th></th><th>Expected</th><th>Provisioned</th>
         </tr>
         </thead>
         
@@ -181,6 +181,11 @@
                 <td></td>
             </tr>
         {% endif %}
+            <tr>
+                <td>Start</td>
+                <td>{{ project.requested_launch }}</td>
+                <td>{{ project.start_date }}</td>
+            </tr>
         {% if project.expected_completion|days_until:0 and project.status == 'RU' %}
             <tr class="bg-danger" style="color:red;background:lightpink">
                 <td>Expiry</td><td> {{ project.expected_completion }}</td><td></td>
@@ -200,7 +205,26 @@
         {% endif %}
 
         <tr>
-            <td>Status </td><td> {{ project.get_status_display }}</td><td></td>
+            <td>Status </td>
+            <td>
+            {% if project.status == 'RU' %}
+              <span class="pull-left label label-success">
+                {{ project.get_status_display }}</span>
+            {% elif project.status == 'ON' %}
+              <span class="pull-left label label-primary">
+                {{ project.get_status_display }}</span>
+            {% elif project.status == 'SU' %}
+              <span class="pull-left label label-warning">
+                {{ project.get_status_display }}</span>
+            {% elif project.status == 'SD' %}
+              <span class="pull-left label label-info">
+                {{ project.get_status_display }}</span>
+            {% else %}
+              <span class="pull-left label label-default">
+                {{ project.get_status_display }}</span>
+            {% endif %}
+            </td>
+            <td></td>
         </tr>
         <tr>
             <td>Fileshare storage </td>
