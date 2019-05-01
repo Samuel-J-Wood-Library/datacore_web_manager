@@ -432,7 +432,9 @@ class IndexView(LoginRequiredMixin, generic.ListView):
                                         Q(envt_date__isnull=True) |
                                         Q(data_date__isnull=True)
                                         ).exclude(
-                                        project__status='ON'
+                                            project__status='ON'
+                                        ).exclude(
+                                            project__status='SU'
                                         ).order_by('record_creation'),
             'onboarding_prj_list': Project.objects.filter(
                                         status='ON',
@@ -1894,7 +1896,7 @@ class FullSearch(LoginRequiredMixin, generic.TemplateView):
         qs_prj =  qs_prj.filter(Q(dc_prj_id__icontains=st) | 
                                 Q(title__icontains=st) | 
                                 Q(nickname__icontains=st) |
-                                Q(comments__icontains=st)
+                                Q(dynamic_comments__comment__icontains=st)
         )
         qs_usr = Person.objects.all()
         qs_usr = qs_usr.filter( Q(first_name__icontains=st) |
