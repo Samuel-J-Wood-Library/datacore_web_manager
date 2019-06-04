@@ -40,9 +40,9 @@ class TestAccess(TestCase):
     
     def test_call_view_denies_anonymous(self):
         response = self.client.get(reverse('dc_management:index'), follow=True)
-        self.assertRedirects(response, '/login/?next=/info/')
+        self.assertRedirects(response, 'accounts/login/?next=/info/')
         response = self.client.post(reverse('dc_management:index'), follow=True)
-        self.assertRedirects(response, '/login/?next=/info/')
+        self.assertRedirects(response, 'accounts/login/?next=/info/')
         pages = ['all_users',
                  'all_projects',
                  'person-add',
@@ -153,7 +153,6 @@ class ProjectTestCase(TestCase):
                             disk_storage = 100,
                             other_storage = 100,   
                             connection_date = datetime.date(2014, 6, 30),
-                            comments = "This is an awesome test server for unittest",
         )
         cls.prj1 = Project.objects.create( dc_prj_id = 'prj0006',
                                 title = 'test project',
@@ -169,10 +168,8 @@ class ProjectTestCase(TestCase):
                                 expected_completion = datetime.date(2018, 7, 13),
                                 requested_launch = datetime.date(2018, 2, 13),
                                 status = 'RU',
-                                predata_date = datetime.date(2017, 12, 1),
-                                postdata_date = datetime.date(2017, 12, 13),
+                                wrapup_date = datetime.date(2017, 12, 1),
                                 host = cls.host,
-                                comments = "This is a test project for unittest",
         )
         cls.prj2 = Project.objects.create( dc_prj_id = 'prj0007',
                                 title = 'minimal test project',
@@ -231,7 +228,6 @@ class StorageTestCase(TestCase):
                             disk_storage = 100,
                             other_storage = 100,   
                             connection_date = datetime.date(2014, 6, 30),
-                            comments = "This is an awesome test server for unittest",
         )
         self.prj1 = Project.objects.create( dc_prj_id = 'prj0006',
                                 title = 'test project',
@@ -247,10 +243,8 @@ class StorageTestCase(TestCase):
                                 expected_completion = datetime.date(2018, 7, 13),
                                 requested_launch = datetime.date(2018, 2, 13),
                                 status = 'RU',
-                                predata_date = datetime.date(2017, 12, 1),
-                                postdata_date = datetime.date(2017, 12, 13),
+                                wrapup_date = datetime.date(2017, 12, 1),
                                 host = host,
-                                comments = "This is a test project for unittest",
         )
         self.prj2 = Project.objects.create( dc_prj_id = 'prj0007',
                                 title = 'minimal test project',
