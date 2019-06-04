@@ -282,8 +282,6 @@ class SendMail(LoginRequiredMixin, generic.TemplateView):
 #### Basic views ####
 #######################
 class IndexProjectView(LoginRequiredMixin, generic.ListView):
-    login_url='/login/'
-    
     template_name = 'dc_management/index_projects.html'
     context_object_name = 'project_list'
 
@@ -303,8 +301,6 @@ class IndexProjectView(LoginRequiredMixin, generic.ListView):
         return context
         
 class IndexUserView(LoginRequiredMixin, generic.ListView):
-    login_url='/login/'
-    
     template_name = 'dc_management/index_users.html'
     context_object_name = 'user_list'
 
@@ -321,8 +317,6 @@ class IndexUserView(LoginRequiredMixin, generic.ListView):
         return context
     
 class IndexServerView(LoginRequiredMixin, generic.ListView):
-    login_url='/login/'
-    
     template_name = 'dc_management/index_servers.html'
     context_object_name = 'server_list'
 
@@ -341,8 +335,6 @@ class IndexServerView(LoginRequiredMixin, generic.ListView):
         return context
 
 class IndexSoftwareView(LoginRequiredMixin, generic.ListView):
-    login_url='/login/'
-    
     template_name = 'dc_management/index_software.html'
     context_object_name = 'sw_list'
 
@@ -360,8 +352,6 @@ class IndexSoftwareView(LoginRequiredMixin, generic.ListView):
         return context
 
 class IndexGovdocView(LoginRequiredMixin, generic.ListView):
-    login_url='/login/'
-    
     template_name = 'dc_management/index_gov_docs.html'
     context_object_name = 'govdoc_list'
 
@@ -377,7 +367,6 @@ class IndexGovdocView(LoginRequiredMixin, generic.ListView):
         return context
                     
 class IndexView(LoginRequiredMixin, generic.ListView):
-    login_url='/login/'
     
     template_name = 'dc_management/index.html'
     context_object_name = 'project_list'
