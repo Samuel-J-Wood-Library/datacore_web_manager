@@ -91,7 +91,7 @@
                                     role="menu" 
                                     aria-labelledby="dropblast">
                                     <li><a href="{% url 'admin:index' %}" 
-                                           target="_blank">Change password</a>
+                                           target="_blank">Admin</a>
                                     </li>
                                     <li><a href="/logout/">Logout </a></li>
                                     <li><a href="{% url 'frontpage' %}">
@@ -111,12 +111,7 @@
                                 <ul class="dropdown-menu" 
                                     role="menu" 
                                     aria-labelledby="dropblast">
-                                    <li><a href="{% url 'admin:index' %}" 
-                                           target="_blank">DC Admin</a>
-                                    </li>
-                                    <li><a href="{% url 'password_reset' %}">
-                                        Reset password</a>
-                                    </li>
+                                    
                                     <li><a href="{% url 'dc_management:url_generator' %}">
                                         DCUA generator</a>
                                     </li>
