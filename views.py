@@ -10,7 +10,7 @@ from dal import autocomplete
 from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -281,10 +281,11 @@ class SendMail(LoginRequiredMixin, generic.TemplateView):
 #######################
 #### Basic views ####
 #######################
-class IndexProjectView(LoginRequiredMixin, generic.ListView):
+class IndexProjectView(PermissionRequiredMixin, generic.ListView):
     template_name = 'dc_management/index_projects.html'
     context_object_name = 'project_list'
-
+    permission_required = 'dc_management.view_project'
+    
     def get_queryset(self):
         """Return  all active projects."""
         return  Project.objects.filter(
@@ -366,11 +367,12 @@ class IndexGovdocView(LoginRequiredMixin, generic.ListView):
         })
         return context
                     
-class IndexView(LoginRequiredMixin, generic.ListView):
+class IndexView(PermissionRequiredMixin, generic.ListView):
     
     template_name = 'dc_management/index.html'
     context_object_name = 'project_list'
-
+    permission_required = 'dc_management.view_project'
+    
     def get_queryset(self):
         """Return  all active projects."""
         return Project.objects.filter(status="RU").order_by('dc_prj_id')
