@@ -650,9 +650,10 @@ class Project(models.Model):
     ######################
     ### finance fields ###
     ######################
+    # WCM Fund number to charge
+    account_number = models.CharField(max_length=32, null=True, blank=True)
     
     # set of fields for holding current billing information
-    
     user_cost = models.FloatField(null=True, blank=True)
     host_cost = models.FloatField(null=True, blank=True)
     db_cost = models.FloatField(null=True, blank=True)
