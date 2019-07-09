@@ -7,6 +7,7 @@ from .models import Software, Software_License_Type, Software_Log, Software_Purc
 from .models import Storage_Log, SubFunction, SoftwareCost, UserCost, StorageCost
 from .models import DCUAGenerator, FileTransfer, TransferMethod, Department
 from .models import ResourceLog, MigrationLog, ExtraResourceCost, DatabaseCost
+from .models import ProjectBillingRecord
 
 # customize the look of the admin site:
 admin.site.site_header = 'Data Core Management Site'
@@ -149,6 +150,7 @@ admin.site.register(DC_Administrator)
 admin.site.register(EnvtSubtype)
 admin.site.register(External_Access_Log)
 admin.site.register(ExtraResourceCost)
+admin.site.register(ProjectBillingRecord)
 admin.site.register(ResourceLog)
 admin.site.register(SN_Ticket)
 admin.site.register(Software)
