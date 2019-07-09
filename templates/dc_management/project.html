@@ -3,6 +3,10 @@
 {% load static %}
 {% load bootstrap4 %}
 
+{% block pagetitle %}
+{{ project.dc_prj_id }}
+{% endblock %}
+
 {% block content %}
 
 {# Load CSS and JavaScript #}
@@ -108,6 +112,8 @@
 
     <a  type="button" class="btn btn-primary btn-group-justified" 
         href="{% url 'dc_management:migration-add' project.pk %}">Migrate project</a>
+    <a  type="button" class="btn btn-primary btn-group-justified" 
+        href="{% url 'dc_management:project-charge' project.pk %}">Charge project</a>
     <a  type="button" class="btn btn-default btn-group-justified" 
         href="#">Find available node</a>
     <a  type="button" class="btn btn-default btn-group-justified" 
@@ -399,7 +405,7 @@
 <div class="container col-md-12">
  <div class="panel panel-info">
   <div class="panel-heading">
-    <h4>Project billing</h4>
+    <h4>Project billing for {{ bill.billing_date }}</h4>
   </div>
   <div class="panel-body">
         {% include "dc_management/project_billing.html" %}

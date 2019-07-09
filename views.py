@@ -5,6 +5,8 @@ from datetime import date, timedelta
 import time
 from urllib.parse import quote
 
+import numpy as np
+
 from dal import autocomplete
 
 from django.views import generic
@@ -31,9 +33,9 @@ from dc_management.outlookservice import get_me, send_message
 
 from .models import Server, Project, Person, Access_Log, Governance_Doc
 from .models import Software, Software_Log, Storage_Log
-from .models import UserCost, SoftwareCost, StorageCost, DCUAGenerator
+from .models import UserCost, SoftwareCost, StorageCost, DCUAGenerator, DatabaseCost
 from .models import FileTransfer, MigrationLog, CommentLog
-from .models import ProjectBillingRecord
+from .models import ProjectBillingRecord, ExtraResourceCost
 
 from .forms import AddUserToProjectForm, RemoveUserFromProjectForm
 from .forms import ExportFileForm, CreateDCAgreementURLForm
@@ -645,6 +647,7 @@ class ProjectUpdate(LoginRequiredMixin, UpdateView):
     #success_url = reverse_lazy("dc_management:index" )
     #default success_url should be to the object page defined in model.
     def form_valid(self, form):
+        print(self.object.host)
         self.object = form.save(commit=False)
         return super(ProjectUpdate, self).form_valid(form)
 
@@ -1124,7 +1127,7 @@ class RemoveUserFromProject(LoginRequiredMixin, FormView ):
         }
         self.request.session['email_json'] = json.dumps(email_details)
                 
-        # Check if user in project, then connect user to project
+        # Check if user in project, then remove user from project
         prj = form.cleaned_data['project']
         newusers = form.cleaned_data['dcusers']
         oldusers = prj.users.all()
@@ -1445,7 +1448,185 @@ class ProjectMonthlyBillView(LoginRequiredMixin, generic.DetailView):
     model = ProjectBillingRecord
     template_name = 'dc_management/project_billing.html'
 
+class ProjectMonthlyBillGenerate(LoginRequiredMixin, CreateView):
+    model = ProjectBillingRecord
+    template_name = 'dc_management/basic_form.html'
+
+    fields=['project',
+            'billing_date',
+            'base_value',
+            'base_rate',
+            'base_expense',
+            'storage_1_type',
+            'storage_1_value',
+            'storage_1_rate',
+            'storage_1_expense',
+            'storage_2_type',
+            'storage_2_value',
+            'storage_2_rate',
+            'storage_2_expense',
+            'storage_3_type',
+            'storage_3_value',
+            'storage_3_rate',
+            'storage_3_expense',
+            'storage_4_type',
+            'storage_4_value',
+            'storage_4_rate',
+            'storage_4_expense',
+            'sw_value',
+            'sw_rates',
+            'sw_expense',
+            'hosting_value',
+            'hosting_rate',
+            'hosting_expense',
+            'db_value',
+            'db_rate',
+            'db_expense',
+            'db_setup',
+            'multiplier',
+            'comments',
+            ]
+    def get_initial(self):
+        initial = super(ProjectMonthlyBillGenerate, self).get_initial()
+        # get the project
+        chosen_project = Project.objects.get(pk=self.kwargs['pk'])
+        
+        # get the billable number of users
+        user_number = chosen_project.billable_users().count()
+        user_rate = UserCost.objects.get(user_quantity=user_number).user_cost
+        
+        # get the storage charges
+        st1 = StorageCost.objects.get(storage_type__icontains="fileshare")
+        st1_type = st1.storage_type
+        st1_value = chosen_project.fileshare_storage
+        st1_rate = st1.st_cost_per_gb 
+        st1_expense = st1_rate * st1_value / 100
+        
+        st2 = StorageCost.objects.get(storage_type__icontains="backup")
+        st2_type = st2.storage_type
+        st2_value = chosen_project.backup_storage
+        st2_rate = st2.st_cost_per_gb 
+        st2_expense = st2_rate * st2_value / 100
+
+        st3 = StorageCost.objects.get(storage_type__icontains="direct")
+        st3_type = st3.storage_type
+        st3_value = chosen_project.direct_attach_storage
+        st3_rate = st3.st_cost_per_gb 
+        st3_expense = st3_rate * st3_value / 100
+        
+        # get software expenses
+        sw_str = "; ".join([sw.name for sw in chosen_project.software_requested.all()])
+        
+        sw_costs = []
+        for sw in chosen_project.software_requested.all():
+            sw_rate = SoftwareCost.objects.get(software=sw.pk).software_cost
+            sw_cost = sw_rate * user_number
+            sw_costs.append(sw_cost)
+        x = np.array(sw_costs)
+        sw_total = x[x != np.array(None)].sum()
+        
+        # get extra computation costs
+        prj_erc = chosen_project.requested_cpu - 4
+        erc = ExtraResourceCost.objects.get(extra_cpu=prj_erc)
+        erc_cost = erc.cpu_cost
+        
+        # get db costs
+        if chosen_project.db:
+            db_value = 1
+            db_rate = DatabaseCost.objects.get(pk=1).db_cost
+        else:
+            db_value = 0
+            db_rate = 0
+            
+        # update initial field defaults with custom set default values:
+        initial.update({'project': chosen_project, 
+                        'billing_date':date.today(),
+                        'base_value': user_number,
+                        'base_rate': user_rate,
+                        'base_expense': user_number * user_rate,
+                        'storage_1_type':st1_type,
+                        'storage_1_value':st1_value,
+                        'storage_1_rate':st1_rate,
+                        'storage_1_expense':st1_expense,
+                        'storage_2_type':st2_type,
+                        'storage_2_value':st2_value,
+                        'storage_2_rate':st2_rate,
+                        'storage_2_expense':st2_expense,
+                        'storage_3_type':st3_type,
+                        'storage_3_value':st3_value,
+                        'storage_3_rate':st3_rate,
+                        'storage_3_expense':st3_expense,
+                        'sw_value':sw_str,
+                        'sw_rates':"; ".join(["${:.2f}".format(c) for c in sw_costs]),
+                        'sw_expense':sw_total,
+                        'hosting_value':prj_erc,
+                        'hosting_rate':erc_cost,
+                        'hosting_expense':erc_cost,
+                        'db_value':db_value,
+                        'db_rate':db_rate,
+                        'db_expense':db_rate,
+                        'db_setup':0,
+                        'multiplier':1,
+                        'comments':"automatically generated.",  
+        
+        })
+        return initial
+    def form_valid(self, form):
+        # add the logged in user as the record author
+        form.instance.record_author = self.request.user
+        
+        self.object = form.save(commit=False)
+        return super(ProjectMonthlyBillGenerate, self).form_valid(form)
+
+
+
 class ProjectMonthlyBillCreate(LoginRequiredMixin, CreateView):
+    model = ProjectBillingRecord
+    template_name = 'dc_management/basic_form.html'
+    fields=['project',
+            'billing_date',
+            'base_value',
+            'base_rate',
+            'base_expense',
+            'storage_1_type',
+            'storage_1_value',
+            'storage_1_rate',
+            'storage_1_expense',
+            'storage_2_type',
+            'storage_2_value',
+            'storage_2_rate',
+            'storage_2_expense',
+            'storage_3_type',
+            'storage_3_value',
+            'storage_3_rate',
+            'storage_3_expense',
+            'storage_4_type',
+            'storage_4_value',
+            'storage_4_rate',
+            'storage_4_expense',
+            'sw_value',
+            'sw_rates',
+            'sw_expense',
+            'hosting_value',
+            'hosting_rate',
+            'hosting_expense',
+            'db_value',
+            'db_rate',
+            'db_expense',
+            'db_setup',
+            'multiplier',
+            'comments',
+            ]
+    #template_name = 'dc_management/governance_form.html'
+    # default success_url should be to the object page defined in model.
+    def form_valid(self, form):
+        # add the logged in user as the record author
+        form.instance.record_author = self.request.user
+        
+        self.object = form.save(commit=False)
+        return super(ProjectMonthlyBillCreate, self).form_valid(form)
+
+class ProjectMonthlyBillUpdate(LoginRequiredMixin, CreateView):
     model = ProjectBillingRecord
     template_name = 'dc_management/basic_form.html'
     fields=['project',

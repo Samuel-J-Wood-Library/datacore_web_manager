@@ -6,7 +6,7 @@ from .models import Governance_Doc, Project, Server, Server_Change_Log, SN_Ticke
 from .models import Software, Software_License_Type, Software_Log, Software_Purchase
 from .models import Storage_Log, SubFunction, SoftwareCost, UserCost, StorageCost
 from .models import DCUAGenerator, FileTransfer, TransferMethod, Department
-from .models import ResourceLog, MigrationLog
+from .models import ResourceLog, MigrationLog, ExtraResourceCost, DatabaseCost
 
 # customize the look of the admin site:
 admin.site.site_header = 'Data Core Management Site'
@@ -142,11 +142,13 @@ class MigrationLogAdmin(admin.ModelAdmin):
 admin.site.register(Access_Log)
 admin.site.register(AccessPermission)
 admin.site.register(Audit_Log)
+admin.site.register(DatabaseCost)
 admin.site.register(Data_Log)
 admin.site.register(Department)
 admin.site.register(DC_Administrator)
 admin.site.register(EnvtSubtype)
 admin.site.register(External_Access_Log)
+admin.site.register(ExtraResourceCost)
 admin.site.register(ResourceLog)
 admin.site.register(SN_Ticket)
 admin.site.register(Software)

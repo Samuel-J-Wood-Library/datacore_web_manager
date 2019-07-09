@@ -132,7 +132,16 @@ urlpatterns = [
          views.ProjectMonthlyBillCreate.as_view(),
          name='project-bill-add',
     ),
-
+    path('finances/update/<int:pk>',
+         views.ProjectMonthlyBillUpdate.as_view(),
+         name='project-bill-update',
+    ),
+    
+    path('finances/generate/<int:pk>',
+         views.ProjectMonthlyBillGenerate.as_view(),
+         name='project-charge',
+    ),
+    
     # log views:
     path('logs/filetransfer/<int:pk>', 
             views.FileTransferView.as_view(), 

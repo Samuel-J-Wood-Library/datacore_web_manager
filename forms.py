@@ -27,8 +27,7 @@ class CommentForm(forms.ModelForm):
     class Meta:
         model = CommentLog
         fields = [ 'comment', ]
-    
-        
+     
 class AddUserToProjectForm(forms.Form):
     dcusers = forms.ModelMultipleChoiceField(
                                 queryset=Person.objects.all(), 
@@ -323,9 +322,8 @@ class ProjectForm(forms.ModelForm):
         super(ProjectForm, self).__init__(*args, **kwargs)
         self.fields['start_date'].label = "Official project start date"
         self.helper = FormHelper()
-        self.helper.form_id = 'id-file-transfer-form'
+        self.helper.form_id = 'project-create-form'
         self.helper.form_method = 'post'
-        #self.helper.form_action = reverse_lazy('dc_management:sendtest')
         self.helper.add_input(Submit('submit', 'Submit'))
         self.helper.layout = Layout(
                 Fieldset('<div class="alert alert-info">Project details</div>',
@@ -407,9 +405,8 @@ class ProjectUpdateForm(forms.ModelForm):
         super(ProjectUpdateForm, self).__init__(*args, **kwargs)
         self.fields['start_date'].label = "Official project start date"
         self.helper = FormHelper()
-        self.helper.form_id = 'id-file-transfer-form'
+        self.helper.form_id = 'project-update-form'
         self.helper.form_method = 'post'
-        #self.helper.form_action = reverse_lazy('dc_management:sendtest')
         self.helper.add_input(Submit('submit', 'Submit'))
         self.helper.layout = Layout(
                 Fieldset('<div class="alert alert-info">Project details</div>',
@@ -454,9 +451,7 @@ class ProjectUpdateForm(forms.ModelForm):
                     'wrapup_date',
                     'completion_ticket',
                     'completion_date',
-                    'host',
                     'prj_dns',
-                    'myapp',
                     'myapp',
                     'db',
                 ]
@@ -470,9 +465,6 @@ class ProjectUpdateForm(forms.ModelForm):
                     'prj_admin' : autocomplete.ModelSelect2(
                                         url='dc_management:autocomplete-user'
                                         ),                    
-                    'host' : autocomplete.ModelSelect2(
-                                        url='dc_management:autocomplete-node'
-                                        ),
                     'db' : autocomplete.ModelSelect2(
                                         url='dc_management:autocomplete-node'
                                         ),
