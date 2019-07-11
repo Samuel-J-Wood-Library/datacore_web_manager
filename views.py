@@ -1543,7 +1543,7 @@ class ProjectMonthlyBillGenerate(LoginRequiredMixin, CreateView):
                         'billing_date':date.today(),
                         'base_value': user_number,
                         'base_rate': user_rate,
-                        'base_expense': user_number * user_rate,
+                        'base_expense': user_rate,
                         'storage_1_type':st1_type,
                         'storage_1_value':st1_value,
                         'storage_1_rate':st1_rate,
