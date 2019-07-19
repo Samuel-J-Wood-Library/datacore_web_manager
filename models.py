@@ -1077,7 +1077,6 @@ class ProjectBillingRecord(models.Model):
     # comments using dynamic comment class (allows replies)
     comments = models.ManyToManyField(CommentLog, 
                                       blank=True,
-                                      null=True, 
                                       related_name='billing_comments'
                                       )
     
