@@ -598,7 +598,7 @@ class Project(models.Model):
         when we need to ignore ITS staff who have been given access to dcore
         """
         return Person.objects.filter(project=self.pk,
-                            ).exclude(role__name_icontains='data core'
+                            ).exclude(role__name__icontains='data core'
                             )
     
     def valid_nodes(self):
@@ -1323,7 +1323,7 @@ class FileTransfer(models.Model):
     filepath_dest = models.TextField("destination paths of files for transfer")
 
     # references one of the means of transfer (eg FTP, transfer.med)
-    transfer_method = models.ForeignKey(TransferMethod, on_delete=models.CASCADE)
+    transfer_method = models.ForeignKey(TransferMethod, on_delete=models.SET_NULL)
     
     # person requesting the file transfer 
     requester = models.ForeignKey(Person, on_delete=models.CASCADE)

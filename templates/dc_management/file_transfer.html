@@ -70,6 +70,8 @@
                 </a>
             </td>
         {% endif %}
+        <br/>
+        {{ filetransfer.filenames|linebreaks }}
     </tr>
     <tr><th>Destination</th>
         {% if filetransfer.external_destination %}
@@ -81,11 +83,12 @@
                 </a>
             </td>
         {% endif %}
+        <br/>
+        {{ filetransfer.filepath_dest|linebreaks }}
     </tr>
 
     <tr><th>Transfer method</th><td>{{ filetransfer.transfer_method }}</td></tr>
     <tr><th>Requested by</th><td>{{ filetransfer.requester }}</td></tr>
-    <tr><th>Files transferred</th><td>{{ filetransfer.filenames|linebreaks }}</td></tr>
     <tr><th>Data type</th><td>{{ filetransfer.get_data_type_display }}</td></tr>
 
     {% if filetransfer.data_type == "ID" and not filetransfer.reviewed_by and filetransfer.external_destination  %}
