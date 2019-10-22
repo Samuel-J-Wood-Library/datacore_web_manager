@@ -1,11 +1,11 @@
 from django.contrib import admin
 
 from .models import Access_Log, AccessPermission, Audit_Log, Data_Log
-from .models import DC_Administrator, Person, EnvtSubtype, External_Access_Log
+from .models import DC_Administrator, EnvtSubtype, External_Access_Log
 from .models import Governance_Doc, Project, Server, Server_Change_Log, SN_Ticket
 from .models import Software, Software_License_Type, Software_Log, Software_Purchase
 from .models import Storage_Log, SubFunction, SoftwareCost, UserCost, StorageCost
-from .models import DCUAGenerator, FileTransfer, TransferMethod, Department
+from .models import DCUAGenerator, FileTransfer, TransferMethod
 from .models import ResourceLog, MigrationLog, ExtraResourceCost, DatabaseCost
 from .models import ProjectBillingRecord
 
@@ -115,15 +115,6 @@ class DCUAGeneratorAdmin(admin.ModelAdmin):
 					'url',
 					)
 
-@admin.register(Person)
-class PersonAdmin(admin.ModelAdmin):
-    list_display = ('first_name',
-					'last_name',
-					'cwid',
-					'role',
-					)
-
-    search_fields = ('first_name', 'last_name', 'cwid',)
 
 @admin.register(MigrationLog)
 class MigrationLogAdmin(admin.ModelAdmin):
@@ -145,7 +136,6 @@ admin.site.register(AccessPermission)
 admin.site.register(Audit_Log)
 admin.site.register(DatabaseCost)
 admin.site.register(Data_Log)
-admin.site.register(Department)
 admin.site.register(DC_Administrator)
 admin.site.register(EnvtSubtype)
 admin.site.register(External_Access_Log)
