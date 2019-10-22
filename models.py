@@ -1323,7 +1323,7 @@ class FileTransfer(models.Model):
     filepath_dest = models.TextField("destination paths of files for transfer")
 
     # references one of the means of transfer (eg FTP, transfer.med)
-    transfer_method = models.ForeignKey(TransferMethod, on_delete=models.SET_NULL)
+    transfer_method = models.ForeignKey(TransferMethod, on_delete=models.PROTECT)
     
     # person requesting the file transfer 
     requester = models.ForeignKey(Person, on_delete=models.CASCADE)
