@@ -12,6 +12,8 @@ import collections
 
 import numpy as np
 
+from persons.models import Person, Department, Organization, Role 
+
 ############################
 ####  Comment Models    ####
 ############################
@@ -385,12 +387,12 @@ class Server(models.Model):
     def get_absolute_url(self):
         return reverse('dc_management:node', kwargs={'pk': self.pk})
            
-class Department(models.Model):
+class Department_deprecated(models.Model):
     name = models.CharField(max_length=128, unique=True)
     def __str__(self):
         return "{}".format(self.name)
    
-class Person(models.Model):
+class Person_deprecated(models.Model):
     # date the record was created
     record_creation = models.DateField(auto_now_add=True)
     # date the record was most recently modified
@@ -683,7 +685,9 @@ class Project(models.Model):
         """
         when we need to ignore ITS staff who have been given access to dcore
         """
-        return Person.objects.filter(project=self.pk,).exclude(role='DC')
+        return Person.objects.filter(project=self.pk,
+                            ).exclude(role__name_icontains='data core'
+                            )
     
     def valid_nodes(self):
         """
@@ -1141,21 +1145,21 @@ class Software_Log(models.Model):
     record_author = models.ForeignKey(User, on_delete=models.CASCADE)
     
     applied_to_prj = models.ForeignKey(Project, 
-                                        on_delete=models.CASCADE,
+                                        on_delete=models.SET_NULL,
                                         null=True,
                                         blank=True
                                         )
     applied_to_node = models.ForeignKey(Server, 
-                                        on_delete=models.CASCADE,
+                                        on_delete=models.SET_NULL,
                                         null=True,
                                         blank=True,
                                         )
     applied_to_user = models.ForeignKey(Person, 
-                                        on_delete=models.CASCADE,
+                                        on_delete=models.SET_NULL,
                                         null=True,
                                         blank=True,
                                         )
-    software_changed = models.ForeignKey(Software, on_delete=models.CASCADE, null=True)
+    software_changed = models.ForeignKey(Software, on_delete=models.SET_NULL, null=True)
 
     comments = models.TextField(null=True, blank=True)
 
