@@ -31,11 +31,13 @@ from django.db.utils import IntegrityError, DataError
 from dc_management.authhelper import get_signin_url, get_token_from_code, get_access_token
 from dc_management.outlookservice import get_me, send_message
 
-from .models import Server, Project, Person, Access_Log, Governance_Doc
+from .models import Server, Project, Access_Log, Governance_Doc
 from .models import Software, Software_Log, Storage_Log
 from .models import UserCost, SoftwareCost, StorageCost, DCUAGenerator, DatabaseCost
 from .models import FileTransfer, MigrationLog, CommentLog
 from .models import ProjectBillingRecord, ExtraResourceCost
+
+from persons.models import Person, Department, Organization, Role
 
 from .forms import AddUserToProjectForm, RemoveUserFromProjectForm
 from .forms import ExportFileForm, CreateDCAgreementURLForm
