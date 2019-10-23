@@ -1,0 +1,12 @@
+{% extends 'dc_management/base-dcore.html' %}
+
+{% block content %}
+<h1>
+All {{ storage_list|length }} storage units:
+</h1>
+
+    {% with storage.datasets as dataset_list %}
+        {% include 'datacatalog/table_datasets.html' %}
+    {% endwith %}
+
+{% endblock content %}

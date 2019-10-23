@@ -62,6 +62,15 @@ urlpatterns = [
          name='prjgovdocs'
     ),
     
+    # add, modify, view storage:
+    path('storage/<int:pk>', views.StorageView.as_view(), name='storage'),
+    path('storage/add', views.StorageCreate.as_view(), name='storage-add'),
+    path('storage/update/<int:pk>/', 
+         views.StorageUpdate.as_view(), 
+         name='storage-update',
+         ),
+    path('storage/all', views.AllStorageView.as_view(), name='all_storage'),
+    
     # add, modify, remove user
     url(r'^dcuser/add/$', views.PersonCreate.as_view(), name='person-add'),
     url(r'^dcuser/update/(?P<pk>[0-9]+)/$', 

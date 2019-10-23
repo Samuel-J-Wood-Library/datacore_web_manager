@@ -32,7 +32,7 @@ from dc_management.authhelper import get_signin_url, get_token_from_code, get_ac
 from dc_management.outlookservice import get_me, send_message
 
 from .models import Server, Project, Access_Log, Governance_Doc
-from .models import Software, Software_Log, Storage_Log
+from .models import Software, Software_Log, Storage_Log, Storage
 from .models import UserCost, SoftwareCost, StorageCost, DCUAGenerator, DatabaseCost
 from .models import FileTransfer, MigrationLog, CommentLog
 from .models import ProjectBillingRecord, ExtraResourceCost
@@ -44,7 +44,7 @@ from .forms import ExportFileForm, CreateDCAgreementURLForm
 from .forms import AddSoftwareToProjectForm, ProjectForm, ProjectUpdateForm
 from .forms import StorageChangeForm, BulkUserUploadForm, GovernanceDocForm
 from .forms import FileTransferForm, ServerUpdateForm, ServerForm, MigrationForm
-from .forms import CommentForm
+from .forms import CommentForm, StorageForm
 
 #######################
 #### Comment views ####
@@ -103,7 +103,6 @@ class CommentView(LoginRequiredMixin, CreateView):
         
         
         return super(CommentView, self).form_valid(form)
-
 
 ####################################
 ######  AUTOCOMPLETE  VIEWS   ######
@@ -499,6 +498,7 @@ class PersonUpdate(LoginRequiredMixin, UpdateView):
 #############################
 ######  PROJECT VIEWS  ######
 #############################
+
 class ProjectView(LoginRequiredMixin, generic.DetailView):
     model = Project
     template_name = 'dc_management/project.html'
@@ -791,6 +791,56 @@ Kind regards,
 
         return super(StorageChange, self).form_valid(form)
 
+#############################
+######  STORAGE VIEWS  ######
+#############################
+
+class StorageView(PermissionRequiredMixin, generic.DetailView):
+    model = Storage
+    template_name = 'dc_management/storage.html'
+    permission_required = 'dc_management.view_project'
+    
+    def get_context_data(self, **kwargs):
+        # get a non-redundant list of all projects using this storage
+        storage_projects =  Project.objects.filter(storage=self.kwargs['pk']
+                        ).order_by('name').distinct()
+ 
+        context = super(StorageView, self).get_context_data(**kwargs)
+        context.update({
+                        'storage_projects': storage_projects,
+        })
+        return context
+
+class AllStorageView(PermissionRequiredMixin, generic.ListView):
+    template_name = 'dc_management/storage_all.html'
+    context_object_name = 'storage_list'
+    permission_required = 'dc_management.view_project'
+    
+    def get_queryset(self):
+        """Return  all storage."""
+        return Storage.objects.all().order_by('name')
+
+class StorageCreate(PermissionRequiredMixin, CreateView):
+    model = Storage
+    form_class = StorageForm
+    template_name = "dc_management/basic_form.html"
+    permission_required = 'dc_management.view_project'
+    
+    # default success_url should be to the object page defined in model.
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        return super(StorageCreate, self).form_valid(form)
+
+class StorageUpdate(PermissionRequiredMixin, UpdateView):
+    model = Storage
+    form_class = StorageForm
+    template_name = "dc_management/basic_form.html"
+    permission_required = 'dc_management.view_project'
+    
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        return super(StorageUpdate, self).form_valid(form)
+  
 #############################
 ######  SERVER VIEWS  ######
 #############################

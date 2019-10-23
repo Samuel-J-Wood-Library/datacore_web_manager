@@ -1,0 +1,19 @@
+<table class="table table-striped table-hover" id="serverTable">
+<thead class="thead-default">
+    <tr>
+        <th>Name</th>
+        <th>Access</th>
+        <th>Location</th>
+        <th># datasets</th>
+    </tr>
+</thead>
+
+{% for s in storage_list %}
+    <tr>
+    <td><a href="{% url 'dc_management:storage' s.pk %}">{{ s.name }}</a></td>
+    <td> {% for p in s.project_set %}p {% endfor %}</td>
+    <td> {{ s.get_location_display }}</td>
+    <td> {{ s.datasets.count }}</td>
+    </tr>
+{% endfor %}
+</table>

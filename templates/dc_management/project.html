@@ -343,6 +343,35 @@
 </div>
 
 
+<!-- Display of attached storage --!>
+<div class="container col-md-12">
+ <div class="panel panel-info">
+  <div class="panel-heading">
+    <h4>Project storage
+      <span class="pull-right">
+            <a  type="button" 
+                class="btn btn-primary"  
+                href="{% url 'dc_management:storage-add' %}">Add storage</a>
+      </span>
+    </h4>
+  </div>
+  <div class="panel-body">
+    
+    {% with project.storage as storage_list %}
+        {% include "dc_management/storage_list.html" %}
+    {% endwith %}
+    
+    <h4>Summary:</h4>
+    <ul>
+     <li>{{ fully_validated|length }} fully validated users</li>
+     <li>{{ unconnected_users|length }} unconnected users</li>
+     <li>{{ irb_users|length }} users on IRB</li>
+     <li>{{ dcua_users|length }} users with DCUA</li>
+     <li>{{ dua_users|length }} users on DUA </li>
+    </ul>
+  </div>
+ </div>
+</div>
 
 
 <!-- Display of current gov docs --!>
