@@ -15,7 +15,7 @@ from django.forms.widgets import SelectDateWidget, CheckboxInput
 
 from .models import Server, Project, Person, Software, Software_Log, Project
 from .models import DCUAGenerator, Storage_Log, StorageCost, Governance_Doc
-from .models import FileTransfer, MigrationLog, CommentLog
+from .models import FileTransfer, MigrationLog, CommentLog, Storage
 
 
 
@@ -330,8 +330,10 @@ class ProjectForm(forms.ModelForm):
                         'dc_prj_id',
                         'title', 
                         'nickname',
+                        'account_number',
                         project_leaders,
                         'users',
+                        'storage',
                         environment_type,
                         style="font-weight: bold;",
                 ),
@@ -380,10 +382,15 @@ class ProjectForm(forms.ModelForm):
                     'prj_dns',
                     'myapp',
                     'db',
+                    'storage',
+                    'account_number',
                 ]
 
         widgets =  {'users' : autocomplete.ModelSelect2Multiple(
                                         url='dc_management:autocomplete-user'
+                                        ),
+                    'storage' : autocomplete.ModelSelect2Multiple(
+                                        url='dc_management:autocomplete-storage'
                                         ),
                     'pi' : autocomplete.ModelSelect2(
                                         url='dc_management:autocomplete-user'
@@ -412,7 +419,9 @@ class ProjectUpdateForm(forms.ModelForm):
                 Fieldset('<div class="alert alert-info">Project details</div>',
                         'title', 
                         'nickname',
+                        'account_number',
                         project_leaders,
+                        'storage',
                         environment_type,
 
                         style="font-weight: bold;",
@@ -454,6 +463,8 @@ class ProjectUpdateForm(forms.ModelForm):
                     'prj_dns',
                     'myapp',
                     'db',
+                    'account_number', 
+                    'storage',
                 ]
 
         widgets =  {'users' : autocomplete.ModelSelect2Multiple(
@@ -464,7 +475,10 @@ class ProjectUpdateForm(forms.ModelForm):
                                         ),
                     'prj_admin' : autocomplete.ModelSelect2(
                                         url='dc_management:autocomplete-user'
-                                        ),                    
+                                        ),   
+                    'storage' : autocomplete.ModelSelect2Multiple(
+                                        url='dc_management:autocomplete-storage'
+                                        ),                 
                     'db' : autocomplete.ModelSelect2(
                                         url='dc_management:autocomplete-node'
                                         ),
@@ -504,6 +518,22 @@ class ServerForm(forms.ModelForm):
                                         ),
                                     
                     }
+
+class StorageForm(forms.ModelForm):
+    class Meta:
+        model = Storage
+        fields = [  'name', 
+                    'location', 
+                    'description', 
+                    'datasets', 
+                ]
+
+        widgets =  {'datasets' : autocomplete.ModelSelect2Multiple(
+                                        url='dc_management:autocomplete-dataset'
+                                        ),
+                                    
+                    }
+
 
 class ServerUpdateForm(forms.ModelForm):
     

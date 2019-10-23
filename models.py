@@ -432,6 +432,12 @@ class Storage(models.Model):
     
     # datasets contained in storage
     datasets = models.ManyToManyField(Dataset)
+
+    def __str__(self):
+        return "{} ({})".format(self.name, self.location)
+
+    def get_absolute_url(self):
+        return reverse('dc_management:storage', kwargs={'pk': self.pk})
     
     
 class Project(models.Model):

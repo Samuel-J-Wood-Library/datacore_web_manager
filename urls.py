@@ -18,6 +18,14 @@ urlpatterns = [
     path('govdoc', views.IndexGovdocView.as_view(), name='idx-govdoc'),
     
     # autocomplete functions:
+    url(r'autocomplete-dataset/$', 
+        views.DatasetAutocomplete.as_view(), 
+        name='autocomplete-dataset',
+        ),
+    url(r'autocomplete-storage/$', 
+        views.StorageAutocomplete.as_view(), 
+        name='autocomplete-storage',
+        ),
     url(r'autocomplete-user/$', 
         views.DCUserAutocomplete.as_view(), 
         name='autocomplete-user',

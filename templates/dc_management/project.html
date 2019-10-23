@@ -351,13 +351,13 @@
       <span class="pull-right">
             <a  type="button" 
                 class="btn btn-primary"  
-                href="{% url 'dc_management:storage-add' %}">Add storage</a>
+                href="{% url 'dc_management:storage-add' %}">Create storage</a>
       </span>
     </h4>
   </div>
   <div class="panel-body">
     
-    {% with project.storage as storage_list %}
+    {% with project.storage.all as storage_list %}
         {% include "dc_management/storage_list.html" %}
     {% endwith %}
     

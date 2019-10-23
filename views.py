@@ -38,6 +38,7 @@ from .models import FileTransfer, MigrationLog, CommentLog
 from .models import ProjectBillingRecord, ExtraResourceCost
 
 from persons.models import Person, Department, Organization, Role
+from datacatalog.models import Dataset
 
 from .forms import AddUserToProjectForm, RemoveUserFromProjectForm
 from .forms import ExportFileForm, CreateDCAgreementURLForm
@@ -168,6 +169,28 @@ class GovdocAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
                             Q(project__nickname__icontains=self.q) |
                             Q(comments__icontains=self.q) |
                             Q(pk=self.q)
+                            )
+        return qs
+
+class StorageAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        qs = Storage.objects.all()
+
+        if self.q:
+            qs = qs.filter(
+                            Q(name__icontains=self.q) | 
+                            Q(description__icontains=self.q)
+                            )
+        return qs
+
+class DatasetAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        qs = Dataset.objects.all()
+
+        if self.q:
+            qs = qs.filter(
+                            Q(ds_id__icontains=self.q) | 
+                            Q(title__icontains=self.q)
                             )
         return qs
 
@@ -803,7 +826,7 @@ class StorageView(PermissionRequiredMixin, generic.DetailView):
     def get_context_data(self, **kwargs):
         # get a non-redundant list of all projects using this storage
         storage_projects =  Project.objects.filter(storage=self.kwargs['pk']
-                        ).order_by('name').distinct()
+                        ).order_by('dc_prj_id').distinct()
  
         context = super(StorageView, self).get_context_data(**kwargs)
         context.update({
@@ -829,6 +852,10 @@ class StorageCreate(PermissionRequiredMixin, CreateView):
     # default success_url should be to the object page defined in model.
     def form_valid(self, form):
         self.object = form.save(commit=False)
+        # update who last edited record
+        self.object.record_author = self.request.user
+        
+        self.object.save()
         return super(StorageCreate, self).form_valid(form)
 
 class StorageUpdate(PermissionRequiredMixin, UpdateView):
@@ -839,6 +866,10 @@ class StorageUpdate(PermissionRequiredMixin, UpdateView):
     
     def form_valid(self, form):
         self.object = form.save(commit=False)
+        # update who last edited record
+        self.object.record_author = self.request.user
+        
+        self.object.save()
         return super(StorageUpdate, self).form_valid(form)
   
 #############################

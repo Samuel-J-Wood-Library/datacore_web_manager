@@ -5,8 +5,7 @@
 All {{ storage_list|length }} storage units:
 </h1>
 
-    {% with storage.datasets as dataset_list %}
-        {% include 'datacatalog/table_datasets.html' %}
-    {% endwith %}
+{% include 'dc_management/storage_list.html' %}
+
 
 {% endblock content %}

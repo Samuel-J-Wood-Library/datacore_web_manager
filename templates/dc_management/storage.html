@@ -2,25 +2,24 @@
 
 {% block content %}
 <h1>
-    {{ storage.name }} 
+    {{ storage.get_location_display }} Storage: {{ storage.name }} 
 </h1>
-<h2>
-    <small class="text-muted">{{ storage.location }}</small>
-</h2>
+
 
 <p> {{ storage.description|linebreaks }}</p>
 
 </br>
 <h4>Datasets present</h4>
-    {% with storage.datasets as dataset_list %}
+    {% with storage.datasets.all as dataset_list %}
         {% include 'datacatalog/table_datasets.html' %}
     {% endwith %}
 
 <h4>Projects with access</h4>
-    {% with 'dc_management/project_list.html' as passthroughhtml %}
-        {% include 'dc_management/project_list_template.html' %}
+    {% with storage_projects as project_list %}
+        {% with 'dc_management/project_list.html' as passthroughhtml %}
+            {% include 'dc_management/project_list_template.html' %}
+        {% endwith %}
     {% endwith %}
-
 <br/>
 <a  type="button" class="btn btn-primary" 
     href="{% url 'dc_management:storage-update' storage.pk %}">
