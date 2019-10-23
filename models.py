@@ -13,6 +13,7 @@ import collections
 import numpy as np
 
 from persons.models import Person, Department, Organization, Role 
+from datacatalog.models import Dataset, DataUseAgreement
 
 ############################
 ####  Comment Models    ####
@@ -387,11 +388,52 @@ class Server(models.Model):
     def get_absolute_url(self):
         return reverse('dc_management:node', kwargs={'pk': self.pk})
            
-
 ############################
 ####   Project Models   ####
 ############################
-  
+
+class Storage(models.Model):
+    """
+    The Storage model defines locations in which data are stored. Storage could be 
+    Isilon fileshares, or AWS S3 buckets, or other media. The data in a storage instance
+    will also have governance that defines its use and access. Projects point to the 
+    relevant storage instances to determine what data are available for project users. 
+    """
+    # date the record was created
+    record_creation = models.DateField(auto_now_add=True)
+    
+    # date the record was most recently modified
+    record_update = models.DateField(auto_now=True)
+    
+    # the user who was signed in at time of record modification
+    record_author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    # identifying name for storage instance - preferably name of parent directory.
+    name = models.CharField(max_length=32, unique=True,)
+    
+    # description of purpose of storage
+    description = models.TextField(null=True, blank=True,)
+    
+    # location storage is hosted at (Isilon, AWS, etc)
+    ISILON = 'IS'
+    AWS = 'AW'
+    AZURE = 'AZ'
+    LOCATION_CHOICES = (
+                (ISILON, "Isilon"),
+                (AWS, "Amazon Web Services"),
+                (AZURE, "Microsoft Azure")
+    )
+    location = models.CharField(
+                            "Storage location",
+                            max_length=2,
+                            choices = LOCATION_CHOICES,
+                            default = ISILON,
+    )
+    
+    # datasets contained in storage
+    datasets = models.ManyToManyField(Dataset)
+    
+    
 class Project(models.Model):
     # date the record was created
     record_creation = models.DateField(auto_now_add=True)
@@ -438,6 +480,10 @@ class Project(models.Model):
     # requested CPU number to be provisioned
     requested_cpu = models.IntegerField(null=True, blank=True)
     
+    #####################
+    # ACCESS COMPONENTS #
+    #####################
+    
     # link to table of data core users. All users who need access to the project.
     # other roles (eg PI, admin) do not have to be listed as users.
     users = models.ManyToManyField(Person, blank=True)
@@ -457,6 +503,17 @@ class Project(models.Model):
                     blank=True,
                     related_name='prj_admin')
 
+    ###########
+    # STORAGE #
+    ###########
+    
+    # the storage (typically fileshares) accessible by the project
+    storage = models.ManyToManyField(Storage)
+    
+    ############################
+    # SOFTWARE AND ENVIRONMENT #
+    ############################
+    
     # link to software table. All s/w currently provisioned
     software_installed = models.ManyToManyField(
                                             Software,
