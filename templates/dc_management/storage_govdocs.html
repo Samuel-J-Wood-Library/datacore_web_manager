@@ -1,0 +1,73 @@
+{% load bootstrap4 %}
+{% load static %}
+
+
+{% load project_tags %}
+
+
+<table class="table table-striped table-hover" id="storagegovTable">
+<thead class="thead-default">
+    <tr>
+        <th>ID</th>
+        <th>Record #</th>
+        <th>Type</th>
+        <th># Users</th>
+        <th>Expiry date</th>
+    </tr>
+</thead>
+
+    {% for gd in prj_governance %}
+    {% if gd.superseded_by.all.count > 0 or gd.defers_to_doc %}
+        <tr style="color:#BDA493;"">
+    {% else %}
+        <tr>
+    {% endif %}
+            <td><a href="{% url 'datacatalog:dua-view' gd.pk %}" 
+               target="_blank">{{ gd.duaid }}</a></td>
+            <td>{{ gd.pk }}</td>
+            <td>{{ gd.governance_type }}</td>
+            <td>
+                {% if gd.users.count > 0 %}
+                <div data-toggle="tooltip" 
+                   data-html="true"
+                   data-trigger="click"
+                   data-placement="left"
+                   data-container="body"
+                   title="{% for u in gd.users.all %}
+                            {{ u }}</br>
+                          {% endfor %}">
+                {{ gd.users.count}}          
+                <img src="{% static 'img/information.svg' %}" height="15" width="15">
+                </div>
+                {% else %}
+                {{ gd.users.count}} 
+                {% endif %}  
+                
+            </td>
+            
+            {% if gd.attention_required == "danger" %}
+                <td class="bg-danger" style="color:red;">
+                    {{ gd.end_date }}
+                </td>
+            {% elif gd.attention_required == "warning" %}
+                <td class="bg-warning" style="color:orange;">
+                    {{ gd.end_date }}
+                </td>
+            {% elif gd.attention_required == "primary" %}
+                <td class="bg-info" style="color:blue;">
+                    {{ gd.end_date }}
+                </td>
+            {%else %}
+                <td>
+                    {{ gd.end_date }}
+                </td>            
+            {% endif %}
+                <td>
+        </tr>
+    {% endfor %}
+        
+</table>
+
+<script>
+$("[data-toggle=tooltip").tooltip();
+</script>

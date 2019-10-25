@@ -38,14 +38,14 @@ from .models import FileTransfer, MigrationLog, CommentLog
 from .models import ProjectBillingRecord, ExtraResourceCost
 
 from persons.models import Person, Department, Organization, Role
-from datacatalog.models import Dataset
+from datacatalog.models import Dataset, DataUseAgreement
 
 from .forms import AddUserToProjectForm, RemoveUserFromProjectForm
 from .forms import ExportFileForm, CreateDCAgreementURLForm
 from .forms import AddSoftwareToProjectForm, ProjectForm, ProjectUpdateForm
 from .forms import StorageChangeForm, BulkUserUploadForm, GovernanceDocForm
 from .forms import FileTransferForm, ServerUpdateForm, ServerForm, MigrationForm
-from .forms import CommentForm, StorageForm
+from .forms import CommentForm, StorageForm, StorageAttachForm
 
 #######################
 #### Comment views ####
@@ -539,6 +539,10 @@ class ProjectView(LoginRequiredMixin, generic.DetailView):
         else:
             available_sw = []            
         
+        # pull all governance docs from datasets on attached storage:
+        prj_governance = DataUseAgreement.objects.filter(datasets__storage__project=self.object.pk,
+                                ).distinct()
+        
         # create other lists for display:
         current_gov_docs = self.object.governance_doc_set.all(
                                 ).exclude(superseded_by__isnull=False
@@ -584,6 +588,7 @@ class ProjectView(LoginRequiredMixin, generic.DetailView):
         context.update({
                         'project_costs': project_costs,
                         'available_software':available_sw,
+                        'prj_governance':prj_governance,
                         'current_gov_docs':current_gov_docs,
                         'fully_validated':fully_validated,
                         'partially_validated':partially_validated,
@@ -827,10 +832,14 @@ class StorageView(PermissionRequiredMixin, generic.DetailView):
         # get a non-redundant list of all projects using this storage
         storage_projects =  Project.objects.filter(storage=self.kwargs['pk']
                         ).order_by('dc_prj_id').distinct()
- 
+        storage_governance = DataUseAgreement.objects.filter(
+                                datasets__storage=self.kwargs['pk']
+                        ).order_by('governance_type').distinct()
+        
         context = super(StorageView, self).get_context_data(**kwargs)
         context.update({
                         'storage_projects': storage_projects,
+                        'storage_governance': storage_governance,
         })
         return context
 
@@ -846,7 +855,7 @@ class AllStorageView(PermissionRequiredMixin, generic.ListView):
 class StorageCreate(PermissionRequiredMixin, CreateView):
     model = Storage
     form_class = StorageForm
-    template_name = "dc_management/basic_form.html"
+    template_name = "dc_management/basic_crispy_form.html"
     permission_required = 'dc_management.view_project'
     
     # default success_url should be to the object page defined in model.
@@ -871,6 +880,23 @@ class StorageUpdate(PermissionRequiredMixin, UpdateView):
         
         self.object.save()
         return super(StorageUpdate, self).form_valid(form)
+
+class StorageAttach(PermissionRequiredMixin, UpdateView):
+    """
+    Storage attach is really just a project update with only one field to update.
+    """
+    model = Project
+    form_class = StorageAttachForm
+    template_name = "dc_management/basic_crispy_form.html"
+    permission_required = 'dc_management.view_project'
+    
+    #success_url = reverse_lazy("dc_management:index" )
+    #default success_url should be to the object page defined in model.
+    def form_valid(self, form):
+        print(self.object.host)
+        self.object = form.save(commit=False)
+        return super(StorageAttach, self).form_valid(form)
+
   
 #############################
 ######  SERVER VIEWS  ######

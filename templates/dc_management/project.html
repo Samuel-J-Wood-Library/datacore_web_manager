@@ -352,6 +352,9 @@
             <a  type="button" 
                 class="btn btn-primary"  
                 href="{% url 'dc_management:storage-add' %}">Create storage</a>
+            <a  type="button" 
+                class="btn btn-primary"  
+                href="{% url 'dc_management:storage-attach' project.pk %}">Attach storage</a>
       </span>
     </h4>
   </div>
@@ -361,6 +364,9 @@
         {% include "dc_management/storage_list.html" %}
     {% endwith %}
     
+    <h4>Governance docs:</h4>
+    {% include "dc_management/storage_govdocs.html" %}
+         
     <h4>Summary:</h4>
     <ul>
      <li>{{ fully_validated|length }} fully validated users</li>

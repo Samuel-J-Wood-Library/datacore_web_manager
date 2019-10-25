@@ -3,7 +3,7 @@ import datetime
 from dal import autocomplete
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Div, Fieldset, HTML
+from crispy_forms.layout import Submit, Layout, Div, Fieldset, HTML, Row
 from crispy_forms.bootstrap import Field
 
 from django import forms
@@ -208,6 +208,18 @@ class GovernanceDocForm(forms.ModelForm):
 ########################
 ### Layout templates ###
 ########################
+def layout_simple_two(field1, field2):
+    form = Div(
+                Div(field1,
+                    css_class='col-xs-6',
+                ),
+                Div(field2,
+                    css_class='col-xs-6',
+                ),
+                css_class="row"
+            )    
+    return form
+
 project_leaders = Div(
                         Div('pi',
                             css_class='col-xs-6',
@@ -520,6 +532,35 @@ class ServerForm(forms.ModelForm):
                     }
 
 class StorageForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(StorageForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = 'storage-create-form'
+        self.helper.form_method = 'post'
+        self.helper.add_input(Submit('submit', 'Create storage'))
+        self.helper.layout = Layout(
+                Fieldset('<div class="alert alert-info">Create new storage entry</div>',
+                        layout_simple_two('name', 'location'),
+                        'description',
+                        Div(
+                            Div('datasets',
+                                css_class='col-xs-9',
+                                style='font-size:100%;font-weight: bold;'
+                            ),
+                            Div(HTML(''' 
+                                    </br>
+                                    <a  type="button" 
+                                    class="btn btn-success"  
+                                    href="{% url 'datacatalog:dataset-add' %}">
+                                    Create new dataset</a>'''
+                                    ),
+                                css_class='col-xs-3',
+                            ),
+                            css_class="row"
+                        ), 
+                        style="font-weight: bold;",
+                        ),
+        )
     class Meta:
         model = Storage
         fields = [  'name', 
@@ -534,6 +575,28 @@ class StorageForm(forms.ModelForm):
                                     
                     }
 
+class StorageAttachForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(StorageAttachForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = 'storage-attach-form'
+        self.helper.form_method = 'post'
+        self.helper.add_input(Submit('submit', 'Update storage'))
+        self.helper.layout = Layout(
+                Fieldset('<div class="alert alert-info">Add or remove storage from project</div>',
+                        'storage', 
+                        style="font-weight: bold;",
+                ),
+        )
+        
+    class Meta:
+        model = Project
+        fields = [ 'storage', ]
+
+        widgets =  {'storage' : autocomplete.ModelSelect2Multiple(
+                                url='dc_management:autocomplete-storage'
+                                ), 
+                    }
 
 class ServerUpdateForm(forms.ModelForm):
     

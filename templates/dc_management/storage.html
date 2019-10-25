@@ -21,6 +21,14 @@
         {% endwith %}
     {% endwith %}
 <br/>
+
+<h4>Governance Documents</h4>
+    {% with storage_governance as prj_governance %}
+        {% include "dc_management/storage_govdocs.html" %}
+    {% endwith %}
+<br/>
+
+
 <a  type="button" class="btn btn-primary" 
     href="{% url 'dc_management:storage-update' storage.pk %}">
     Update {{ storage.name }} storage

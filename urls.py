@@ -77,7 +77,12 @@ urlpatterns = [
          views.StorageUpdate.as_view(), 
          name='storage-update',
          ),
+    path('storage/attach/<int:pk>/', 
+         views.StorageAttach.as_view(), 
+         name='storage-attach',
+         ),
     path('storage/all', views.AllStorageView.as_view(), name='all_storage'),
+    
     
     # add, modify, remove user
     url(r'^dcuser/add/$', views.PersonCreate.as_view(), name='person-add'),
