@@ -514,7 +514,7 @@ class Project(models.Model):
     ###########
     
     # the storage (typically fileshares) accessible by the project
-    storage = models.ManyToManyField(Storage)
+    storage = models.ManyToManyField(Storage, blank=True)
     
     ############################
     # SOFTWARE AND ENVIRONMENT #
