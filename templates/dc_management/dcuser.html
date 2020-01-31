@@ -50,14 +50,14 @@
 
     <tr>
         <td>{{ person.cwid }}</td>
-        <td>{{ person.get_role_display }}</td>
-        <td>{{ person.get_affiliation_display }}</td>
-        <td>{{ person.email }}</td>
+        <td>{{ person.role.name }}</td>
+        <td>{{ person.affiliation }}</td>
+        <td>{{ person.email_primary }}</td>
     </tr>
 </table>
 
 
-<a type="button" class="btn btn-primary" href="{% url 'dc_management:person-update' person.pk %}">Update user details</a>
+<a type="button" class="btn btn-primary" href="{% url 'persons:person-edit' person.pk %}">Update user details</a>
 
 <a type="button" class="btn btn-danger" href="{% url 'dc_management:thisusertoproject-add' person.pk %}">Add user to project</a>
 
