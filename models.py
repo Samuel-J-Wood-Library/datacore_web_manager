@@ -380,8 +380,14 @@ class Server(models.Model):
         user_projects = self.get_all_active_users()
         duplicate_user_dict = {}
         for u in user_projects:
-            if (len(user_projects[u]) > 1) & (u.role.name[:9] != 'Data Core'):
-                duplicate_user_dict[u] = user_projects[u]
+            if (len(user_projects[u]) > 1):
+                if u.role:
+                    if u.role.name[:9] == 'Data Core':
+                        continue
+                    else:
+                        duplicate_user_dict[u] = user_projects[u]
+                else:
+                    duplicate_user_dict[u] = user_projects[u]
                 
         return duplicate_user_dict
         
