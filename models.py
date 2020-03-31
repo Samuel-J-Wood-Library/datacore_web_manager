@@ -461,7 +461,10 @@ class Project(models.Model):
     # short title for easier reference
     nickname = models.CharField(max_length=256, blank=True)
     
-    # whether it is allowed to be open
+    # SN reference to onboarding request
+    onboarding_ticket = models.CharField(max_length=32, blank=True, null=True)
+    
+    # whether it only has public data
     open_allowed = models.NullBooleanField("classification: public?")
     
     # whether or not the project actually has internet access
@@ -576,12 +579,14 @@ class Project(models.Model):
     COMPLETED = "CO"    # project is inaccessible, and not consuming resources
     SUSPENDED = "SU"    # access has been temporarily suspended. Still charged for resrcs
     SHUTTINGDOWN = "SD" # project is in process of being permanently removed.
+    ARCHIVED = "AR"
     STATUS_CHOICES = (
             (ONBOARDING, "Onboarding"),
             (RUNNING, "Running"),
             (COMPLETED, "Completed"),
             (SUSPENDED, "Suspended"),
             (SHUTTINGDOWN, "Shutting down"),
+            (ARCHIVED, "Archived"),
     )
     status = models.CharField(
                             max_length=2,
