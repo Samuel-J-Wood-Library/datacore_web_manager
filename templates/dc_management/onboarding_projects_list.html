@@ -46,13 +46,13 @@
         
         <!-- highlight based on project status and days to expected completion --!>    
         {% if project.requested_launch|days_until:7  %}
-            <td class="bg-danger" style="color:red;">
+            <td class="bg-danger">
             {{ project.requested_launch }} <a type="button" class="btn btn-default" href="#">Launch</a></td>
         {% elif project.requested_launch|days_until:14 %}
-            <td class="bg-warning" style="color:orange;">
+            <td class="bg-warning">
             {{ project.requested_launch }}</td>
         {% elif project.requested_launch|days_until:21 %}
-            <td class="bg-info" style="color:blue;">
+            <td class="bg-info">
             {{ project.requested_launch }}</td>
         {% else %}
             <td>

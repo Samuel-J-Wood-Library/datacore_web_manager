@@ -17,15 +17,15 @@
         </td>
         <td>{{ gd.get_governance_type_display }}</td>
         {% if gd.attention_required == "danger" %}
-            <td class="bg-danger" style="color:red;">
+            <td class="bg-danger">
                 {{ gd.expiry_date }}
             </td>
         {% elif gd.attention_required == "warning" %}
-            <td class="bg-warning" style="color:orange;">
+            <td class="bg-warning">
                 {{ gd.expiry_date }}
             </td>
         {% elif gd.attention_required == "primary" %}
-            <td class="bg-info" style="color:blue;">
+            <td class="bg-info">
                 {{ gd.expiry_date }}
             </td>
         {% endif %}

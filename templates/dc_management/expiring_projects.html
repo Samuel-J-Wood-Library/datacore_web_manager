@@ -5,13 +5,13 @@
 
 <!-- highlight based on project status and days to expected completion --!>    
 {% if project.expected_completion|days_until:0  %}
-    <td class="bg-danger" style="color:red;">
+    <td class="bg-danger">
     {{ project.expected_completion }}</td>
 {% elif project.expected_completion|days_until:10  %}
-    <td class="bg-warning" style="color:orange;">
+    <td class="bg-warning">
     {{ project.expected_completion }}</td>
 {% elif project.expected_completion|days_until:90  %}
-    <td class="bg-info" style="color:blue;">
+    <td class="bg-info">
     {{ project.expected_completion }}</td>
 {% else %}
     <td>{{ project.expected_completion }}</td>

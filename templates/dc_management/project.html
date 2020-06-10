@@ -11,12 +11,6 @@
 
 {# Load CSS and JavaScript #}
 
-{% comment this breaks after removing the load bootstrap3 tag %}
-{% bootstrap_css %}
-{% bootstrap_javascript %}
-{# Display django.contrib.messages as Bootstrap alerts #}
-{% bootstrap_messages %}
-{% endcomment %}
 
 {# load the custom filters for time #}
 {% load project_tags %}
@@ -31,6 +25,10 @@
 
 #exTab1 .nav-tabs > li > a {
   border-radius: 4px 4px 0 0;
+}
+
+.sticky-offset {
+    top: 67px;
 }
 </style>
 
@@ -119,7 +117,7 @@
           {# show project's duration #}
           <li class="list-group-item d-flex justify-content-between align-items-center"
               style="padding:3px">
-            <span class="badge badge-light">{{ project.requested_launch }} - </span>   
+            <span class="badge badge-light">{{ project.requested_launch }}</span> -    
             
             {% if project.expected_completion|days_until:0 and project.status == 'RU' %}
                 <span class="badge badge-danger" style="color:red;background:lightpink">
@@ -163,8 +161,8 @@
     
     {### STICKY ACTION BUTTONS ###}
     <div class="col-2">
-    <div class="card sticky-top border-0">
-        <a  type="button" class="mb-1 mt-5 btn btn-primary btn-block" 
+    <div class="card sticky-top border-0 sticky-offset">
+        <a  type="button" class="mb-1 mt-2 btn btn-primary btn-block" 
             href="{% url 'dc_management:project-update' project.pk %}">Update project</a>
 
         <a  type="button" class="my-1 btn btn-primary btn-block" 
@@ -197,8 +195,6 @@
     
     {###############################}
     {### PROJECT CURRENT DETAILS ###}
-
-
     
 <div class="tab-content clearfix col-10">
 
@@ -208,14 +204,14 @@
     <div class="tab-pane active" id="details">
 
     {### PROJECT ATTRIBUTES ###}
-    </br>
-    <div class="card card-info  my-2">
-      <div class="card-header bg-secondary">
+    <br>
+    <div class="card border-dark  my-2">
+      <div class="card-header">
         <h4>PROJECT ATTRIBUTES</h4>
       </div>
       <div class="card-body">
         
-        <table class="table py-1">
+        <table class="table py-0 my-0">
             <tr>
                 <td>Onboarding ticket</td>
                 <td> <a 
@@ -238,8 +234,8 @@
     {####################################}
     {### PROJECT ACCESS AND RESOURCES ###}
     
-     <div class="card card-info my-2">
-      <div class="card-header bg-secondary">
+     <div class="card border-dark my-2">
+      <div class="card-header">
         <h4>PROJECT ACCESS AND RESOURCES:
             {% if project.myapp == True %}
 
@@ -316,8 +312,8 @@
     {#####################}
     {### PROJECT USERS ###}
     
-     <div class="card my-2">
-      <div class="card-header bg-secondary">
+     <div class="card border-dark my-2">
+      <div class="card-header">
         <h5>USERS ({{ project.billable_users.count }}/{{ project.users.all.count }} billable)
             <span style="float:right">
                 <a type="button" class="btn btn-primary ml-auto" href="{% url 'dc_management:usertothisproject-remove' project.pk %}">Remove user from project</a>
@@ -339,8 +335,8 @@
     {#######################}
     {### PROJECT STORAGE ###}
 
-     <div class="card my-2">
-      <div class="card-header bg-secondary">
+     <div class="card border-dark my-2">
+      <div class="card-header">
         <h4>Project storage
           <span style="float:right">
                 <a  type="button" 
@@ -377,8 +373,8 @@
     {########################}
     {### PROJECT GOV DOCS ###}
 
-     <div class="card my-2">
-      <div class="card-header bg-secondary">
+     <div class="card border-dark my-2">
+      <div class="card-header">
         <h4>Project governance - current only
           <span style="float:right">
                 <a  type="button" 
@@ -410,8 +406,8 @@
     {#####################}
     {### PROJECT SOFTWARE ###}
 
-     <div class="card my-2">
-      <div class="card-header bg-secondary">
+     <div class="card border-dark my-2">
+      <div class="card-header">
         <h4>Installed software:
           <span style="float:right">
                 <a type="button" class="btn btn-primary"  href="{% url 'dc_management:change_software' %}">Install/remove software</a>
@@ -434,8 +430,8 @@
     {#####################}
     {### PROJECT BILLING ###}
 
-     <div class="card my-2">
-      <div class="card-header bg-secondary">
+     <div class="card border-dark my-2">
+      <div class="card-header">
         <h4>Project billing for {{ bill.billing_date }}</h4>
       </div>
       <div class="card-body">
@@ -447,8 +443,8 @@
     {#####################}
     {### PROJECT NODE AVAILABILITY ###}
 
-     <div class="card my-2">
-      <div class="card-header bg-secondary">
+     <div class="card border-dark my-2">
+      <div class="card-header">
         <h4>Nodes suitable for migration of {{ project }}</h4>
       </div>
       <div class="card-body">
@@ -693,409 +689,11 @@
     </div>
 
 </div> {# tab content div #}
+
 </div> {# content + action button row #}
 
 
-{###########################}
-{#####    OLD CODE    ######}
-{###########################}
 
-{% comment %}
-<div class="container col-md-12">
-
-
-
-
-
-<!-- right hand info panel --!>
-<div class="col-md-10">
-
-
-<!-- Setup tabs for separating details and logs --!>
-<div id="exTab1" class="container col-md-12">
-    <ul  class="nav nav-tabs">
-        <li class="active">
-            <a  href="#olddetails" data-toggle="tab">OLDDetails</a>
-        </li>
-            <li><a href="#oldlogs" data-toggle="tab">OLDLogs</a>
-        </li>
-	</ul>
-		
-		
-<div class="tab-content clearfix col-md-12">
-  
-
-
-
-
-<!-- Attributes of project --!>
-<div class="tab-pane active col-md-12" id="olddetails">
-
-</br>
-
-<div class="container col-md-12">
- <div class="panel panel-info">
-  <div class="panel-heading">
-    <h4>Project attributes:</h4>
-  </div>
-  <div class="panel-body">
-    <table class="table table-striped">
-        <thead class="thead-default">
-        <tr>
-            <th></th><th>Expected</th><th>Provisioned</th>
-        </tr>
-        </thead>
-        
-        <tr>
-            <td>PI </td>
-            <td> 
-                <a href="{% url 'dc_management:dcuser' project.pi.pk %}">
-                    {{ project.pi }}
-                </a>
-            </td>
-            <td></td>
-        </tr>
-        {% if project.prj_admin %}
-            <tr>
-                <td>Project administrator </td>
-                <td>
-                    <a href="{% url 'dc_management:dcuser' project.prj_admin.pk %}">
-                        {{ project.prj_admin }}
-                    </a>
-                </td>
-                <td></td>
-            </tr>
-        {% endif %}
-            <tr>
-                <td>Start</td>
-                <td>{{ project.requested_launch }}</td>
-                <td>{{ project.start_date }}</td>
-            </tr>
-        {% if project.expected_completion|days_until:0 and project.status == 'RU' %}
-            <tr class="bg-danger" style="color:red;background:lightpink">
-                <td>Expiry</td><td> {{ project.expected_completion }}</td><td></td>
-            </tr>
-        {% elif project.expected_completion|days_until:10 and project.status == 'RU' %}
-            <tr class="bg-warning" style="color:orange;">
-                <td>Expiry</td><td> {{ project.expected_completion }}</td><td></td>
-            </tr>
-        {% elif project.expected_completion|days_until:90 and project.status == 'RU' %}
-            <tr class="bg-info" style="color:blue;">
-                <td>Expiry</td><td> {{ project.expected_completion}}</td><td></td>
-            </tr>
-        {% else %}
-            <tr>
-                <td>Expiry</td><td> {{ project.expected_completion}}</td><td></td>
-            </tr>
-        {% endif %}
-
-        <tr>
-            <td>Status </td>
-            <td>
-            {% if project.status == 'RU' %}
-              <span class="pull-left label label-success">
-                {{ project.get_status_display }}</span>
-            {% elif project.status == 'ON' %}
-              <span class="pull-left label label-primary">
-                {{ project.get_status_display }}</span>
-            {% elif project.status == 'SU' %}
-              <span class="pull-left label label-warning">
-                {{ project.get_status_display }}</span>
-            {% elif project.status == 'SD' %}
-              <span class="pull-left label label-info">
-                {{ project.get_status_display }}</span>
-            {% else %}
-              <span class="pull-left label label-default">
-                {{ project.get_status_display }}</span>
-            {% endif %}
-            </td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>Onboarding ticket</td>
-            <td> <a 
-             href="https://wcmcprd.service-now.com/nav_to.do?uri=textsearch.do?sysparm_search={{ project.onboarding_ticket }}">
-             {{ project.onboarding_ticket }}</a>
-             </td><td></td>
-        </tr>
-        <tr>
-            <td>Fileshare storage </td>
-            <td> {{ project.fileshare_storage }} GB</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>Direct attach storage </td>
-            <td> {{ project.direct_attach_storage }} GB</td>
-            <td>{{ project.host.other_storage }} GB</td>
-        </tr>
-
-        <tr>
-            <td>CPUs</td>
-            <td> {{ project.requested_cpu }}</td>
-            <td>{{ project.host.processor_num }}</td>
-        </tr>
-        <tr>
-            <td>RAM</td>
-            <td> {{ project.requested_ram }} GB</td>
-            <td>{{ project.host.ram }} GB</td>
-        </tr>
-        
-        
-        <tr>
-            <td>Environment </td><td> {{ project.get_env_type_display }}</td><td></td>
-        </tr>
-        <tr>
-            <td>Subtype </td><td> {{ project.env_subtype }}</td><td></td>
-        </tr>
-        {% if project.governance_doc_set.all.count == 0 %}
-        <tr class="bg-danger" style="color:red;">
-        {% else %} 
-        <tr>
-        {% endif %}
-            <td>Governance docs </td>
-            <td> {{ project.governance_doc_set.all.count }} </td>
-            <td></td>
-        </tr>
-
-    </table>
-  </div>
- </div>
-</div>
-
-
-
-
-
-</div>
-
-
-<div class="tab-pane col-md-12" id="oldlogs">
-
-<!-- ############ --!>
-<!-- project logs --!>
-<!-- ############ --!>
-
- <h4>Access logs</h4>
- <table class="table table-striped">
-  <thead class="thead-default">
-        <tr>
-            <th>Logged</th>
-            <th>Ticket</th>
-            <th>Activated</th>
-            <th>User</th>
-            <th>Change</th>
-            <th>Author</th>
-        </tr>
-  </thead>
-  {% for l in project.access_log_set.all %}
-   <tr><td>{{ l.record_creation }}</td>
-       {% if l.sn_ticket %}
-       <td>{{ l.sn_ticket }}</td>
-       {% else %}
-       <td class="bg-warning" style="color:orange;">{{ l.sn_ticket }}</td>
-       {% endif %}
-       <td>{{ l.date_changed }}</td>
-       <td>{{ l.dc_user }}</td>
-       <td>{{ l.get_change_type_display }}</td>
-       <td>{{ l.record_author }}</td>
-       </tr>
-  {% endfor %}
- </table>
-
- <h4>External access logs</h4>
- <table class="table table-striped">
-  <thead class="thead-default">
-        <tr>
-            <th>Logged</th>
-            <th>Ticket</th>
-            <th>Connected</th>
-            <th>Disconnected</th>
-        </tr>
-  </thead>
-  {% for l in project.external_access_log_set.all %}
-   <tr><td>{{ l.record_creation }}</td>
-       {% if l.sn_ticket %}
-       <td>{{ l.sn_ticket }}</td>
-       {% else %}
-       <td class="bg-warning" style="color:orange;">{{ l.sn_ticket }}</td>
-       {% endif %}
-       <td>{{ l.date_connected }}</td>
-       <td>{{ l.date_disconnected }}</td>
-       </tr>
-  {% endfor %}
- </table>
- 
- <h4>Software logs</h4>
- <table class="table table-striped">
-  <thead class="thead-default">
-        <tr>
-            <th>Ticket</th>
-            <th>Change date</th>
-            <th>Change type</th>
-            <th>Software</th>
-        </tr>
-  </thead>
-  {% for l in project.software_log_set.all %}
-    <tr>
-       {% if l.sn_ticket %}
-       <td>{{ l.sn_ticket }}</td>
-       {% else %}
-       <td class="bg-warning" style="color:orange;">{{ l.sn_ticket }}</td>
-       {% endif %}
-
-       <td>{{ l.change_date }}</td>
-       <td>{{ l.get_change_type_display }}</td>
-       <td>{{ l.software_changed }}</td>
-    </tr>
-  {% endfor %}
- </table>
-
- <h4>Storage logs</h4>
- <table class="table table-striped">
-  <thead class="thead-default">
-        <tr>
-            <th>Logged</th>
-            <th>Ticket</th>
-            <th>Changed</th>
-            <th>Type</th>
-            <th>Amount (GB)</th>
-            <th>Comments</th>
-        </tr>
-  </thead>
-  {% for l in project.storage_log_set.all %}
-   <tr><td>{{ l.record_creation }}</td>
-       {% if l.sn_ticket %}
-       <td>{{ l.sn_ticket }}</td>
-       {% else %}
-       <td class="bg-warning" style="color:orange;">{{ l.sn_ticket }}</td>
-       {% endif %}
-       <td>{{ l.date_changed }}</td>
-       <td>{{ l.storage_type }}</td>
-       <td>{{ l.storage_amount }}</td>
-       <td>{{ l.comments|linebreaks }}</td>
-       </tr>
-  {% endfor %}
- </table>
-
- <h4>
-    File Transfer logs
- </h4>
- <table class="table table-striped">
-  <thead class="thead-inverse">
-        <tr>
-            <th>Date</th>
-            <th>Ticket</th>
-            <th>Source</th>
-            <th>Destination</th>
-            <th>Data</th>
-        </tr>
-  </thead>
-  {% for ft in project.source_project.all %}
-   <tr>
-       <td>
-            <a href="{% url 'dc_management:file-transfer-view' ft.pk %}">
-              {{ ft.change_date }}
-            </a>
-        </td>
-       {% if ft.ticket %}
-       <td>{{ ft.ticket }}</td>
-       {% else %}
-       <td class="bg-warning" style="color:orange;">{{ ft.ticket }}</td>
-       {% endif %}
-       
-        <td> 
-        {% if ft.source %}
-        {{ ft.source }}
-        {% elif ft.external_source %}
-        {{ ft.external_source }}
-        {% endif %}
-        </td>
-        <td>
-        {% if ft.destination %}
-        {{ ft.destination }}
-        {% elif ft.external_destination %}
-        {{ ft.external_destination }}
-        {% endif %}
-        </td>
-       
-       <td>{{ ft.get_data_type_display }}</td>
-       
-       </tr>
-  {% endfor %}
-  {% for ft in project.destination_project.all %}
-   <tr>
-       <td>
-         <a href="{% url 'dc_management:file-transfer-view' ft.pk %}">
-           {{ ft.change_date }}
-         </a>
-       </td>
-       {% if ft.ticket %}
-       <td>{{ ft.ticket }}</td>
-       {% else %}
-       <td class="bg-warning" style="color:orange;">{{ ft.ticket }}</td>
-       {% endif %}
-       
-        <td> 
-        {% if ft.source %}
-        {{ ft.source }}
-        {% elif ft.external_source %}
-        {{ ft.external_source }}
-        {% endif %}
-        </td>
-        <td>
-        {% if ft.destination %}
-        {{ ft.destination }}
-        {% elif ft.external_destination %}
-        {{ ft.external_destination }}
-        {% endif %}
-        </td>
-       
-       <td>{{ ft.get_data_type_display }}</td>
-       
-       </tr>
-  {% endfor %}
- </table>
-
- <h4>Audit logs</h4>
- <table class="table table-striped">
-  <thead class="thead-inverse">
-        <tr>
-            <th>Logged</th>
-            <th>Ticket</th>
-            <th>Audit Date</th>
-            <th>User</th>
-            <th>Comments</th>
-        </tr>
-  </thead>
-  {% for l in project.audit_log_set.all %}
-   <tr><td>{{ l.record_creation }}</td>
-       {% if l.sn_ticket %}
-       <td>{{ l.sn_ticket }}</td>
-       {% else %}
-       <td class="bg-warning" style="color:orange;">{{ l.sn_ticket }}</td>
-       {% endif %}
-       <td>{{ l.audit_date }}</td>
-       <td>{{ l.dc_user }}</td>
-       <td>{{ l.comments }}</td>
-       </tr>
-  {% endfor %}
- </table>
-
-<h4>Migration logs</h4>
-  {% with  project.migrationlog_set.all as migration_list %}
-    {% include 'dc_management/migration_log.html' %}
-  {% endwith %}
-
-<h4>Project invoices</h4>
-    {% include 'dc_management/invoice_list.html' %}
-
-</div>
-</div>
-</div>
-
-</div>
-</div>
-{% endcomment %}
 
 
 {% endblock %}

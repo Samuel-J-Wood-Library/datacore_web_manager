@@ -211,15 +211,30 @@ class GovernanceDocForm(forms.ModelForm):
 def layout_simple_two(field1, field2):
     form = Div(
                 Div(field1,
-                    css_class='col-xs-6',
+                    css_class='col-6',
                 ),
                 Div(field2,
-                    css_class='col-xs-6',
+                    css_class='col-6',
                 ),
                 css_class="row"
             )    
     return form
 
+def layout_three_equal(ONE,TWO,THREE):
+    div_thirds = Div(
+                        Div(ONE,
+                            css_class='col-4',
+                        ),
+                        Div(TWO,
+                            css_class='col-4',
+                        ),
+                        Div(THREE,
+                            css_class='col-4',
+                        ),
+                        css_class="row"
+    )
+    return div_thirds
+    
 project_leaders = Div(
                         Div('pi',
                             css_class='col-xs-6',
@@ -683,21 +698,14 @@ class FileTransferForm(forms.ModelForm):
         self.helper.add_input(Submit('submit', 'Submit'))
         self.helper.layout = Layout(
                 Fieldset('File transfer request',
-                        Div(
-                                Div('change_date',
-                                    css_class='col-xs-4',
-                                ),
-                                Div('requester',
-                                    css_class='col-xs-4',
-                                ),
-                                Div('ticket',
-                                    css_class='col-xs-4',
-                                ),
-                                css_class="row"
+                        layout_three_equal('change_date', 
+                                            'requester', 
+                                            'ticket',
                         ),
                         style="font-weight: bold;"
                 ),
                 Fieldset('Data Source ⇨ Destination',
+                        Div(
                             Div(
                                 Div('source', 
                                     title="Indicate origin of data (eg abc2001@med).",
@@ -711,12 +719,14 @@ class FileTransferForm(forms.ModelForm):
                                     title="List the full directory path to all files.",
                                     css_class="row",
                                 ),
-                                css_class='col-xs-5 alert alert-info',
+                                css_class='col-5 card px-4 bg-info',
                             ),
+                            
                             Div('transfer_method',
                                 HTML('⇨'),
-                                css_class="col-xs-2 text-center align-bottom row"
+                                css_class="col-2 text-center align-bottom"
                             ),
+                            
                             Div(
                                 Div(  'destination', 
                                     label='Data Core source',
@@ -731,30 +741,16 @@ class FileTransferForm(forms.ModelForm):
                                     title='List the full path to where files are being transferred. Write "transfer.med" or similar if exporting to user.',
                                     css_class='row',
                                 ),
-                                css_class='col-xs-5 alert alert-info',
+                                css_class='col-5 card px-4 bg-info',
                             ),
-                            style="color: blue;font-weight: bold;"
-                            
+                        css_class='row',
+                        ),
+                            style="font-weight: bold;",
+                            css_class="container",
                 ),
                 Fieldset('File information',
-                            Div(
-                                Div('file_num',
-                                    css_class='col-xs-6',
-                                ),
-                                Div('file_num_unknown',
-                                    css_class='col-xs-6',
-                                ),
-                                css_class="row"
-                            ),
-                            Div(
-                                Div('data_type',
-                                    css_class='col-xs-6',
-                                ),
-                                Div('reviewed_by',
-                                    css_class='col-xs-6',
-                                ),
-                                css_class="row"
-                            ),
+                            layout_simple_two('file_num', 'file_num_unknown',),
+                            layout_simple_two('data_type', 'reviewed_by',),        
                             style="font-weight: bold;"
                 ),
                 
@@ -790,7 +786,10 @@ class FileTransferForm(forms.ModelForm):
                     'requester' : autocomplete.ModelSelect2(
                                         url='dc_management:autocomplete-user'
                                         ),
-                    'file_num_unknown' : CheckboxInput(),                   
+                    'file_num_unknown' : CheckboxInput(),    
+                    'reviewed_by' : autocomplete.ModelSelect2(
+                                        url='dc_management:autocomplete-user'
+                                        ),               
                     }
 
 class MigrationForm(forms.ModelForm):

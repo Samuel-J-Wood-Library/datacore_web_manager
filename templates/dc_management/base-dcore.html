@@ -13,11 +13,11 @@
     background-color: #E87722;
 }
 
-body { padding-top: 55px; }
+body { padding-top: 67px; }
 </style>
 
 
-<nav class="navbar navbar-expand-md navbar-custom fixed-top">
+<nav class="navbar navbar-expand-md navbar-custom fixed-top navbar-dark">
     <a class="navbar-brand" href="/">{{ APPTITLE }}</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" 
             data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" 
@@ -58,7 +58,7 @@ body { padding-top: 55px; }
             </div>        
             </li>
         </ul>
-        <ul class="navbar-nav mp-auto">    
+        <ul class="navbar-nav mp-auto navbar-brand">    
             {# ## ### PROJECT TITLE ### ## #}
             <li>
               <a class="nav-link mx-auto" href="#" style="fontweight:bold;color:white">
@@ -95,6 +95,9 @@ body { padding-top: 55px; }
             <div class="dropdown-menu" aria-labelledby="ActionsDropdown">
                 <a class="dropdown-item" href="{% url 'dc_management:url_generator' %}">
                     Create DCUA</a>
+                <a class="dropdown-item" 
+                    href="{% url 'dc_management:file-transfer-add' %}">
+                    Transfer file(s)</a>
                 <a class="dropdown-item" href="{% url 'dc_management:change_software' %}">
                     Install/remove software</a>
                 <a class="dropdown-item" href="{% url 'dc_management:finances-active' %}">
