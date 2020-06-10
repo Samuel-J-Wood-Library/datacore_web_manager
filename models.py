@@ -135,8 +135,11 @@ class Software(models.Model):
     
     def swusers(self):
         sw_users = Person.objects.filter(project__software_installed=self.pk
-                                        ).exclude(project__status='CO'
-                                        ).distinct()    
+                                ).filter(
+                                    Q(project__status='RU') |
+                                    Q(project__status='ON') 
+                                ).order_by('cwid'
+                                ).distinct()    
         return sw_users
 
     def seatcount(self):

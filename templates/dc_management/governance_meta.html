@@ -1,18 +1,19 @@
 {% extends 'dc_management/base-dcore.html' %}
 
-{% load bootstrap3 %}
 
 {% block content %}
 
-{# Load CSS and JavaScript #}
-{% bootstrap_css %}
-{% bootstrap_javascript %}
+{% comment %}
+    {# Load CSS and JavaScript #}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    {# Display django.contrib.messages as Bootstrap alerts #}
+    {% bootstrap_messages %}
+{% endcomment %}
 
 {# load the custom filters for time #}
 {% load project_tags %}
 
-{# Display django.contrib.messages as Bootstrap alerts #}
-{% bootstrap_messages %}
 
 <style>
 /* styling of the tabs*/

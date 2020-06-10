@@ -19,11 +19,11 @@
 
    
     <div class="container">
-     <div class="panel panel-info">
-      <div class="panel-heading">
+     <div class="card card-info my-1">
+      <div class="card-header">
         <h4>Users mounted twice on node</h4>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         {% with server_list as server_list %}
             {% include "dc_management/duplicate_user_list.html" %}
         {% endwith %}
@@ -34,11 +34,11 @@
     
     {% if onboarding_prj_list|length > 0 or onboarding_list|length > 0 %}
     <div class="container">
-     <div class="panel panel-info">
-      <div class="panel-heading">
+     <div class="card card-info my-1">
+      <div class="card-header">
         <h4>Projects being onboarded</h4>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         {% with onboarding_prj_list as project_list %}
             {% include "dc_management/onboarding_projects_list.html" %}
         {% endwith %}
@@ -58,11 +58,11 @@
     
     {% if migration_list|length > 0 %}
     <div class="container">
-     <div class="panel panel-info">
-      <div class="panel-heading">
+     <div class="card card-info my-1">
+      <div class="card-header">
         <h4>Projects being migrated</h4>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
             {% with False as startdate %}
                 {% include "dc_management/migration_tracking.html" %}
             {% endwith %}
@@ -73,11 +73,11 @@
 
     {% if expiring_list|length > 0 %}
     <div class="container">
-     <div class="panel panel-info">
-      <div class="panel-heading">
+     <div class="card card-info my-1">
+      <div class="card-header">
         <h4>Projects expiring in less than 90 days</h4>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         {% with expiring_list as project_list %}
         {% with "dc_management/expiring_projects.html" as passthroughhtml %}
             {% include "dc_management/project_list_template.html" %}
@@ -91,11 +91,11 @@
     
     {% if shutting_list|length > 0 %}
     <div class="container">
-     <div class="panel panel-info">
-      <div class="panel-heading">
+     <div class="card card-info my-1">
+      <div class="card-header">
         <h4>Projects scheduled for completion</h4>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         
         {% with shutting_list as project_list %}
         {% with "dc_management/project_closing_list.html" as passthroughhtml %}
@@ -109,11 +109,11 @@
     
 
     <div class="container">
-     <div class="panel panel-info">
-      <div class="panel-heading">
+     <div class="card card-info my-1">
+      <div class="card-header">
         <h4>Governance docs requiring attention</h4>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         
         <table class="table table-striped table-hover">
             <thead class="thead-default">
@@ -136,11 +136,11 @@
 
     {% if undocumented_list|length > 0 %}
     <div class="container">
-     <div class="panel panel-info">
-      <div class="panel-heading">
+     <div class="card card-info my-1">
+      <div class="card-header">
         <h4>Projects without any governance documentation</h4>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
             
         {% with undocumented_list as project_list %}
         {% with "dc_management/missing_gov_docs.html" as passthroughhtml %}
@@ -155,11 +155,11 @@
     
     {% if irb_invalid|length > 0 %}
     <div class="container">
-     <div class="panel panel-info">
-      <div class="panel-heading">
+     <div class="card card-info my-1">
+      <div class="card-header">
         <h4>Projects lacking appropriate IRB authorization</h4>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
             
         {% with irb_invalid as project_list %}
         {% with "dc_management/missing_gov_docs.html" as passthroughhtml %}
@@ -174,11 +174,11 @@
     
     {% if dua_invalid|length > 0 %}
     <div class="container">
-     <div class="panel panel-info">
-      <div class="panel-heading">
+     <div class="card card-info my-1">
+      <div class="card-header">
         <h4>Projects with expired DUAs</h4>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
             
         {% with dua_invalid as project_list %}
         {% with "dc_management/missing_gov_docs.html" as passthroughhtml %}
@@ -193,11 +193,11 @@
     
     
     <div class="container">
-     <div class="panel panel-info">
-      <div class="panel-heading">
+     <div class="card card-info my-1">
+      <div class="card-header">
         <h4>Users not audited in last 9 months</h4>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
             <p>
                 List of all users in active projects and whose governance 
                 documentation is more than a year old. This is not yet project-specific.
@@ -209,11 +209,11 @@
      </div>
     </div>
     <div class="container">
-     <div class="panel panel-info">
-      <div class="panel-heading">
-        <h4>Items with missing tickets</h4>
+     <div class="card card-info my-1">
+      <div class="card-header">
+        <h4>Items with missing tickets (in development)</h4>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
 
       </div>
      </div>
