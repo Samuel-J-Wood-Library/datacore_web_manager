@@ -818,6 +818,102 @@ class Governance_Doc(models.Model):
         verbose_name = 'Governance Document'
         verbose_name_plural = 'Governance Documents'
 
+class AnnualProjectAttestation(models.Model):
+    """
+    A class to capture a yearly acknowledgement from the PI that the users listed on 
+    the project are authorized to maintain access to the project.
+    """
+    # date the record was created
+    record_creation = models.DateField(auto_now_add=True)
+    
+    # date the record was most recently modified
+    record_update = models.DateField(auto_now=True)
+    
+    # the user who was signed in at time of record modification
+    record_author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    # the project being attested 
+    project = models.ForeignKey(Project,
+                                on_delete=models.PROTECT,
+                                )
+    
+    # the person attesting
+    pi = models.ForeignKey(Person, 
+                         on_delete=models.PROTECT,
+                         related_name="attestation_pi",
+                         )
+
+    # date of attestation
+    attestation_date = models.DateField()
+    
+    # users attested to 
+    allowed_users = models.ManyToManyField(Person)
+
+    def get_absolute_url(self):
+        return reverse('dc_management:annualattest', kwargs={'pk': self.pk})
+
+    def __str__(self):
+        return f"{self.project} {self.attestation_date}"
+
+class DataCoreUserAgreement(models.Model):
+    """
+    A class to capture signed agreement to the terms of using the Data Core. 
+    Each DCUA instance represents one user on one project, for a specified 
+    period of time.
+    """
+    # date the record was created
+    record_creation = models.DateField(auto_now_add=True)
+    
+    # date the record was most recently modified
+    record_update = models.DateField(auto_now=True)
+    
+    # the user who was signed in at time of record modification
+    record_author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    # the project being attested 
+    project = models.ForeignKey(Project,
+                                on_delete=models.PROTECT,
+                                )
+    
+    # the person attesting
+    attestee = models.ForeignKey(Person, 
+                                 on_delete=models.PROTECT,
+                                 )
+    
+    # the start date of the agreement
+    start_date = models.DateField()
+    
+    # the end date of the agreement
+    end_date = models.DateField() 
+    
+    # folders allowed (to be defined by curation team)
+    locations_allowed = models.TextField()
+    
+    # consent to project access (to specified folders)
+    consent_access = models.CharField(max_length=8, null=True)
+    
+    # consent to usage conditions
+    consent_usage = models.CharField(max_length=8, null=True)
+    
+    # signature date
+    signature_date = models.DateField(null=True)
+    
+    # signature name 
+    signature_name = models.CharField(max_length=64, null=True)
+    
+    # signature title
+    signature_title = models.CharField(max_length=64, null=True)
+    
+    # acknowledgement of patching schedule 
+    acknowledge_patching = models.CharField(max_length=8, null=True)
+
+    def get_absolute_url(self):
+        return reverse('dc_management:dcua', kwargs={'pk': self.pk})
+
+    def __str__(self):
+        return f"{self.project} {self.attestee} {self.signature_date}"
+
+
 class DC_Administrator(models.Model):
     # date the record was created
     record_creation = models.DateField(auto_now_add=True)
