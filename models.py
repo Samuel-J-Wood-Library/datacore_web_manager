@@ -1163,6 +1163,9 @@ class ProjectBillingRecord(models.Model):
     # multiplier value allows for partial-month billing (or penalty billing)
     multiplier = models.FloatField(null=True, blank=True)
     
+    # WCM account number to charge
+    account = models.CharField(null=True, blank=True, max_length=32)
+    
     # comments using dynamic comment class (allows replies)
     comments = models.ManyToManyField(CommentLog, 
                                       blank=True,
