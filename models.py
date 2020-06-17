@@ -478,17 +478,24 @@ class Project(models.Model):
     isolate_data = models.NullBooleanField("data isolation: isolate?")
     
     # the requested amount of fileshare storage (Isilon) configured in Isilon
-    fileshare_storage = models.IntegerField("Fileshare size (GB)",
+    # for primary (source) data, which is archived, but without version backup
+    fileshare_storage = models.IntegerField("Primary data (GB)",
                                             null=True, 
                                             blank=True)
     
+    # the requested amount of fileshare storage (Isilon) configured in Isilon
+    # for derivative (Shared and WorkArea) data, which has versioned backup
+    fileshare_derivative = models.IntegerField("Derivative data (GB)",
+                                            null=True, 
+                                            blank=True)
+                                            
     # the requested amount of direct attach (E: drive) storage. Configured at node
     direct_attach_storage = models.IntegerField("Direct attach size (GB)", 
                                                 null=True, 
                                                 blank=True)
                                                 
-    # requested encrypted backup
-    backup_storage = models.IntegerField("Backup storage size (GB)", 
+    # requested archival storage
+    backup_storage = models.IntegerField("Archival storage (GB)", 
                                          null=True, 
                                          blank=True)
                                          
