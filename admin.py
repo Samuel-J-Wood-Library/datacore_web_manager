@@ -7,7 +7,8 @@ from .models import Software, Software_License_Type, Software_Log, Software_Purc
 from .models import Storage_Log, SubFunction, SoftwareCost, UserCost, StorageCost
 from .models import DCUAGenerator, FileTransfer, TransferMethod
 from .models import ResourceLog, MigrationLog, ExtraResourceCost, DatabaseCost
-from .models import ProjectBillingRecord
+from .models import ProjectBillingRecord, AnnualProjectAttestation
+from .models import DataCoreUserAgreement 
 
 # customize the look of the admin site:
 admin.site.site_header = 'Data Core Management Site'
@@ -129,7 +130,32 @@ class MigrationLogAdmin(admin.ModelAdmin):
                      'node_destination__node',
                      'comments')
 
+@admin.register(AnnualProjectAttestation)
+class AnnualProjectAttestationAdmin(admin.ModelAdmin):
+    list_display = ('project',
+					'pi',
+					'attestation_date',
+					)
 
+    search_fields = ('project__dc_prj_id', 
+                     'pi__first_name', 
+                     'pi__last_name',
+                    )
+
+@admin.register(DataCoreUserAgreement)
+class DataCoreUserAgreementAdmin(admin.ModelAdmin):
+    list_display = ('project',
+					'attestee',
+					'end_date',
+					'consent_access',
+					)
+
+    search_fields = ('project__dc_prj_id', 
+                     'attestee__first_name', 
+                     'attestee__last_name',
+                    )
+    
+    list_filter = ('consent_access',)
 
 admin.site.register(Access_Log)
 admin.site.register(AccessPermission)

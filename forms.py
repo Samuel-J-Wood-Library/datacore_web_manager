@@ -11,12 +11,14 @@ from django.db.models import Q
 
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext_lazy as _
+from django.utils.safestring import mark_safe
 from django.forms.widgets import SelectDateWidget, CheckboxInput
 
 from .models import Server, Project, Person, Software, Software_Log, Project
 from .models import DCUAGenerator, Storage_Log, StorageCost, Governance_Doc
 from .models import FileTransfer, MigrationLog, CommentLog, Storage
-
+from .models import DataCoreUserAgreement, AnnualProjectAttestation
+from .models import ProjectBillingRecord
 
 
 """
@@ -43,6 +45,11 @@ class AddUserToProjectForm(forms.Form):
                                         url='dc_management:autocomplete-project'
                                         ),
                                 )
+    locations_allowed =  forms.CharField(required=False, 
+                                         label="Locations user is allowed to access",
+                                         initial=mark_safe("prj-SOURCE\nprj-SHARED\nWorkArea"),
+                                         widget=forms.Textarea,
+                                         )                           
     email_comment = forms.CharField(required=False, label="Comment for SN ticket",)                            
     comment = forms.CharField(required=False, label="Comment for db log",)
     class Meta:
@@ -234,7 +241,43 @@ def layout_three_equal(ONE,TWO,THREE):
                         css_class="row"
     )
     return div_thirds
-    
+
+def layout_four_accounting(ONE,TWO,THREE,FOUR):
+    div_quarts = Div(
+                        Div(ONE,
+                            css_class='col-5',
+                        ),
+                        Div(TWO,
+                            css_class='col-2',
+                        ),
+                        Div(THREE,
+                            css_class='col-2',
+                        ),
+                        Div(FOUR,
+                            css_class='col-3'
+                        ),
+                        css_class="row"
+    )
+    return div_quarts
+
+def layout_four_equal(ONE,TWO,THREE,FOUR):
+    div_quarts = Div(
+                        Div(ONE,
+                            css_class='col-3',
+                        ),
+                        Div(TWO,
+                            css_class='col-3',
+                        ),
+                        Div(THREE,
+                            css_class='col-3',
+                        ),
+                        Div(FOUR,
+                            css_class='col-3'
+                        ),
+                        css_class="row"
+    )
+    return div_quarts
+            
 project_leaders = Div(
                         Div('pi',
                             css_class='col-xs-6',
@@ -343,6 +386,256 @@ project_dates = Layout(Fieldset('<div class="alert alert-info">Project dates</di
                         style="font-weight: bold; ",
                 ),  
 )           
+
+def get_storage_costs(storage_type, project):
+    st = StorageCost.objects.get(storage_type__icontains=storage_type)
+    st_type = st.storage_type               # kind of storage 
+    st_value = project.fileshare_storage    # size in GB
+    st_rate = st.st_cost_per_gb             # rate per 100 GB
+    st_expense = st_rate * st_value / 100   # cost
+    return st_type, st_value, st_rate, st_expense
+
+ 
+class ProjectBillingForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(ProjectBillingForm, self).__init__(*args, **kwargs)
+        
+        # get project details from URL:
+        #ppk = kwargs.pop('ppk', None)
+        #prj = Project.objects.get(pk=ppk)
+        
+        ppk = self.kwargs['ppk']
+        prj = Project.objects.get(pk=ppk)
+        
+        self.fields['billing_date'].initial = datetime.date.today()
+        
+        # get the billable number of users
+        user_number = prj.billable_users().count()
+        self.fields['base_value'].label = "Number of users"
+        self.fields['base_value'].initial = user_number
+
+        user_rate = UserCost.objects.get(user_quantity=user_number).user_cost
+        self.fields['base_rate'].initial = user_rate
+        
+        # get the storage charges
+        st1_type, st1_value, st1_rate, st1_expense = get_storage_costs("fileshare", prj)
+        self.fields['storage_1_type'].initial    = st1_type
+        self.fields['storage_1_value'].initial   = st1_value
+        self.fields['storage_1_rate'].initial    = st1_rate
+        self.fields['storage_1_expense'].initial = st1_expense
+        
+        st2_type, st2_value, st2_rate, st2_expense = get_storage_costs("backup", prj)
+        self.fields['storage_2_type'].initial    = st2_type
+        self.fields['storage_2_value'].initial   = st2_value
+        self.fields['storage_2_rate'].initial    = st2_rate
+        self.fields['storage_2_expense'].initial = st2_expense
+
+        st3_type, st3_value, st3_rate, st3_expense = get_storage_costs("direct", prj)
+        self.fields['storage_3_type'].initial    = st3_type
+        self.fields['storage_3_value'].initial   = st3_value
+        self.fields['storage_3_rate'].initial    = st3_rate
+        self.fields['storage_3_expense'].initial = st3_expense
+        
+        # get software expenses
+        sw_str = "; ".join([sw.name for sw in prj.software_requested.all()])
+        
+        sw_costs = []
+        for sw in prj.software_requested.all():
+            sw_rate = SoftwareCost.objects.get(software=sw.pk).software_cost
+            sw_cost = sw_rate * user_number
+            sw_costs.append(sw_cost)
+        x = np.array(sw_costs)
+        
+        sw_rates = "; ".join(["${:.2f}".format(c) for c in sw_costs])
+        sw_total = x[x != np.array(None)].sum()
+                              
+        self.fields['sw_value'].initial   = sw_str
+        self.fields['sw_rates'].initial   = sw_rates
+        self.fields['sw_expense'].initial = sw_total
+
+        # get extra computation costs
+        prj_erc = prj.requested_cpu - 4
+        erc = ExtraResourceCost.objects.get(extra_cpu=prj_erc)
+        erc_cost = erc.cpu_cost
+       
+        self.fields['hosting_value'].initial   = prj_erc    # extra CPU computation
+        self.fields['hosting_rate'].initial    = erc_cost   
+        self.fields['hosting_expense'].initial = erc_cost
+
+        # get db costs
+        if prj.db:
+            db_value = 1
+            db_rate = DatabaseCost.objects.get(pk=1).db_cost
+        else:
+            db_value = 0
+            db_rate = 0
+                                   
+        self.fields['db_value'].initial     = db_value  # flat rate for db hosting
+        self.fields['db_rate'].initial      = db_rate   
+        self.fields['db_expense'].initial   = db_rate
+        self.fields['db_setup'].initial     = 0         # one time setup fee $500
+        
+        self.fields['multiplier'].initial   = 1         # for charging multiple months
+        self.fields['account'].initial      = prj.account_number
+        
+        
+        self.helper = FormHelper()
+        self.helper.form_id = 'ProjectBillingForm'
+        self.helper.form_method = 'post'
+        self.helper.add_input(Submit('submit', 'Submit'))
+        self.helper.layout = Layout(
+                    Fieldset(
+                            """ 
+                            <div class="alert alert-info">
+                                Billing record for f"{prj}"
+                            </div>
+                            """
+                        'billing_date',
+                    ),
+                    Fieldset(
+                        "Curation, administration and basic hosting charges",
+                        'base_value',
+                        'base_rate',
+                        'base_expense',
+                    ),
+                    Fieldset(
+                        "Storage charges",
+                        layout_four_accounting('storage_1_type',
+                                                'storage_1_value',
+                                                'storage_1_rate',
+                                                'storage_1_expense',
+                        ),
+                        layout_four_accounting('storage_2_type',
+                                                'storage_2_value',
+                                                'storage_2_rate',
+                                                'storage_2_expense',
+                        ),
+                        layout_four_accounting('storage_3_type',
+                                                'storage_3_value' ,
+                                                'storage_3_rate',
+                                                'storage_3_expense',
+                        ),
+                        layout_four_accounting('storage_4_type',
+                                                'storage_4_value',
+                                                'storage_4_rate',
+                                                'storage_4_expense',
+                        ),
+                    ),
+                    Fieldset(    
+                        "Software charges",
+                        layout_simple_two('sw_value','sw_rates',),
+                        'sw_expense',
+                    ),
+                    Fieldset(
+                        "Additional hosting and database charges",                    
+                        layout_three_equal('hosting_value',
+                                            'hosting_rate',
+                                            'hosting_expense',
+                        ),
+                        layout_four_equal('db_value',
+                                            'db_rate',
+                                            'db_expense',
+                                            'db_setup',
+                        ),
+                        'multiplier',
+                        'account',
+                    ),
+        )
+        
+    class Meta:
+        model = ProjectBillingRecord
+        fields = [      'billing_date',
+                        'base_value',
+                        'base_rate',
+                        'base_expense',
+                        'storage_1_type',
+                        'storage_1_value',
+                        'storage_1_rate',
+                        'storage_1_expense',
+                        'storage_2_type',
+                        'storage_2_value',
+                        'storage_2_rate',
+                        'storage_2_expense',
+                        'storage_3_type',
+                        'storage_3_value' ,
+                        'storage_3_rate',
+                        'storage_3_expense',
+                        'storage_4_type',
+                        'storage_4_value',
+                        'storage_4_rate',
+                        'storage_4_expense',
+                        'sw_value',
+                        'sw_rates',
+                        'sw_expense',
+                        'hosting_value',
+                        'hosting_rate',
+                        'hosting_expense',
+                        'db_value',
+                        'db_rate',
+                        'db_expense',
+                        'db_setup',
+                        'multiplier',
+                        'account',
+                ]
+   
+        
+class DCUAForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(DCUAForm, self).__init__(*args, **kwargs)
+        self.fields['consent_access'].label = "Initials:"
+        self.fields['consent_usage'].label = "Initials:"
+        self.fields['signature_date'].label = "Date:"
+        self.fields['signature_name'].label = "Full Name:"
+        self.fields['signature_title'].label = "Title:"
+        self.fields['acknowledge_patching'].label = "Initials:"
+        
+        self.helper = FormHelper()
+        self.helper.form_id = 'DCUAForm'
+        self.helper.form_method = 'post'
+        self.helper.add_input(Submit('submit', 'Submit'))
+        self.helper.layout = Layout(
+                    Fieldset(
+            """ <div class="alert alert-info">
+                    Data Core User Agreement for f"{self.instance.attestee} on 
+                    {self.instance.project}"
+                </div>
+                <p>This agreement is between {} and the Data Core at WCM. This agreement is effective as of {} and expires on {} unless extended by mutual consent of the data distributor and Data Core.</p>
+            """.format( self.instance.attestee, 
+                        self.instance.start_date,
+                        self.instance.end_date,
+                        ),
+                            'consent_access',
+                            'consent_usage',
+                            'signature_date',
+                            'signature_name',
+                            'signature_title',
+                            style="font-weight:bold;",
+                    ),
+                    Fieldset('<div class="alert alert-info">Acknowledgement of monthly patching</div>',
+                            'acknowledge_patching',                        
+                            style="font-weight: bold;",
+                    ),
+        )
+    
+    class Meta:
+        model = DataCoreUserAgreement
+        fields = [  'consent_access',
+                    'consent_usage',
+                    'signature_date',
+                    'signature_name',
+                    'signature_title',
+                    'acknowledge_patching',
+                ]
+
+class DCUAPrepForm(forms.ModelForm):
+    class Meta:
+        model = DataCoreUserAgreement
+        fields = [  'attestee',
+                    'project',
+                    'start_date',
+                    'end_date', 
+                    'locations_allowed',
+                ]  
                             
 class ProjectForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -793,7 +1086,6 @@ class FileTransferForm(forms.ModelForm):
                     }
 
 class MigrationForm(forms.ModelForm):
-    
     class Meta:
         model = MigrationLog
         fields = [  'project',
@@ -820,7 +1112,6 @@ class MigrationForm(forms.ModelForm):
                     }
 
 class MigrationNewForm(forms.ModelForm):
-    
     class Meta:
         model = MigrationLog
         fields = [  'project',
@@ -839,3 +1130,6 @@ class MigrationNewForm(forms.ModelForm):
                                         url='dc_management:autocomplete-node'
                                         ),
                     }
+
+
+

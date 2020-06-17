@@ -117,6 +117,14 @@ urlpatterns = [
             name='govdocmeta-update'
     ),
     
+    # Data Core user views
+    path('myproject/<int:pk>/', 
+         views.UserProjectView.as_view(), 
+         name='user-project-view'
+    ),
+    path('myprojects/', views.UserProjectListView.as_view(), name='user-project-list'),
+    
+    
     # forms for adding user - project relationship:
     url(r'^dcuser/(?P<pk>[0-9]+)/connect$', 
         views.AddThisUserToProject.as_view(), 
@@ -126,6 +134,7 @@ urlpatterns = [
         views.AddUserToProject.as_view(), 
         name='usertoproject-add',
     ),
+    path('dcua/sign/<int:pk>/', views.SignDCUA.as_view(),name='sign-dcua'),
     
     # removing user - project relationship:
     url(r'^project/(?P<pk>[0-9]+)/userconnect$', 
@@ -150,7 +159,7 @@ urlpatterns = [
          views.ProjectMonthlyBillView.as_view(),
          name='project-bill',
     ),
-    path('finances/create',
+    path('finances/create/<int:ppk>',
          views.ProjectMonthlyBillCreate.as_view(),
          name='project-bill-add',
     ),

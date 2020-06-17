@@ -36,6 +36,7 @@ from .models import Software, Software_Log, Storage_Log, Storage
 from .models import UserCost, SoftwareCost, StorageCost, DCUAGenerator, DatabaseCost
 from .models import FileTransfer, MigrationLog, CommentLog
 from .models import ProjectBillingRecord, ExtraResourceCost
+from .models import DataCoreUserAgreement, AnnualProjectAttestation
 
 from persons.models import Person, Department, Organization, Role
 from datacatalog.models import Dataset, DataUseAgreement
@@ -46,6 +47,7 @@ from .forms import AddSoftwareToProjectForm, ProjectForm, ProjectUpdateForm
 from .forms import StorageChangeForm, BulkUserUploadForm, GovernanceDocForm
 from .forms import FileTransferForm, ServerUpdateForm, ServerForm, MigrationForm
 from .forms import CommentForm, StorageForm, StorageAttachForm
+from .forms import DCUAForm, DCUAPrepForm, ProjectBillingForm
 
 #######################
 #### Comment views ####
@@ -1099,6 +1101,48 @@ class SoftwareView(LoginRequiredMixin, generic.DetailView):
     model = Software
     template_name = 'dc_management/software.html'
     
+###############################
+######  USER PAGE VIEWS  ######
+###############################
+
+class UserProjectView(LoginRequiredMixin, generic.DetailView):
+    model = Project
+    template_name = 'dc_management/userview_project_detail.html'
+
+    def get_context_data(self, **kwargs):
+        
+        project_dcuas = DataCoreUserAgreement.objects.filter(project=self.kwargs['pk'])
+        dcua_attestees = [ d.attestee for d in project_dcuas ]
+        project_govdocs = DataUseAgreement.objects.filter()
+        
+        context = super(UserProjectView, self).get_context_data(**kwargs)
+        context.update({
+                        'project_dcuas': project_dcuas,
+                        'dcua_attestees':dcua_attestees,
+        })
+        return context    
+
+class UserProjectListView(LoginRequiredMixin, generic.ListView):
+    template_name = 'dc_management/userview_project_list.html'
+    context_object_name = 'project_list'
+    
+    def get_queryset(self):
+        """Return all projects associated with the viewer"""
+        viewer = self.request.user
+        try:
+            viewer_person = Person.objects.get(cwid=viewer.username)
+        except:
+            viewer_person = None
+            viewers_projects = None
+        else:
+            viewers_projects = Project.objects.filter(  Q(pi=viewer_person) |
+                                        Q(users__id=viewer_person) |
+                                        Q(prj_admin=viewer_person)
+                             ).order_by('dc_prj_id'
+                             )
+        
+        return viewers_projects
+        
 #################################################
 ######  UPDATE USER - PROJECT RELATIONSHIP ######
 #################################################
@@ -1123,6 +1167,7 @@ class AddUserToProject(LoginRequiredMixin, FormView):
         prj = form.cleaned_data['project']
         newusers = form.cleaned_data['dcusers']
         email_comment = form.cleaned_data['email_comment']
+        locations_allowed = form.cleaned_data['locations_allowed']
         oldusers = prj.users.all()
         record_author = self.request.user
         
@@ -1144,7 +1189,20 @@ class AddUserToProject(LoginRequiredMixin, FormView):
                             change_type="AA",
                 )
                 self.logger.save()
-        
+                
+                # create DCUA for signing by user
+                new_dcua = DataCoreUserAgreement(
+                                    record_creation=date.today(),
+                                    record_update=date.today(),
+                                    record_author=record_author,
+                                    attestee=newuser,
+                                    project=prj,
+                                    start_date=date.today(),
+                                    end_date=date.today()+timedelta(days=365), 
+                                    locations_allowed=locations_allowed,
+                            )
+                new_dcua.save()
+                
         # send email
         if prj.host:
             node = prj.host.node
@@ -1214,6 +1272,17 @@ class AddUserToThisProject(AddUserToProject):
         # update initial field defaults with custom set default values:
         initial.update({'project': chosen_project, })
         return initial
+
+class SignDCUA(LoginRequiredMixin, UpdateView):
+    model = DCUAForm
+    fields = [  'consent_access',
+                'consent_usage',
+                'signature_date',
+                'signature_name',
+                'signature_title'
+    ]
+    template_name = "dc_management/basic_crispy_form.html"
+
 
 ######### Removing users from projects ###########
 
@@ -1557,7 +1626,19 @@ class ProjectMonthlyBillView(LoginRequiredMixin, generic.DetailView):
     model = ProjectBillingRecord
     template_name = 'dc_management/project_billing.html'
 
-class ProjectMonthlyBillGenerate(LoginRequiredMixin, CreateView):
+class ProjectMonthlyBillGenerate(PermissionRequiredMixin, CreateView):
+    model = ProjectBillingRecord
+    form_class = ProjectBillingForm 
+    template_name = "dc_management/basic_crispy_form.html"
+    
+    #success_url = reverse_lazy("dc_management:index" )
+    # default success_url should be to the object page defined in model.
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        return super(ProjectMonthlyBillGenerate, self).form_valid(form)
+        
+        
+class ProjectMonthlyBillGenerateOld(LoginRequiredMixin, CreateView):
     model = ProjectBillingRecord
     template_name = 'dc_management/basic_form.html'
 
@@ -1596,7 +1677,7 @@ class ProjectMonthlyBillGenerate(LoginRequiredMixin, CreateView):
             'comments',
             ]
     def get_initial(self):
-        initial = super(ProjectMonthlyBillGenerate, self).get_initial()
+        initial = super(ProjectMonthlyBillGenerateOld, self).get_initial()
         # get the project
         chosen_project = Project.objects.get(pk=self.kwargs['pk'])
         
@@ -1685,7 +1766,7 @@ class ProjectMonthlyBillGenerate(LoginRequiredMixin, CreateView):
         form.instance.record_author = self.request.user
         
         self.object = form.save(commit=False)
-        return super(ProjectMonthlyBillGenerate, self).form_valid(form)
+        return super(ProjectMonthlyBillGenerateOld, self).form_valid(form)
 
 
 
