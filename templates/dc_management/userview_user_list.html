@@ -1,0 +1,32 @@
+
+{% if project %}
+    <table class="table table-striped table-hover">
+    <thead class="thead-default">
+    <tr>
+        <th>Name (CWID)</th>
+        <th>Department</th>
+        <th>DCUA</th>
+        <th>IRB</th>
+        <th>DUA</th>
+    </tr>
+    </thead>
+    
+    {% for u in project.users.all %}
+    {% if u.role.name != 'Data Core staff' %}
+     <tr>    
+        <td><a href="{% url 'dc_management:dcuser' u.pk %}">{{ u }}</a>
+        </td>
+        <td>{{ u.department }}</td>
+        <td>{% if u in dcua_attestees %}
+                    SIGNED
+            {% endif %}            
+        </td>
+        <td>pending</td>
+        <td>pending</td>
+     </tr>
+     {% endif %}
+    {% endfor %}
+    </table>
+{% else %}
+    <p>No users found.</p>
+{% endif %}

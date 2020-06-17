@@ -1,0 +1,17 @@
+{% extends 'dc_management/base-dcore.html' %}
+
+{% load bootstrap4 %}
+
+{% block content %}
+<h2>All my projects ({{ project_list.count }})</h2>
+
+{{ project_list }}
+
+
+    {% with 'dc_management/project_list.html' as passthroughhtml %}
+        {% include 'dc_management/project_list_template.html' %}
+    {% endwith %}
+
+{% endblock %}
+
+

@@ -1,0 +1,609 @@
+{% extends 'dc_management/base-dcore.html' %}
+
+{% load static %}
+{% load bootstrap4 %}
+
+{% block pagetitle %}
+{{ project.dc_prj_id }}
+{% endblock %}
+
+{% block content %}
+
+{# Load CSS and JavaScript #}
+
+
+{# load the custom filters for time #}
+{% load project_tags %}
+
+
+<style>
+/* styling of the tabs*/
+#exTab1 .tab-content {
+  color : black;
+  padding : 5px 15px;
+}
+
+#exTab1 .nav-tabs > li > a {
+  border-radius: 4px 4px 0 0;
+}
+
+.sticky-offset {
+    top: 67px;
+}
+</style>
+
+
+{######################}
+{### PROJECT HEADER ###}
+{######################}
+<div class="container">
+    <div class="row justify-content-between">
+    
+    {# Project title #}
+    <div class="col-9">
+      <h1 style="padding:0;margin:0;">
+        {{ project.dc_prj_id }}
+        <small class="text-muted">{{ project.nickname }}</small>
+      </h1>
+      <h2>
+        <small class="text-muted">{{ project.title }}</small>
+      </h2>
+      <div class="border-top my-2"></div>
+      <p>PI: <a href="{% url 'dc_management:dcuser' project.pi.pk %}">
+        {{ project.pi }}
+      </a>
+      {% if project.prj_admin %}
+      </br>Admin: <a href="{% url 'dc_management:dcuser' project.pi.pk %}">
+        {{ project.prj_admin }}
+      </a>
+      {% endif %}
+      </p>
+      <p></p>
+    </div>
+    
+    
+    {### Project status icons ###}
+    <div class="col-3">
+        <ul class="list-group" style="font-size:95%;">
+          <li   class="list-group-item d-flex justify-content-between align-items-center"
+                style="padding:3px">
+            CLASSIFICATION
+            <span style="float:right" class="badge 
+            {% if project.open_allowed == True %}badge-success">PUBLIC
+            {% elif project.open_allowed == None %}badge-warning">UNDETERMINED
+            {% else %}badge-danger">CONFIDENTIAL{% endif %}
+            </span>
+          </li>
+          <li   class="list-group-item d-flex justify-content-between align-items-center"
+                style="padding:3px">
+            DATA ISOLATION
+            <span style="float:right" class="badge 
+            {% if project.isolate_data == True %}badge-danger">ISOLATE
+            {% elif project.isolate_data == None %}badge-warning">UNSPECIFIED
+            {% else %}badge-success">MISCIBLE{% endif %}
+            </span>
+          </li>
+          <li   class="list-group-item d-flex justify-content-between align-items-center"
+                style="padding:3px">
+            SECURITY
+            <span style="float:right" class="badge 
+            {% if project.host.firewalled == False %}badge-danger">OPEN
+            {% elif project.host.firewalled == None %}badge-warning">UNDETERMINED
+            {% else %}badge-success">FIREWALLED{% endif %}
+            </span>
+          </li>
+          <li   class="list-group-item d-flex justify-content-between align-items-center"
+                style="padding:3px">
+            STATUS
+            
+            {% if project.status == 'RU' %}
+              <span style="float:right" class="badge badge-success">
+                {{ project.get_status_display|upper }}</span>
+            {% elif project.status == 'ON' %}
+              <span style="float:right" class="badge badge-primary">
+                {{ project.get_status_display|upper }}</span>
+            {% elif project.status == 'SU' %}
+              <span style="float:right" class="badge badge-warning">
+                {{ project.get_status_display|upper }}</span>
+            {% elif project.status == 'SD' %}
+              <span style="float:right" class="badge badge-info">
+                {{ project.get_status_display|upper }}</span>
+            {% else %}
+              <span style="float:right" class="badge badge-default">
+                {{ project.get_status_display|upper }}</span>
+            {% endif %}
+          </li>
+          
+          {# show project's duration #}
+          <li class="list-group-item d-flex justify-content-between align-items-center"
+              style="padding:3px">
+            <span class="badge badge-light">{{ project.requested_launch }}</span> -    
+            
+            {% if project.expected_completion|days_until:0 and project.status == 'RU' %}
+                <span class="badge badge-danger" style="color:red;background:lightpink">
+                    {{ project.start_date }}</span>
+            {% elif project.expected_completion|days_until:10 and project.status == 'RU' %}
+                <span class="badge badge-warning" style="color:orange;">
+                    {{ project.start_date }}</span>
+            {% elif project.expected_completion|days_until:90 and project.status == 'RU' %}
+                <span class="badge badge-info" style="color:blue;">
+                    {{ project.start_date }}</span>
+            {% else %}
+                <span class="badge badge-light">
+                    {{ project.start_date }}</span>
+            {% endif %}
+          </li>
+        </ul>
+        
+        
+    </div>
+  </div>
+
+</div>
+
+{####################}
+{### PROJECT BODY ###}
+    
+    {# tabs to separate details and logs #}
+    <div class="col-10 justify-content-end">
+      <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a class="nav-link active" data-toggle="tab" href="#details">Project details</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#logs">Project logs</a>
+      </li>
+      </ul>
+    </div>
+    
+    
+<div class="row justify-content-between">    
+    
+    {### STICKY ACTION BUTTONS ###}
+    <div class="col-2">
+    <div class="card sticky-top border-0 sticky-offset">
+        <a  type="button" class="mb-1 mt-2 btn btn-primary btn-block" 
+            href="http://www.xkcd.com">View XKCD</a>
+
+
+    </div>
+    </div>
+    
+    
+    {###############################}
+    {### PROJECT CURRENT DETAILS ###}
+    
+<div class="tab-content clearfix col-10">
+
+
+    {### PROJECT TABS ###}
+    {# removed col-10 from below #}
+    <div class="tab-pane active" id="details">
+
+
+ 
+ 
+    {####################################}
+    {### PROJECT ACCESS AND RESOURCES ###}
+    
+     <div class="card border-dark my-2">
+      <div class="card-header">
+        <h4>PROJECT ACCESS AND RESOURCES:
+            {% if project.myapp == True %}
+
+                <span style="float:right" 
+                      class="badge badge-success">MyApps Enabled</span>
+            {% endif %}
+        </h4>
+      </div>
+      <div class="card-body">
+        
+        <table class="table">
+            <thead class="thead-light">
+            <tr>
+                <th>CPU</th>
+                <th>RAM</th>
+                <th>Fileshare storage</th>
+                <th>Scratch storage</th>
+            </tr>
+            </thead>
+            
+            <tr>
+                <td>{{ project.requested_cpu }}</td>
+                <td>{{ project.requested_ram }} GB</td>
+                <td>{{ project.fileshare_storage }} GB</td>
+                <td>{{ project.direct_attach_storage }} GB</td>
+            </tr>
+            
+        </table>
+      </div>
+    </div> {# end access and resources card #}
+ 
+ 
+    {#####################}
+    {### PROJECT USERS ###}
+    
+     <div class="card border-dark my-2">
+      <div class="card-header">
+        <h5>USERS ({{ project.billable_users.count }} active)
+            <span style="float:right">
+                <a type="button" class="btn btn-primary ml-auto" href="https://wcmcprd.service-now.com/myhelpdesk?id=sc_cat_item&sys_id=7c81b0b41302f70037507b104244b047&sysparm_category=009b496f0f85af00911291dbe1050e56">Request user addition/removal</a>
+            </span>
+        </h5>
+        
+      </div>
+      <div class="card-body">
+        {% include "dc_management/userview_user_list.html" %}
+        <h4>{{ unconnected_users|length }} unconnected, authorized users:</h4>
+        {% for u in unconnected_users %}
+            {{ u }},
+        {% endfor %}
+      </div>
+     </div>
+
+
+    {#######################}
+    {### PROJECT STORAGE ###}
+
+     <div class="card border-dark my-2">
+      <div class="card-header">
+        <h4>Project storage
+          <span style="float:right">
+                <a  type="button" 
+                    class="btn btn-primary"  
+                    href="{% url 'dc_management:storage-add' %}">Create storage</a>
+                <a  type="button" 
+                    class="btn btn-primary"  
+                    href="{% url 'dc_management:storage-attach' project.pk %}">
+                    Attach storage</a>
+          </span>
+        </h4>
+      </div>
+      <div class="card-body">
+    
+        {% with project.storage.all as storage_list %}
+            {% include "dc_management/storage_list.html" %}
+        {% endwith %}
+    
+        <h4>Governance docs:</h4>
+        {% include "dc_management/storage_govdocs.html" %}
+         
+        <h4>Summary:</h4>
+        <ul>
+         <li>{{ fully_validated|length }} fully validated users</li>
+         <li>{{ unconnected_users|length }} unconnected users</li>
+         <li>{{ irb_users|length }} users on IRB</li>
+         <li>{{ dcua_users|length }} users with DCUA</li>
+         <li>{{ dua_users|length }} users on DUA </li>
+        </ul>
+      </div>
+     </div>
+
+
+    {########################}
+    {### PROJECT GOV DOCS ###}
+
+     <div class="card border-dark my-2">
+      <div class="card-header">
+        <h4>Project governance - current only
+          <span style="float:right">
+                <a  type="button" 
+                    class="btn btn-info"  
+                    href="{% url 'dc_management:prjgovdocs' project.pk %}">See all</a>
+                <a  type="button" 
+                    class="btn btn-primary"  
+                    href="{% url 'dc_management:govdocmeta-add' %}">Add document</a>
+          </span>
+        </h4>
+      </div>
+      <div class="card-body">
+    
+        {% with current_gov_docs as gov_doc_list %}
+            {% include "dc_management/gov_docs_list.html" %}
+        {% endwith %}
+        <h4>Summary:</h4>
+        <ul>
+         <li>{{ fully_validated|length }} fully validated users</li>
+         <li>{{ unconnected_users|length }} unconnected users</li>
+         <li>{{ irb_users|length }} users on IRB</li>
+         <li>{{ dcua_users|length }} users with DCUA</li>
+         <li>{{ dua_users|length }} users on DUA </li>
+        </ul>
+      </div>
+     </div>
+
+
+    {#####################}
+    {### PROJECT SOFTWARE ###}
+
+     <div class="card border-dark my-2">
+      <div class="card-header">
+        <h4>Installed software:
+          <span style="float:right">
+                <a type="button" class="btn btn-primary"  href="{% url 'dc_management:change_software' %}">Install/remove software</a>
+          </span>
+        </h4>
+    
+      </div>
+      <div class="card-body">
+        {% with project.software_installed.all as software_list %}
+            {% include "dc_management/software_list.html" %}
+        {% endwith %}
+        <h4>Other available software (already installed on node):</h4>
+        {% with available_software as software_list %}
+            {% include "dc_management/software_list.html" %}
+        {% endwith %}
+      </div>
+     </div>
+    
+    
+    {#####################}
+    {### PROJECT BILLING ###}
+
+     <div class="card border-dark my-2">
+      <div class="card-header">
+        <h4>Project billing for {{ bill.billing_date }}</h4>
+      </div>
+      <div class="card-body">
+            {% include "dc_management/project_billing.html" %}
+      </div>
+     </div>
+    
+    
+    {#####################}
+    {### PROJECT NODE AVAILABILITY ###}
+
+     <div class="card border-dark my-2">
+      <div class="card-header">
+        <h4>Nodes suitable for migration of {{ project }}</h4>
+      </div>
+      <div class="card-body">
+        <ul>
+        {% for node in project.valid_nodes %}
+            <li><a href="{% url 'dc_management:node' node.pk %}">{{node}}</a></li>
+        {% endfor %}
+        </ul>
+      </div>
+     </div>
+
+
+    {#####################}
+    {### PROJECT COMMENTS ###}
+
+    {% with project as model_instance  %}
+    {% with 'project' as  model_type %}
+    {% include 'dc_management/comment_list.html' %}
+    {% endwith %}
+    {% endwith %}
+ 
+ 
+    </div> {# end project details tab #}
+    
+    {### PROJECT LOGS  ###}
+    <div class="tab-pane col-10" id="logs">
+        
+        <h4>Access logs</h4>
+         <table class="table table-striped">
+          <thead class="thead-light">
+                <tr>
+                    <th>Logged</th>
+                    <th>Ticket</th>
+                    <th>Activated</th>
+                    <th>User</th>
+                    <th>Change</th>
+                    <th>Author</th>
+                </tr>
+          </thead>
+          {% for l in project.access_log_set.all %}
+           <tr><td>{{ l.record_creation }}</td>
+               {% if l.sn_ticket %}
+               <td>{{ l.sn_ticket }}</td>
+               {% else %}
+               <td class="bg-warning" style="color:orange;">{{ l.sn_ticket }}</td>
+               {% endif %}
+               <td>{{ l.date_changed }}</td>
+               <td>{{ l.dc_user }}</td>
+               <td>{{ l.get_change_type_display }}</td>
+               <td>{{ l.record_author }}</td>
+               </tr>
+          {% endfor %}
+         </table>
+
+         <h4>External access logs</h4>
+         <table class="table table-striped">
+          <thead class="thead-light">
+                <tr>
+                    <th>Logged</th>
+                    <th>Ticket</th>
+                    <th>Connected</th>
+                    <th>Disconnected</th>
+                </tr>
+          </thead>
+          {% for l in project.external_access_log_set.all %}
+           <tr><td>{{ l.record_creation }}</td>
+               {% if l.sn_ticket %}
+               <td>{{ l.sn_ticket }}</td>
+               {% else %}
+               <td class="bg-warning" style="color:orange;">{{ l.sn_ticket }}</td>
+               {% endif %}
+               <td>{{ l.date_connected }}</td>
+               <td>{{ l.date_disconnected }}</td>
+               </tr>
+          {% endfor %}
+         </table>
+ 
+         <h4>Software logs</h4>
+         <table class="table table-striped">
+          <thead class="thead-light">
+                <tr>
+                    <th>Ticket</th>
+                    <th>Change date</th>
+                    <th>Change type</th>
+                    <th>Software</th>
+                </tr>
+          </thead>
+          {% for l in project.software_log_set.all %}
+            <tr>
+               {% if l.sn_ticket %}
+               <td>{{ l.sn_ticket }}</td>
+               {% else %}
+               <td class="bg-warning" style="color:orange;">{{ l.sn_ticket }}</td>
+               {% endif %}
+
+               <td>{{ l.change_date }}</td>
+               <td>{{ l.get_change_type_display }}</td>
+               <td>{{ l.software_changed }}</td>
+            </tr>
+          {% endfor %}
+         </table>
+
+         <h4>Storage logs</h4>
+         <table class="table table-striped">
+          <thead class="thead-light">
+                <tr>
+                    <th>Logged</th>
+                    <th>Ticket</th>
+                    <th>Changed</th>
+                    <th>Type</th>
+                    <th>Amount (GB)</th>
+                    <th>Comments</th>
+                </tr>
+          </thead>
+          {% for l in project.storage_log_set.all %}
+           <tr><td>{{ l.record_creation }}</td>
+               {% if l.sn_ticket %}
+               <td>{{ l.sn_ticket }}</td>
+               {% else %}
+               <td class="bg-warning" style="color:orange;">{{ l.sn_ticket }}</td>
+               {% endif %}
+               <td>{{ l.date_changed }}</td>
+               <td>{{ l.storage_type }}</td>
+               <td>{{ l.storage_amount }}</td>
+               <td>{{ l.comments|linebreaks }}</td>
+               </tr>
+          {% endfor %}
+         </table>
+
+         <h4>
+            File Transfer logs
+         </h4>
+         <table class="table table-striped">
+          <thead class="thead-inverse">
+                <tr>
+                    <th>Date</th>
+                    <th>Ticket</th>
+                    <th>Source</th>
+                    <th>Destination</th>
+                    <th>Data</th>
+                </tr>
+          </thead>
+          {% for ft in project.source_project.all %}
+           <tr>
+               <td>
+                    <a href="{% url 'dc_management:file-transfer-view' ft.pk %}">
+                      {{ ft.change_date }}
+                    </a>
+                </td>
+               {% if ft.ticket %}
+               <td>{{ ft.ticket }}</td>
+               {% else %}
+               <td class="bg-warning" style="color:orange;">{{ ft.ticket }}</td>
+               {% endif %}
+       
+                <td> 
+                {% if ft.source %}
+                {{ ft.source }}
+                {% elif ft.external_source %}
+                {{ ft.external_source }}
+                {% endif %}
+                </td>
+                <td>
+                {% if ft.destination %}
+                {{ ft.destination }}
+                {% elif ft.external_destination %}
+                {{ ft.external_destination }}
+                {% endif %}
+                </td>
+       
+               <td>{{ ft.get_data_type_display }}</td>
+       
+               </tr>
+          {% endfor %}
+          {% for ft in project.destination_project.all %}
+           <tr>
+               <td>
+                 <a href="{% url 'dc_management:file-transfer-view' ft.pk %}">
+                   {{ ft.change_date }}
+                 </a>
+               </td>
+               {% if ft.ticket %}
+               <td>{{ ft.ticket }}</td>
+               {% else %}
+               <td class="bg-warning" style="color:orange;">{{ ft.ticket }}</td>
+               {% endif %}
+       
+                <td> 
+                {% if ft.source %}
+                {{ ft.source }}
+                {% elif ft.external_source %}
+                {{ ft.external_source }}
+                {% endif %}
+                </td>
+                <td>
+                {% if ft.destination %}
+                {{ ft.destination }}
+                {% elif ft.external_destination %}
+                {{ ft.external_destination }}
+                {% endif %}
+                </td>
+       
+               <td>{{ ft.get_data_type_display }}</td>
+       
+               </tr>
+          {% endfor %}
+         </table>
+
+         <h4>Audit logs</h4>
+         <table class="table table-striped">
+          <thead class="thead-inverse">
+                <tr>
+                    <th>Logged</th>
+                    <th>Ticket</th>
+                    <th>Audit Date</th>
+                    <th>User</th>
+                    <th>Comments</th>
+                </tr>
+          </thead>
+          {% for l in project.audit_log_set.all %}
+           <tr><td>{{ l.record_creation }}</td>
+               {% if l.sn_ticket %}
+               <td>{{ l.sn_ticket }}</td>
+               {% else %}
+               <td class="bg-warning" style="color:orange;">{{ l.sn_ticket }}</td>
+               {% endif %}
+               <td>{{ l.audit_date }}</td>
+               <td>{{ l.dc_user }}</td>
+               <td>{{ l.comments }}</td>
+               </tr>
+          {% endfor %}
+         </table>
+
+        <h4>Migration logs</h4>
+          {% with  project.migrationlog_set.all as migration_list %}
+            {% include 'dc_management/migration_log.html' %}
+          {% endwith %}
+
+        <h4>Project invoices</h4>
+            {% include 'dc_management/invoice_list.html' %}
+
+    </div>
+
+</div> {# tab content div #}
+
+</div> {# content + action button row #}
+
+
+
+
+
+{% endblock %}
