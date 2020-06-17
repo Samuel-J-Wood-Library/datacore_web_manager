@@ -52,15 +52,15 @@
         <td>{{ mig.data_date }}</td>
         {% if startdate == True %}
             {% if mig.project.requested_launch|days_until:7  %}
-                <td class="bg-danger" style="color:red;">
+                <td class="bg-danger" >
                     {{ mig.project.requested_launch }}
                 </td>
             {% elif mig.project.requested_launch|days_until:14 %}
-                <td class="bg-warning" style="color:orange;">
+                <td class="bg-warning">
                     {{ mig.project.requested_launch }}
                 </td>
             {% elif mig.project.requested_launch|days_until:21 %}
-                <td class="bg-info" style="color:blue;">
+                <td class="bg-info">
                     {{ mig.project.requested_launch }}
                 </td>
             {% else %}

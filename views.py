@@ -739,10 +739,12 @@ class StorageChange(LoginRequiredMixin, CreateView):
             project.direct_attach_storage = new_project_storage
             existing_server_storage = project.host.other_storage
             assess_server = True
-        elif re.search('backup', s_type.lower()):
+        elif re.search('archiv', s_type.lower()):
             project.backup_storage = log.storage_amount
-        elif re.search('share', s_type.lower()):
+        elif re.search('primary', s_type.lower()):
             project.fileshare_storage = log.storage_amount
+        elif re.search('derivative', s_type.lower()):
+            project.fileshare_derivative = log.storage_amount
         else:
             pass # may want to add an error message here.
         
@@ -1629,7 +1631,15 @@ class ProjectMonthlyBillView(LoginRequiredMixin, generic.DetailView):
 class ProjectMonthlyBillGenerate(PermissionRequiredMixin, CreateView):
     model = ProjectBillingRecord
     form_class = ProjectBillingForm 
+    permission_required = 'dc_management.add_projectbillingrecord'
+    
     template_name = "dc_management/basic_crispy_form.html"
+    
+    def get_form_kwargs(self):
+        kwargs = super( ProjectMonthlyBillGenerate, self).get_form_kwargs()
+        # update the kwargs for the form init method with yours
+        kwargs.update(self.kwargs)  # self.kwargs contains all url conf params
+        return kwargs
     
     #success_url = reverse_lazy("dc_management:index" )
     # default success_url should be to the object page defined in model.

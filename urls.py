@@ -159,7 +159,7 @@ urlpatterns = [
          views.ProjectMonthlyBillView.as_view(),
          name='project-bill',
     ),
-    path('finances/create/<int:ppk>',
+    path('finances/create',
          views.ProjectMonthlyBillCreate.as_view(),
          name='project-bill-add',
     ),
@@ -168,7 +168,7 @@ urlpatterns = [
          name='project-bill-update',
     ),
     
-    path('finances/generate/<int:pk>',
+    path('finances/generate/<int:ppk>',
          views.ProjectMonthlyBillGenerate.as_view(),
          name='project-charge',
     ),

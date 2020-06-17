@@ -1,4 +1,5 @@
 import datetime
+import numpy as np
 
 from dal import autocomplete
 
@@ -18,7 +19,7 @@ from .models import Server, Project, Person, Software, Software_Log, Project
 from .models import DCUAGenerator, Storage_Log, StorageCost, Governance_Doc
 from .models import FileTransfer, MigrationLog, CommentLog, Storage
 from .models import DataCoreUserAgreement, AnnualProjectAttestation
-from .models import ProjectBillingRecord
+from .models import ProjectBillingRecord, UserCost
 
 
 """
@@ -172,8 +173,8 @@ class StorageChangeForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         qs = StorageCost.objects.filter(
                                 Q(storage_type__icontains='direct') |
-                                Q(storage_type__icontains='backup') |
-                                Q(storage_type__icontains='share') 
+                                Q(storage_type__icontains='derivative') |
+                                Q(storage_type__icontains='primary') 
                         )
         # ppk = kwargs.pop('ppk', None)
         # prj = Project.objects.get(pk=ppk)
@@ -280,23 +281,23 @@ def layout_four_equal(ONE,TWO,THREE,FOUR):
             
 project_leaders = Div(
                         Div('pi',
-                            css_class='col-xs-6',
+                            css_class='col-6',
                         ),
                         Div('prj_admin',
-                            css_class='col-xs-6',
+                            css_class='col-6',
                         ),
                         css_class="row"
                     )
 
 environment_type = Div(
                         Div('env_type',
-                            css_class='col-xs-4',
+                            css_class='col-4',
                         ),
                         Div('env_subtype',
-                            css_class='col-xs-4',
+                            css_class='col-4',
                         ),
                         Div('status',
-                            css_class='col-xs-4',
+                            css_class='col-4',
                         ),
                         css_class="row"
                     )
@@ -304,13 +305,13 @@ project_governance = Layout(
                             Fieldset('<div class="alert alert-info">Governance</div>',
                                     Div(
                                             Div('open_allowed',
-                                                css_class='col-xs-4',
+                                                css_class='col-4',
                                             ),
                                             Div('open_enabled',
-                                                css_class='col-xs-4',
+                                                css_class='col-4',
                                             ),
                                             Div('isolate_data',
-                                                css_class='col-xs-4',
+                                                css_class='col-4',
                                             ),
                                             css_class="row",
                                     ),
@@ -319,66 +320,55 @@ project_governance = Layout(
 )
 project_compute = Div(
                         Div('requested_ram',
-                            css_class='col-xs-6',
+                            css_class='col-6',
                         ),
                         Div('requested_cpu',
-                            css_class='col-xs-6',
+                            css_class='col-6',
                         ),
                         css_class="row"
 )
-project_storage = Div(
-                        Div('fileshare_storage',
-                            css_class='col-xs-4',
-                        ),
-                        Div('direct_attach_storage',
-                            css_class='col-xs-4',
-                        ),
-                        Div('backup_storage',
-                            css_class='col-xs-4',
-                        ),
-                        css_class="row"
-)  
+
 project_access = Div(
                     Div('myapp',
-                        css_class='col-xs-3',
+                        css_class='col-3',
                         style='font-size:100%;font-weight: bold;'
                     ),
                     Div('prj_dns',
-                        css_class='col-xs-9',
+                        css_class='col-9',
                     ),
                     css_class="row"
 )     
 project_dates = Layout(Fieldset('<div class="alert alert-info">Project dates</div>',
                         Div(
                                 Div('start_date',
-                                    css_class='col-xs-6',
+                                    css_class='col-6',
                                 ),
                                 css_class="row"
                         ),
                         Div(
                                 Div('requested_launch',
-                                    css_class='col-xs-6',
+                                    css_class='col-6',
                                 ),
                                 Div('expected_completion',
-                                    css_class='col-xs-6',
+                                    css_class='col-6',
                                 ),
                                 css_class="row"
                         ),
                         Div(
                                 Div('wrapup_ticket',
-                                    css_class='col-xs-6',
+                                    css_class='col-6',
                                 ),
                                 Div('wrapup_date',
-                                    css_class='col-xs-6',
+                                    css_class='col-6',
                                 ),
                                 css_class="row"
                         ),
                         Div(
                                 Div('completion_ticket',
-                                    css_class='col-xs-6',
+                                    css_class='col-6',
                                 ),
                                 Div('completion_date',
-                                    css_class='col-xs-6',
+                                    css_class='col-6',
                                 ),
                                 css_class="row"
                         ),
@@ -398,13 +388,14 @@ def get_storage_costs(storage_type, project):
  
 class ProjectBillingForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
+        ppk = kwargs.pop('ppk', None)
         super(ProjectBillingForm, self).__init__(*args, **kwargs)
         
         # get project details from URL:
         #ppk = kwargs.pop('ppk', None)
         #prj = Project.objects.get(pk=ppk)
         
-        ppk = self.kwargs['ppk']
+        #ppk = self.kwargs['ppk']
         prj = Project.objects.get(pk=ppk)
         
         self.fields['billing_date'].initial = datetime.date.today()
@@ -416,15 +407,16 @@ class ProjectBillingForm(forms.ModelForm):
 
         user_rate = UserCost.objects.get(user_quantity=user_number).user_cost
         self.fields['base_rate'].initial = user_rate
+        self.fields['base_expense'].initial = user_rate
         
         # get the storage charges
-        st1_type, st1_value, st1_rate, st1_expense = get_storage_costs("fileshare", prj)
+        st1_type, st1_value, st1_rate, st1_expense = get_storage_costs("primary", prj)
         self.fields['storage_1_type'].initial    = st1_type
         self.fields['storage_1_value'].initial   = st1_value
         self.fields['storage_1_rate'].initial    = st1_rate
         self.fields['storage_1_expense'].initial = st1_expense
         
-        st2_type, st2_value, st2_rate, st2_expense = get_storage_costs("backup", prj)
+        st2_type, st2_value, st2_rate, st2_expense = get_storage_costs("derivative", prj)
         self.fields['storage_2_type'].initial    = st2_type
         self.fields['storage_2_value'].initial   = st2_value
         self.fields['storage_2_rate'].initial    = st2_rate
@@ -435,6 +427,12 @@ class ProjectBillingForm(forms.ModelForm):
         self.fields['storage_3_value'].initial   = st3_value
         self.fields['storage_3_rate'].initial    = st3_rate
         self.fields['storage_3_expense'].initial = st3_expense
+
+        st4_type, st4_value, st4_rate, st4_expense = get_storage_costs("archiv", prj)
+        self.fields['storage_4_type'].initial    = st4_type
+        self.fields['storage_4_value'].initial   = st4_value
+        self.fields['storage_4_rate'].initial    = st4_rate
+        self.fields['storage_4_expense'].initial = st4_expense
         
         # get software expenses
         sw_str = "; ".join([sw.name for sw in prj.software_requested.all()])
@@ -454,9 +452,14 @@ class ProjectBillingForm(forms.ModelForm):
         self.fields['sw_expense'].initial = sw_total
 
         # get extra computation costs
-        prj_erc = prj.requested_cpu - 4
-        erc = ExtraResourceCost.objects.get(extra_cpu=prj_erc)
-        erc_cost = erc.cpu_cost
+        if prj.requested_cpu and prj.requested_cpu > 4:
+            prj_erc = prj.requested_cpu - 4
+            erc = ExtraResourceCost.objects.get(extra_cpu=prj_erc)
+            erc_cost = erc.cpu_cost
+        else:
+            prj_erc = 0
+            erc_cost = 0
+        
        
         self.fields['hosting_value'].initial   = prj_erc    # extra CPU computation
         self.fields['hosting_rate'].initial    = erc_cost   
@@ -487,16 +490,18 @@ class ProjectBillingForm(forms.ModelForm):
                     Fieldset(
                             """ 
                             <div class="alert alert-info">
-                                Billing record for f"{prj}"
+                                Billing record for {}
                             </div>
-                            """
+                            """.format(prj),
                         'billing_date',
                     ),
                     Fieldset(
                         "Curation, administration and basic hosting charges",
-                        'base_value',
-                        'base_rate',
-                        'base_expense',
+                        layout_three_equal('base_value',
+                                            'base_rate',
+                                            'base_expense',
+                        ),
+                        
                     ),
                     Fieldset(
                         "Storage charges",
@@ -660,7 +665,11 @@ class ProjectForm(forms.ModelForm):
                 project_governance,
                 Fieldset('<div class="alert alert-info">Environment</div>',
                         project_compute,
-                        project_storage,
+                        layout_four_equal('fileshare_storage',
+                                            'fileshare_derivative',
+                                            'direct_attach_storage',
+                                            'backup_storage',
+                        ),
                         'software_requested',
                         project_access,
                         'db',
@@ -682,6 +691,7 @@ class ProjectForm(forms.ModelForm):
                     'open_allowed', 
                     'open_enabled',
                     'fileshare_storage', 
+                    'fileshare_derivative',
                     'direct_attach_storage', 
                     'backup_storage',
                     'requested_ram', 

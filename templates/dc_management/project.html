@@ -205,7 +205,7 @@
 
     {### PROJECT ATTRIBUTES ###}
     <br>
-    <div class="card border-dark  my-2">
+    <div class="card border-dark  my-2 shadow">
       <div class="card-header">
         <h4>PROJECT ATTRIBUTES</h4>
       </div>
@@ -234,7 +234,7 @@
     {####################################}
     {### PROJECT ACCESS AND RESOURCES ###}
     
-     <div class="card border-dark my-2">
+     <div class="card border-dark my-2 shadow">
       <div class="card-header">
         <h4>PROJECT ACCESS AND RESOURCES:
             {% if project.myapp == True %}
@@ -281,27 +281,36 @@
             <thead class="thead-light">
             <tr>
                 <th>-</th>
-                <th>Fileshare</th>
+                <th>Primary data</th>
+                <th>Derivative data</th>
+                <th>Direct Attach</th>
+                <th>Archive</th>
                 <th>CPU</th>
                 <th>RAM</th>
-                <th>Direct Attach</th>
+                
             </tr>
             </thead>
             
             <tr>
                 <td>Project</td>
                 <td>{{ project.fileshare_storage }} GB</td>
+                <td>{{ project.fileshare_derivative }} GB</td>
+                <td>{{ project.direct_attach_storage }} GB</td>
+                <td>{{ project.backup_storage }} GB</td>
                 <td>{{ project.requested_cpu }}</td>
                 <td>{{ project.requested_ram }} GB</td>
-                <td>{{ project.direct_attach_storage }} GB</td>
+                
             </tr>
             
             <tr>
                 <td>Node</td>
                 <td>NA</td>
+                <td>NA</td>
+                <td>{{ project.host.other_storage }} GB</td>
+                <td>NA</td>
                 <td>{{ project.host.processor_num }}</td>
                 <td>{{ project.host.ram }} GB</td>
-                <td>{{ project.host.other_storage }} GB</td>
+                
             </tr>
           
         </table>
@@ -312,7 +321,7 @@
     {#####################}
     {### PROJECT USERS ###}
     
-     <div class="card border-dark my-2">
+     <div class="card border-dark my-2 shadow">
       <div class="card-header">
         <h5>USERS ({{ project.billable_users.count }}/{{ project.users.all.count }} billable)
             <span style="float:right">
@@ -335,7 +344,7 @@
     {#######################}
     {### PROJECT STORAGE ###}
 
-     <div class="card border-dark my-2">
+     <div class="card border-dark my-2 shadow">
       <div class="card-header">
         <h4>Project storage
           <span style="float:right">
@@ -373,7 +382,7 @@
     {########################}
     {### PROJECT GOV DOCS ###}
 
-     <div class="card border-dark my-2">
+     <div class="card border-dark my-2 shadow">
       <div class="card-header">
         <h4>Project governance - current only
           <span style="float:right">
@@ -406,7 +415,7 @@
     {#####################}
     {### PROJECT SOFTWARE ###}
 
-     <div class="card border-dark my-2">
+     <div class="card border-dark my-2 shadow">
       <div class="card-header">
         <h4>Installed software:
           <span style="float:right">
@@ -430,7 +439,7 @@
     {#####################}
     {### PROJECT BILLING ###}
 
-     <div class="card border-dark my-2">
+     <div class="card border-dark my-2 shadow">
       <div class="card-header">
         <h4>Project billing for {{ bill.billing_date }}</h4>
       </div>
@@ -443,7 +452,7 @@
     {#####################}
     {### PROJECT NODE AVAILABILITY ###}
 
-     <div class="card border-dark my-2">
+     <div class="card border-dark my-2 shadow">
       <div class="card-header">
         <h4>Nodes suitable for migration of {{ project }}</h4>
       </div>
