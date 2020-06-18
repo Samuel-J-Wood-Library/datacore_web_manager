@@ -20,7 +20,7 @@ from .models import DCUAGenerator, Storage_Log, StorageCost, Governance_Doc
 from .models import FileTransfer, MigrationLog, CommentLog, Storage
 from .models import DataCoreUserAgreement, AnnualProjectAttestation
 from .models import ProjectBillingRecord, UserCost, SoftwareCost, DatabaseCost
-
+from .models import ExtraResourceCost
 
 """
 class CommentForm(forms.Form):

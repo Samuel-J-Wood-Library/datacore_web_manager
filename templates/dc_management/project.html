@@ -473,11 +473,31 @@
         <h4>Nodes suitable for migration of {{ project }}</h4>
       </div>
       <div class="card-body">
-        <ul>
+        <table class="table-hover table-sm table">
+            <thead>
+                    <th>Node</th>
+                    <th>Firewalled?</th>
+                    <th># active users</th>
+                    <th># projects</th>
+                    <th>OS</th>
+            </thead>
         {% for node in project.valid_nodes %}
-            <li><a href="{% url 'dc_management:node' node.pk %}">{{node}}</a></li>
+            
+            <tr>
+                <td><a href="{% url 'dc_management:node' node.pk %}">{{node}}</a></td>
+                <td>
+                {% if node.firewalled %}
+                <span class="badge badge-success">True</span>
+                {% else %}
+                <span class="badge badge-danger">{{ node.firewalled }}</span>
+                {% endif %}
+                </td>
+                <td>{{ node.get_all_active_users|length }}</td>
+                <td>{{ node.project_set.count }}</td>
+                <td>{{ node.get_operating_sys_display }}</td>
+            </tr>
         {% endfor %}
-        </ul>
+        </table>
       </div>
      </div>
 

@@ -79,7 +79,7 @@
     <tr>
       <td>Software</td>
       <td>{{ bill.sw_value }}</td>
-      <td>${{ bill.sw_rate|floatformat:2 }} / user</td>
+      <td>${{ bill.sw_rate }}</td>
       <td>$<span style="float: right">{{ bill.sw_expense|floatformat:2}}</span></td>
     </tr>
     {% endif %}

@@ -216,8 +216,10 @@ class Server(models.Model):
     PRODUCTION = 'PR'
     TEST = 'TE'
     DEVELOPMENT = 'DE'
+    DATABASE = 'DB'
     FUNCTION_CHOICES = (
             (PRODUCTION, "Production"),
+            (DATABASE, "Production Database"),
             (TEST, "Test"),
             (DEVELOPMENT, "Development"),
     )
