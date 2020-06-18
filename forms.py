@@ -19,7 +19,7 @@ from .models import Server, Project, Person, Software, Software_Log, Project
 from .models import DCUAGenerator, Storage_Log, StorageCost, Governance_Doc
 from .models import FileTransfer, MigrationLog, CommentLog, Storage
 from .models import DataCoreUserAgreement, AnnualProjectAttestation
-from .models import ProjectBillingRecord, UserCost
+from .models import ProjectBillingRecord, UserCost, SoftwareCost, DatabaseCost
 
 
 """
@@ -174,7 +174,8 @@ class StorageChangeForm(forms.ModelForm):
         qs = StorageCost.objects.filter(
                                 Q(storage_type__icontains='direct') |
                                 Q(storage_type__icontains='derivative') |
-                                Q(storage_type__icontains='primary') 
+                                Q(storage_type__icontains='primary') |
+                                Q(storage_type__icontains='archiv') 
                         )
         # ppk = kwargs.pop('ppk', None)
         # prj = Project.objects.get(pk=ppk)
@@ -380,9 +381,22 @@ project_dates = Layout(Fieldset('<div class="alert alert-info">Project dates</di
 def get_storage_costs(storage_type, project):
     st = StorageCost.objects.get(storage_type__icontains=storage_type)
     st_type = st.storage_type               # kind of storage 
-    st_value = project.fileshare_storage    # size in GB
-    st_rate = st.st_cost_per_gb             # rate per 100 GB
-    st_expense = st_rate * st_value / 100   # cost
+    
+    if storage_type == 'archiv':
+        st_value = project.backup_storage
+    elif storage_type == 'direct':
+        st_value = project.direct_attach_storage
+    elif storage_type == 'primary':
+        st_value = project.fileshare_storage
+    elif storage_type == 'derivative':
+        st_value = project.fileshare_derivative
+    else:
+        st_value = 0
+    
+    st_rate = st.st_cost_per_gb                 # rate per 100 GB
+    st_rate =  (st_rate if st_rate else 0 )     # remove null values
+    st_value =  (st_value if st_value else 0 )  # remove null values
+    st_expense = st_rate * st_value             # cost
     return st_type, st_value, st_rate, st_expense
 
  
@@ -462,6 +476,7 @@ class ProjectBillingForm(forms.ModelForm):
         
        
         self.fields['hosting_value'].initial   = prj_erc    # extra CPU computation
+        self.fields['hosting_value'].label   = "Additional CPU"    # extra CPU computation
         self.fields['hosting_rate'].initial    = erc_cost   
         self.fields['hosting_expense'].initial = erc_cost
 

@@ -211,7 +211,7 @@
       </div>
       <div class="card-body">
         
-        <table class="table py-0 my-0">
+        <table class="table py-0 my-0 table-sm">
             <tr>
                 <td>Onboarding ticket</td>
                 <td> <a 
@@ -245,8 +245,8 @@
         </h4>
       </div>
       <div class="card-body">
-        <table class="table">
-            <thead class="thead-light">
+        <table class="table table-sm">
+            <thead class="table-info">
             <tr>
                 <th>Node</th><th>DNS address</th><th>IP address</th>
             </tr>
@@ -277,8 +277,8 @@
             
         </table>
         
-        <table class="table">
-            <thead class="thead-light">
+        <table class="table table-sm">
+            <thead class="table-info">
             <tr>
                 <th>-</th>
                 <th>Primary data</th>
@@ -304,16 +304,31 @@
             
             <tr>
                 <td>Node</td>
-                <td>NA</td>
-                <td>NA</td>
+                <td>-</td>
+                <td>-</td>
                 <td>{{ project.host.other_storage }} GB</td>
-                <td>NA</td>
+                <td>-</td>
                 <td>{{ project.host.processor_num }}</td>
                 <td>{{ project.host.ram }} GB</td>
                 
             </tr>
           
         </table>
+        
+        {% if project.db %}
+        <table class="table col-6">
+            <thead class="table-info">
+            <tr>
+                <th>Connected database:</th>
+                <th>
+                <a href="{% url 'dc_management:node' project.db.pk %}">
+                {{ project.db }}</a>
+                </th>
+            </tr>
+            </thead>
+        </table>
+        {% endif %}
+        
       </div>
     </div> {# end access and resources card #}
  
@@ -441,7 +456,8 @@
 
      <div class="card border-dark my-2 shadow">
       <div class="card-header">
-        <h4>Project billing for {{ bill.billing_date }}</h4>
+        <h4>Project billing for {{ bill.billing_date }} (acct: 
+            {{ project.account_number }})</h4>
       </div>
       <div class="card-body">
             {% include "dc_management/project_billing.html" %}

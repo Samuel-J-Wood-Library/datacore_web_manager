@@ -157,6 +157,24 @@ class DataCoreUserAgreementAdmin(admin.ModelAdmin):
     
     list_filter = ('consent_access',)
 
+@admin.register(ProjectBillingRecord)
+class ProjectBillingRecordAdmin(admin.ModelAdmin):
+    list_display = ('project',
+					'billing_date',
+					'account',
+					'base_expense',
+					'storage_1_expense',
+					'storage_2_expense',
+					'sw_expense',
+					'hosting_expense',
+					)
+
+    search_fields = ('project__dc_prj_id', 
+                     'account', 
+                    )
+    
+    list_filter = ('account',)
+
 admin.site.register(Access_Log)
 admin.site.register(AccessPermission)
 admin.site.register(Audit_Log)
@@ -166,7 +184,6 @@ admin.site.register(DC_Administrator)
 admin.site.register(EnvtSubtype)
 admin.site.register(External_Access_Log)
 admin.site.register(ExtraResourceCost)
-admin.site.register(ProjectBillingRecord)
 admin.site.register(ResourceLog)
 admin.site.register(SN_Ticket)
 admin.site.register(Software)

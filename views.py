@@ -1645,6 +1645,11 @@ class ProjectMonthlyBillGenerate(PermissionRequiredMixin, CreateView):
     # default success_url should be to the object page defined in model.
     def form_valid(self, form):
         self.object = form.save(commit=False)
+        # update who last edited record
+        self.object.record_author = self.request.user
+        prj = Project.objects.get(pk=self.kwargs['ppk'])
+        self.object.project = prj
+        self.object.save()
         return super(ProjectMonthlyBillGenerate, self).form_valid(form)
         
         
@@ -1777,8 +1782,6 @@ class ProjectMonthlyBillGenerateOld(LoginRequiredMixin, CreateView):
         
         self.object = form.save(commit=False)
         return super(ProjectMonthlyBillGenerateOld, self).form_valid(form)
-
-
 
 class ProjectMonthlyBillCreate(LoginRequiredMixin, CreateView):
     model = ProjectBillingRecord

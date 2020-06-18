@@ -920,7 +920,6 @@ class DataCoreUserAgreement(models.Model):
     def __str__(self):
         return f"{self.project} {self.attestee} {self.signature_date}"
 
-
 class DC_Administrator(models.Model):
     # date the record was created
     record_creation = models.DateField(auto_now_add=True)
