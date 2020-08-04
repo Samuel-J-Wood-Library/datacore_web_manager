@@ -74,18 +74,19 @@ class CommentView(LoginRequiredMixin, CreateView):
     def form_valid(self, form, ):
         self.object = form.save(commit=False)
         # get model instance comment is connected with:
-        inst_pk = self.kwargs['inst_pk']
-        model_type = self.kwargs['model_type']
+        inst_pk = self.kwargs['inst_pk']            #  pk of object to attach comment to
+        model_type = self.kwargs['model_type']      #  type of object comment is attached
+        comment_parent = self.kwargs['comment_type']  #  pk of parent comment, or "new"
         
         # get the user who posted
         self.object.record_author = self.request.user
         
         # check if reply, then save parent if so:
-        if self.kwargs['comment_type'] == 'new':
+        if comment_parent == 'new':
             pass
         else:
             self.object.parent_comment = CommentLog.objects.get(
-                                                pk=int(self.kwargs['comment_type'])
+                                                pk=int(comment_parent)
                                                             )
         self.object.save()
         
