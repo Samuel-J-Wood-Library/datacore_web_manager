@@ -29,7 +29,7 @@ class GovDocAdmin(admin.ModelAdmin):
                     'isolate_data',
                     )
     list_filter = ('governance_type','expiry_date')
-    search_fields = ('pk', 'doc_id', 'project')
+    search_fields = ('pk', 'doc_id', )
     
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):

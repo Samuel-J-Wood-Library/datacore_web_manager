@@ -2273,18 +2273,18 @@ class FullSearch(LoginRequiredMixin, generic.TemplateView):
                                 Q(title__icontains=st) | 
                                 Q(nickname__icontains=st) |
                                 Q(dynamic_comments__comment__icontains=st)
-        )
+        ).order_by('dc_prj_id').distinct()
         qs_usr = Person.objects.all()
         qs_usr = qs_usr.filter( Q(first_name__icontains=st) |
                                 Q(last_name__icontains=st) |
                                 Q(cwid__icontains=st) |
                                 Q(comments__icontains=st)
-        )
+        ).order_by('pk').distinct()
         qs_gov = Governance_Doc.objects.all()
         qs_gov = qs_gov.filter( Q(doc_id__icontains=st) |
                                 Q(governance_type=st) |
                                 Q(comments__icontains=st)
-        )
+        ).order_by('pk').distinct()
         context = { "search_str" : st,
                     "qs_prj": qs_prj,
                     "qs_usr": qs_usr,

@@ -1734,6 +1734,7 @@ class MigrationLog(models.Model):
     def get_absolute_url(self):
         return reverse('dc_management:project', kwargs={'pk': self.project.pk})
 
-
+## end ##
+#########
 
     
