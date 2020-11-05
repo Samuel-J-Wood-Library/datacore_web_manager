@@ -5,6 +5,8 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.db.models import Q
 
+from cidrfield.models import IPNetworkField
+
 import datetime
 from datetime import date
 
@@ -398,7 +400,55 @@ class Server(models.Model):
         
     def get_absolute_url(self):
         return reverse('dc_management:node', kwargs={'pk': self.pk})
-           
+
+class SFTP(models.Model):
+    """
+    A class to document sFTP access conditions provided to projects. Some projects require ability to
+    push data from an external site, while others only need ability to pull from within the sFTP node.
+    """
+    # date the record was created
+    record_creation = models.DateField(auto_now_add=True)
+    # date the record was most recently modified
+    record_update = models.DateField(auto_now=True)
+    # the user who was signed in at time of record modification
+    record_author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    # project that gains access through this instance
+    project = models.ForeignKey(Project, null=False)
+
+    # boolean to capture if access is only via internal log on to the sFTP server, not by pushing data in.
+    internal_connection = models.NullBooleanField()
+
+    # Whitelisted IP addresses that can push to the sFTP server
+    whitelisted = IPNetworkField(null=True)
+
+    # description of the location pushing data
+    pusher = models.CharField("External data location", max_length=128, null=True, blank=True)
+
+    # contact name of external team / data provider
+    pusher_contact = models.CharField("External contact name", max_length=128, null=True, blank=True)
+
+    # contact email of external team / data provider
+    pusher_email = models.EmailField("External contact email", null=True, blank=True)
+
+    # sFTP login details e.g. anonymous@dcoredrop
+    login_details = models.EmailField("External connection details", null=True, blank=True)
+
+    # label given to security team for perimeter firewall rule
+    firewall_label = models.CharField("Firewall label", max_length=128, null=True, blank=True)
+
+    # firewall rule id (to allow request for modification or deletion)
+    firewall_rule = models.CharField(max_length=32, null=True, blank=True)
+
+    # firewall request ServiceNow Ticket number
+    firewall_request = models.CharField(max_length=32, null=True, blank=True)
+
+    # server hosting the sFTP application
+    host_server = models.ForeignKey(Server)
+
+    # storage that this sFTP instance gains access to
+    storage = models.ForeignKey(Storage)
+
 ############################
 ####   Project Models   ####
 ############################
@@ -723,6 +773,10 @@ def project_directory_path(instance, filename):
 ############################
 
 class Governance_Doc(models.Model):
+    """
+    This class is the original holder of governance document meta data. This class will be replaced with the
+    Data Catalog models.
+    """
     # date the record was created
     record_creation = models.DateField(auto_now_add=True)
     # date the record was most recently modified
