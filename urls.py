@@ -71,6 +71,7 @@ urlpatterns = [
     ),
 
     # add, modify, view sftp connections:
+    path('sftp', views.IndexSFTPView.as_view(), name='idx-sftp'),
     path('sftp/<int:pk>', views.SFTPView.as_view(), name='sftp'),
     path('sftp/add', views.SFTPCreate.as_view(), name='sftp-add'),
     path('sftp/update/<int:pk>', views.SFTPUpdate.as_view(), name = 'sftp-update'),

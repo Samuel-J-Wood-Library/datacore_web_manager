@@ -179,8 +179,8 @@
             href="{% url 'dc_management:migration-add' project.pk %}">Migrate project</a>
         <a  type="button" class="my-1 btn btn-primary btn-block" 
             href="{% url 'dc_management:project-charge' project.pk %}">Charge project</a>
-        <a  type="button" class="my-1 btn btn-outline-secondary btn-block" 
-            href="#">Find available node</a>
+        <a  type="button" class="my-1 btn btn-primary btn-block"
+            href="{% url 'dc_management:sftp-add' %}">Add sFTP</a>
         <a  type="button" class="my-1 btn btn-outline-secondary btn-block" 
             href="#">Unmount project</a>
         <a  type="button" class="my-1 btn btn-outline-secondary btn-block" 
@@ -314,7 +314,8 @@
             </tr>
           
         </table>
-        
+
+        {# If connection has been allowed to another node (e.g. postgres database), display here. #}
         {% if project.db %}
         <table class="table col-6">
             <thead class="table-info">
@@ -324,6 +325,20 @@
                 <a href="{% url 'dc_management:node' project.db.pk %}">
                 {{ project.db }}</a>
                 </th>
+            </tr>
+            </thead>
+        </table>
+        {% endif %}
+
+       {# If sFTP connection has been enabled for self-import into this project, show details here #}
+       {% if project.sftp_set %}
+        <table class="table">
+            <thead class="table-info">
+            <tr>
+                <th>sFTP connections allowed:</th>
+                {% with project.sftp_set as sftp_list %}
+                  {% include "dc_management/sftp_list.html" %}
+                {% endwith %}
             </tr>
             </thead>
         </table>
