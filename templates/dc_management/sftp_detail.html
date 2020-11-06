@@ -1,0 +1,49 @@
+{% extends 'dc_management/base-dcore.html' %}
+
+{% block content %}
+
+<div class="container">
+<div class="row justify-content-between">
+    <div class="col-8">
+        <h1>sFTP connection for {{ sftp.pusher }}</h1>
+
+        {{ sftp.login_details }}</br>
+        {{ sftp.project }}</br>
+    </div>
+</div>    
+</div>
+
+<a  type="button" class="btn btn-primary" 
+    href="{% url 'dc_management:sftp-update' sftp.pk %}">
+    Update sFTP connection details
+</a>
+<br>
+
+<table class="table table-striped table-hover table-sm">
+
+    <tr>
+        <td>Project</td><td>{{ sftp.project }}</td>
+        <td>Internal Only</td><td>{{ sftp.internal_connection }}</td>
+        <td>Provider</td><td>{{ sftp.pusher }}</td>
+        <td>Provider contact</td><td>{{ sftp.pusher_contact }}</td>
+        <td>Provider email</td><td>{{ sftp.pusher_email }}</td>
+        <td>Allowed IPs</td><td>{{ sftp.whitelisted }}</td>
+        {% if sftp.firewall_rule %}
+        <td>Firewall rule</td><td>{{ sftp.firewall_rule }}</td>
+        {% endif %}
+        <td>Firewall label</td><td>{{ sftp.firewall_label }}</td>
+        {% if sftp.firewall_request %}
+        <td>Firewall request</td><td>{{ sftp.firewall_request }}</td>
+        {% endif %}
+        {% if sftp.storage %}
+        <td>Storage connected</td><td>{{ sftp.storage }}</td>
+        {% endif %}
+        {% if sftp.host_server %}
+        <td>sFTP host</td><td>{{ sftp.host_server }}</td>
+        {% endif %}
+    </tr>
+</table>
+
+
+{% endblock %}
+ 

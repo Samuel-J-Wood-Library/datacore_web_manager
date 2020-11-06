@@ -10,7 +10,7 @@ import numpy as np
 from dal import autocomplete
 
 from django.views import generic
-from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
+from django.views.generic.edit import CreateView, UpdateView, FormView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
@@ -18,27 +18,27 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from django.core.mail import send_mail
 
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse
 
 from django.http import HttpResponse, Http404, FileResponse
 
 from django.urls import reverse_lazy
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect
 
-from django.db.models import Q, Max, Sum
+from django.db.models import Q, Sum
 from django.db.utils import IntegrityError, DataError
 
-from dc_management.authhelper import get_signin_url, get_token_from_code, get_access_token
-from dc_management.outlookservice import get_me, send_message
+from dc_management.authhelper import get_signin_url, get_token_from_code
+from dc_management.outlookservice import get_me
 
 from .models import Server, Project, Access_Log, Governance_Doc
 from .models import Software, Software_Log, Storage_Log, Storage
 from .models import UserCost, SoftwareCost, StorageCost, DCUAGenerator, DatabaseCost
 from .models import FileTransfer, MigrationLog, CommentLog
 from .models import ProjectBillingRecord, ExtraResourceCost
-from .models import DataCoreUserAgreement, AnnualProjectAttestation
+from .models import DataCoreUserAgreement, AnnualProjectAttestation, SFTP
 
-from persons.models import Person, Department, Organization, Role
+from persons.models import Person
 from datacatalog.models import Dataset, DataUseAgreement
 
 from .forms import AddUserToProjectForm, RemoveUserFromProjectForm
@@ -47,7 +47,7 @@ from .forms import AddSoftwareToProjectForm, ProjectForm, ProjectUpdateForm
 from .forms import StorageChangeForm, BulkUserUploadForm, GovernanceDocForm
 from .forms import FileTransferForm, ServerUpdateForm, ServerForm, MigrationForm
 from .forms import CommentForm, StorageForm, StorageAttachForm
-from .forms import DCUAForm, DCUAPrepForm, ProjectBillingForm
+from .forms import DCUAForm, DCUAPrepForm, ProjectBillingForm, SFTPForm
 
 #######################
 #### Comment views ####
@@ -395,7 +395,23 @@ class IndexGovdocView(LoginRequiredMixin, generic.ListView):
             'empty_list'     : [],
         })
         return context
-                    
+
+class IndexSFTPView(PermissionRequiredMixin, generic.ListView):
+    template_name = 'dc_management/index_sftp.html'
+    context_object_name = 'sftp_list'
+    permission_required = 'dc_management.view_project'
+
+    def get_queryset(self):
+        """Return  all software."""
+        return SFTP.objects.all().order_by('project')
+
+    def get_context_data(self, **kwargs):
+        context = super(IndexSFTPView, self).get_context_data(**kwargs)
+        context.update({
+            'empty_list'     : [],
+        })
+        return context
+
 class IndexView(PermissionRequiredMixin, generic.ListView):
     
     template_name = 'dc_management/index.html'
@@ -965,7 +981,46 @@ class ServerUpdate(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         self.object = form.save(commit=False)
         return super(ServerUpdate, self).form_valid(form)
-        
+
+####################
+#### sFTP VIEWS ####
+####################
+class SFTPView(PermissionRequiredMixin, generic.DetailView):
+    model = SFTP
+    template_name = 'dc_management/sftp_detail.html'
+    permission_required = 'dc_management.view_project'
+
+class SFTPCreate(PermissionRequiredMixin, CreateView):
+    model = SFTP
+    form_class = SFTPForm
+    template_name = "dc_management/basic_crispy_form.html"
+    permission_required = 'dc_management.view_project'
+
+    # default success_url should be to the object page defined in model.
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        # update who last edited record
+        self.object.record_author = self.request.user
+
+        self.object.save()
+        return super(SFTPCreate, self).form_valid(form)
+
+
+class SFTPUpdate(PermissionRequiredMixin, UpdateView):
+    model = SFTP
+    form_class = SFTPForm
+    template_name = "dc_management/basic_form.html"
+    permission_required = 'dc_management.view_project'
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        # update who last edited record
+        self.object.record_author = self.request.user
+
+        self.object.save()
+        return super(SFTPUpdate, self).form_valid(form)
+
+
 ###############################
 ######  UPDATE SOFTWARE  ######
 ###############################
@@ -1528,8 +1583,8 @@ class ExportRequest(LoginRequiredMixin, FormView):
         
         # send email
         send_mail(
-            'Transfer files from {} to {}'.format(newuser, str(prj)),
-            'Please add {} to project {} ({}) (name: {} IP:{}).'.format(newuser, 
+            'Transfer files from {} to {}'.format(requestor, str(prj)),
+            'Please add {} to project {} ({}) (name: {} IP:{}).'.format(requestor,
                                                                  str(prj),
                                                                  prj.host,
                                                                  prj.host.node,

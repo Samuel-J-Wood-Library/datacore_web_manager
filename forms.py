@@ -4,23 +4,22 @@ import numpy as np
 from dal import autocomplete
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Div, Fieldset, HTML, Row
-from crispy_forms.bootstrap import Field
+from crispy_forms.layout import Submit, Layout, Div, Fieldset, HTML
 
 from django import forms
 from django.db.models import Q
 
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
-from django.forms.widgets import SelectDateWidget, CheckboxInput
+from django.forms.widgets import CheckboxInput
 
-from .models import Server, Project, Person, Software, Software_Log, Project
+from .models import Server, Person, Software_Log, Project
 from .models import DCUAGenerator, Storage_Log, StorageCost, Governance_Doc
 from .models import FileTransfer, MigrationLog, CommentLog, Storage
 from .models import DataCoreUserAgreement, AnnualProjectAttestation
 from .models import ProjectBillingRecord, UserCost, SoftwareCost, DatabaseCost
-from .models import ExtraResourceCost
+from .models import ExtraResourceCost, SFTP
 
 """
 class CommentForm(forms.Form):
@@ -156,6 +155,34 @@ class CreateDCAgreementURLForm(forms.ModelForm):
         widgets =   {'project' : autocomplete.ModelSelect2(
                                         url='dc_management:autocomplete-project'
                                         ),
+                    }
+
+class SFTPForm(forms.ModelForm):
+    class Meta:
+        model = SFTP
+        fields = [  'project',
+                    'internal_connection',
+                    'whitelisted',
+                    'pusher',
+                    'pusher_contact',
+                    'pusher_email',
+                    'login_details',
+                    'firewall_label',
+                    'firewall_rule',
+                    'firewall_request',
+                    'host_server',
+                    'storage',
+        ]
+        help_texts = {'storage' : _('The fileshare with provisioned access') }
+        widgets =   {'project' : autocomplete.ModelSelect2(
+                         url='dc_management:autocomplete-project'
+                     ),
+                     'host_server' : autocomplete.ModelSelect2(
+                         url='dc_management:autocomplete-node'
+                     ),
+                     'storage': autocomplete.ModelSelect2(
+                         url='dc_management:autocomplete-storage'
+                     ),
                     }
 
 class StorageChangeForm(forms.ModelForm):

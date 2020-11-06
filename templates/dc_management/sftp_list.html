@@ -1,0 +1,27 @@
+<table class="table table-striped table-hover" id="serverTable">
+<thead class="thead-default">
+    <tr>
+        <th>Connection ID</th>
+        <th>Project</th>
+        <th>IP addresses</th>
+        <th>Location</th>
+        <th>External contact</th>
+        <th>Login details</th>
+        <th>Internal Only</th>
+        <th>Firewall label</th>
+    </tr>
+</thead>
+
+{% for s in sftp_list %}
+    <tr>
+    <td><a href="{% url 'dc_management:sftp' s.pk %}">{{ s.pk }}</a></td>
+    <td><a href="{% url 'dc_management:project' s.project.pk %}">{{ s.project }}</a></td>
+    <td> {{ s.whitelisted }}</td>
+    <td> {{ s.pusher }}</td>
+    <td> {{ s.pusher_email }}</td>
+    <td> {{ s.login_details }}</td>
+    <td> {{ s.internal_connection }}</td>
+    <td> {{ s.firewall_label }}</td>
+    </tr>
+{% endfor %}
+</table>

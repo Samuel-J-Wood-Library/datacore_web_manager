@@ -69,7 +69,12 @@ urlpatterns = [
          views.AllProjectGovDocsView.as_view(), 
          name='prjgovdocs'
     ),
-    
+
+    # add, modify, view sftp connections:
+    path('sftp/<int:pk>', views.SFTPView.as_view(), name='sftp'),
+    path('sftp/add', views.SFTPCreate.as_view(), name='sftp-add'),
+    path('sftp/update/<int:pk>', views.SFTPUpdate.as_view(), name = 'sftp-update'),
+
     # add, modify, view storage:
     path('storage/<int:pk>', views.StorageView.as_view(), name='storage'),
     path('storage/add', views.StorageCreate.as_view(), name='storage-add'),
