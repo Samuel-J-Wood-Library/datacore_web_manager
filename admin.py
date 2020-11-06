@@ -8,7 +8,7 @@ from .models import Storage_Log, SubFunction, SoftwareCost, UserCost, StorageCos
 from .models import DCUAGenerator, FileTransfer, TransferMethod
 from .models import ResourceLog, MigrationLog, ExtraResourceCost, DatabaseCost
 from .models import ProjectBillingRecord, AnnualProjectAttestation
-from .models import DataCoreUserAgreement 
+from .models import DataCoreUserAgreement, SFTP
 
 # customize the look of the admin site:
 admin.site.site_header = 'Data Core Management Site'
@@ -174,6 +174,17 @@ class ProjectBillingRecordAdmin(admin.ModelAdmin):
                     )
     
     list_filter = ('account',)
+
+@admin.register(SFTP)
+class SFTPAdmin(admin.ModelAdmin):
+    list_display = ('project',
+                    'internal_connection',
+                    'pusher',
+                    'pusher_email',
+                    'whitelisted',
+                    )
+    search_fields = ('pusher', 'whitelisted',)
+    list_filter = ('internal_connection', 'project',)
 
 admin.site.register(Access_Log)
 admin.site.register(AccessPermission)

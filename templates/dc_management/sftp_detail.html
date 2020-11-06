@@ -13,35 +13,36 @@
 </div>    
 </div>
 
+<p>
 <a  type="button" class="btn btn-primary" 
     href="{% url 'dc_management:sftp-update' sftp.pk %}">
     Update sFTP connection details
 </a>
-<br>
+</p>
 
 <table class="table table-striped table-hover table-sm">
 
-    <tr>
-        <td>Project</td><td>{{ sftp.project }}</td>
-        <td>Internal Only</td><td>{{ sftp.internal_connection }}</td>
-        <td>Provider</td><td>{{ sftp.pusher }}</td>
-        <td>Provider contact</td><td>{{ sftp.pusher_contact }}</td>
-        <td>Provider email</td><td>{{ sftp.pusher_email }}</td>
-        <td>Allowed IPs</td><td>{{ sftp.whitelisted }}</td>
+
+        <tr><td>Project</td><td><a href="{% url 'dc_management:project' sftp.project.pk %}">{{ sftp.project }}</a></td></tr>
+        <tr><td>Internal Only</td><td>{{ sftp.internal_connection }}</td></tr>
+        <tr><td>Provider</td><td>{{ sftp.pusher }}</td></tr>
+        <tr><td>Provider contact</td><td>{{ sftp.pusher_contact }}</td></tr>
+        <tr><td>Provider email</td><td>{{ sftp.pusher_email }}</td></tr>
+        <tr><td>Allowed IPs</td><td>{{ sftp.whitelisted }}</td></tr>
         {% if sftp.firewall_rule %}
-        <td>Firewall rule</td><td>{{ sftp.firewall_rule }}</td>
+            <tr><td>Firewall rule</td><td>{{ sftp.firewall_rule }}</td></tr>
         {% endif %}
-        <td>Firewall label</td><td>{{ sftp.firewall_label }}</td>
+        <tr><td>Firewall label</td><td>{{ sftp.firewall_label }}</td></tr>
         {% if sftp.firewall_request %}
-        <td>Firewall request</td><td>{{ sftp.firewall_request }}</td>
+            <tr><td>Firewall request</td><td>{{ sftp.firewall_request }}</td></tr>
         {% endif %}
         {% if sftp.storage %}
-        <td>Storage connected</td><td>{{ sftp.storage }}</td>
+            <tr><td>Storage connected</td><td><a href="{% url 'dc_management:storage' sftp.storage.pk %}">{{ sftp.storage }}</a></td></tr>
         {% endif %}
         {% if sftp.host_server %}
-        <td>sFTP host</td><td>{{ sftp.host_server }}</td>
+            <tr><td>sFTP host</td><td><a href="{% url 'dc_management:node' sftp.host_server.pk %}">{{ sftp.host_server }}</a></td></tr>
         {% endif %}
-    </tr>
+
 </table>
 
 

@@ -157,33 +157,7 @@ class CreateDCAgreementURLForm(forms.ModelForm):
                                         ),
                     }
 
-class SFTPForm(forms.ModelForm):
-    class Meta:
-        model = SFTP
-        fields = [  'project',
-                    'internal_connection',
-                    'whitelisted',
-                    'pusher',
-                    'pusher_contact',
-                    'pusher_email',
-                    'login_details',
-                    'firewall_label',
-                    'firewall_rule',
-                    'firewall_request',
-                    'host_server',
-                    'storage',
-        ]
-        help_texts = {'storage' : _('The fileshare with provisioned access') }
-        widgets =   {'project' : autocomplete.ModelSelect2(
-                         url='dc_management:autocomplete-project'
-                     ),
-                     'host_server' : autocomplete.ModelSelect2(
-                         url='dc_management:autocomplete-node'
-                     ),
-                     'storage': autocomplete.ModelSelect2(
-                         url='dc_management:autocomplete-storage'
-                     ),
-                    }
+
 
 class StorageChangeForm(forms.ModelForm):
     
@@ -683,7 +657,69 @@ class DCUAPrepForm(forms.ModelForm):
                     'end_date', 
                     'locations_allowed',
                 ]  
-                            
+
+class SFTPForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(SFTPForm, self).__init__(*args, **kwargs)
+        self.fields['login_details'].label = "sFTP login details"
+        self.fields['internal_connection'].label = "Internal connection ONLY"
+
+        self.helper = FormHelper()
+        self.helper.form_id = 'SFTPForm'
+        self.helper.form_method = 'post'
+        self.helper.add_input(Submit('submit', 'Submit'))
+        self.helper.layout = Layout(
+            Fieldset(
+                """ <div class="alert alert-info">
+                        Create new sFTP connection for a project
+                    </div>
+                """,
+                'project',
+                'internal_connection',
+                'whitelisted',
+                layout_three_equal( 'pusher',
+                                    'pusher_contact',
+                                    'pusher_email',),
+                'login_details',
+                layout_three_equal( 'firewall_label',
+                                    'firewall_rule',
+                                    'firewall_request'),
+                'host_server',
+                'storage',
+                style="font-weight:bold;",
+            ),
+        )
+
+    class Meta:
+        model = SFTP
+        fields = [  'project',
+                    'internal_connection',
+                    'whitelisted',
+                    'pusher',
+                    'pusher_contact',
+                    'pusher_email',
+                    'login_details',
+                    'firewall_label',
+                    'firewall_rule',
+                    'firewall_request',
+                    'host_server',
+                    'storage',
+        ]
+        help_texts = {'storage' : _('The fileshare where files will be saved to'),
+                      'internal_connection': _('Whether access is only via the WCM network'),
+                      'login_details': _('will be of the format anonymous@somewhere')
+                      }
+        widgets =   {'project' : autocomplete.ModelSelect2(
+                         url='dc_management:autocomplete-project'
+                     ),
+                     'host_server' : autocomplete.ModelSelect2(
+                         url='dc_management:autocomplete-node'
+                     ),
+                     'storage': autocomplete.ModelSelect2(
+                         url='dc_management:autocomplete-storage'
+                     ),
+                    }
+
 class ProjectForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ProjectForm, self).__init__(*args, **kwargs)

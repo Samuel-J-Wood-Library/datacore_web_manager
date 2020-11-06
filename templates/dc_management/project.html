@@ -331,17 +331,13 @@
         {% endif %}
 
        {# If sFTP connection has been enabled for self-import into this project, show details here #}
-       {% if project.sftp_set %}
-        <table class="table">
-            <thead class="table-info">
-            <tr>
-                <th>sFTP connections allowed:</th>
-                {% with project.sftp_set as sftp_list %}
+       {% if project.sftp_set.count > 0 %}
+        <div class="alert alert-primary" role="alert">
+            sFTP connections allowed:
+        </div>
+                {% with project.sftp_set.all as sftp_list %}
                   {% include "dc_management/sftp_list.html" %}
                 {% endwith %}
-            </tr>
-            </thead>
-        </table>
         {% endif %}
         
       </div>

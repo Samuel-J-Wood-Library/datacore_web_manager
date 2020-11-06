@@ -5,8 +5,6 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.db.models import Q
 
-from cidrfield.models import IPNetworkField
-
 import datetime
 from datetime import date
 
@@ -1040,7 +1038,7 @@ class SFTP(models.Model):
     internal_connection = models.NullBooleanField()
 
     # Whitelisted IP addresses that can push to the sFTP server
-    whitelisted = IPNetworkField(null=True)
+    whitelisted = models.CharField(max_length=128, null=True, blank=True)
 
     # description of the location pushing data
     pusher = models.CharField("External data location", max_length=128, null=True, blank=True)
@@ -1052,7 +1050,7 @@ class SFTP(models.Model):
     pusher_email = models.EmailField("External contact email", null=True, blank=True)
 
     # sFTP login details e.g. anonymous@dcoredrop
-    login_details = models.EmailField("External connection details", null=True, blank=True)
+    login_details = models.CharField("External login details", max_length=128, null=True, blank=True)
 
     # label given to security team for perimeter firewall rule
     firewall_label = models.CharField("Firewall label", max_length=128, null=True, blank=True)
@@ -1069,6 +1067,11 @@ class SFTP(models.Model):
     # storage that this sFTP instance gains access to
     storage = models.ForeignKey(Storage, on_delete=models.PROTECT)
 
+    def __str__(self):
+        return f"{self.pusher}"
+
+    def get_absolute_url(self):
+        return reverse('dc_management:sftp', kwargs={'pk': self.pk})
 
 ############################
 ####   Finance Models   ####
