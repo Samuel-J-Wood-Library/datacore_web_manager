@@ -429,10 +429,12 @@ class Storage(models.Model):
     ISILON = 'IS'
     AWS = 'AW'
     AZURE = 'AZ'
+    SRA = 'SA'
     LOCATION_CHOICES = (
                 (ISILON, "Isilon"),
                 (AWS, "Amazon Web Services"),
-                (AZURE, "Microsoft Azure")
+                (AZURE, "Microsoft Azure"),
+                (SRA, "Secure Remote Archive"),
     )
     location = models.CharField(
                             "Storage location",
@@ -442,7 +444,7 @@ class Storage(models.Model):
     )
     
     # datasets contained in storage
-    datasets = models.ManyToManyField(Dataset)
+    datasets = models.ManyToManyField(Dataset, blank=True)
 
     def __str__(self):
         return "{} ({})".format(self.name, self.location)
