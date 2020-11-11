@@ -1,13 +1,12 @@
 <table class="table table-striped table-hover table-sm" id="sftpTable">
 <thead class="thead-default">
     <tr>
-        <th>Connection ID</th>
+        <th>ID</th>
         <th>Project</th>
         <th>IP addresses</th>
         <th>Location</th>
         <th>Login details</th>
         <th>Internal Only</th>
-        <th>Firewall label</th>
     </tr>
 </thead>
 
@@ -19,7 +18,6 @@
     <td> {{ s.pusher }}</td>
     <td> {{ s.login_details }}</td>
     <td> {{ s.internal_connection }}</td>
-    <td> {{ s.firewall_label }}</td>
     </tr>
 {% endfor %}
 </table>
