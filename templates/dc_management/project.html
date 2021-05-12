@@ -454,10 +454,18 @@
         {% with project.software_installed.all as software_list %}
             {% include "dc_management/software_list.html" %}
         {% endwith %}
-        <h4>Other available software (already installed on node):</h4>
+
+          <h4>Requested software (not installed):</h4>
+        {% with project.software_requested.all as software_list %}
+            {% include "dc_management/software_list.html" %}
+        {% endwith %}
+
+        {% if available_software|length > 0 %}
+          <h4>Other available software (already installed on node):</h4>
         {% with available_software as software_list %}
             {% include "dc_management/software_list.html" %}
         {% endwith %}
+        {% endif %}
       </div>
      </div>
     

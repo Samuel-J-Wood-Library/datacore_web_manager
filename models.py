@@ -8,8 +8,6 @@ from django.db.models import Q
 import datetime
 from datetime import date
 
-import collections
-
 import numpy as np
 
 from persons.models import Person, Department, Organization, Role 
@@ -678,8 +676,8 @@ class Project(models.Model):
         return reverse('dc_management:project', kwargs={'pk': self.pk})
     
     def days_to_completion(self):
-    	td = self.expected_completion - datetime.date.today()
-    	return td.days
+        td = self.expected_completion - datetime.date.today()
+        return td.days
     
     def billable_users(self):
         """

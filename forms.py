@@ -17,7 +17,7 @@ from django.forms.widgets import CheckboxInput
 from .models import Server, Person, Software_Log, Project
 from .models import DCUAGenerator, Storage_Log, StorageCost, Governance_Doc
 from .models import FileTransfer, MigrationLog, CommentLog, Storage
-from .models import DataCoreUserAgreement, AnnualProjectAttestation
+from .models import DataCoreUserAgreement
 from .models import ProjectBillingRecord, UserCost, SoftwareCost, DatabaseCost
 from .models import ExtraResourceCost, SFTP
 
@@ -25,11 +25,14 @@ from .models import ExtraResourceCost, SFTP
 class CommentForm(forms.Form):
     comment = forms.TextField(widget=forms.Textarea)
 """
+
+
 class CommentForm(forms.ModelForm):
     class Meta:
         model = CommentLog
-        fields = [ 'comment', ]
+        fields = ['comment', ]
      
+
 class AddUserToProjectForm(forms.Form):
     dcusers = forms.ModelMultipleChoiceField(
                                 queryset=Person.objects.all(), 
@@ -450,10 +453,10 @@ class ProjectBillingForm(forms.ModelForm):
         self.fields['storage_4_expense'].initial = st4_expense
         
         # get software expenses
-        sw_str = "; ".join([sw.name for sw in prj.software_requested.all()])
+        sw_str = "; ".join([sw.name for sw in prj.software_installed.all()])
         
         sw_costs = []
-        for sw in prj.software_requested.all():
+        for sw in prj.software_installed.all():
             sw_rate = SoftwareCost.objects.get(software=sw.pk).software_cost
             sw_cost = sw_rate * user_number
             sw_costs.append(sw_cost)
@@ -748,7 +751,7 @@ class ProjectForm(forms.ModelForm):
                                             'direct_attach_storage',
                                             'backup_storage',
                         ),
-                        'software_requested',
+                        'software_installed',
                         project_access,
                         'db',
                         style="font-weight: bold;"
@@ -777,7 +780,7 @@ class ProjectForm(forms.ModelForm):
                     'users',
                     'pi',
                     'prj_admin',
-                    'software_requested',
+                    'software_installed',
                     'env_type',
                     'env_subtype',
                     'requested_launch',
@@ -809,7 +812,7 @@ class ProjectForm(forms.ModelForm):
                     'db' : autocomplete.ModelSelect2(
                                         url='dc_management:autocomplete-node'
                                         ),
-                    'software_requested' : autocomplete.ModelSelect2Multiple(
+                    'software_installed' : autocomplete.ModelSelect2Multiple(
                                         url='dc_management:autocomplete-software'
                                         ),
                     'myapp' : CheckboxInput(),                
@@ -837,7 +840,7 @@ class ProjectUpdateForm(forms.ModelForm):
                 project_governance,
                 Fieldset('<div class="alert alert-info">Environment</div>',
                         project_compute,
-                        'software_requested',
+                        'software_installed',
                         project_access,
                         'db',
                         style="font-weight: bold;"
@@ -857,7 +860,7 @@ class ProjectUpdateForm(forms.ModelForm):
                     'requested_cpu', 
                     'pi',
                     'prj_admin',
-                    'software_requested',
+                    'software_installed',
                     'env_type',
                     'env_subtype',
                     'requested_launch',
@@ -890,7 +893,7 @@ class ProjectUpdateForm(forms.ModelForm):
                     'db' : autocomplete.ModelSelect2(
                                         url='dc_management:autocomplete-node'
                                         ),
-                    'software_requested' : autocomplete.ModelSelect2Multiple(
+                    'software_installed' : autocomplete.ModelSelect2Multiple(
                                         url='dc_management:autocomplete-software'
                                         ),
                     'myapp' : CheckboxInput(),  
