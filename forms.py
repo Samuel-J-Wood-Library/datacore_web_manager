@@ -751,7 +751,7 @@ class ProjectForm(forms.ModelForm):
                                             'direct_attach_storage',
                                             'backup_storage',
                         ),
-                        'software_installed',
+                        'software_requested',
                         project_access,
                         'db',
                         style="font-weight: bold;"
@@ -780,7 +780,7 @@ class ProjectForm(forms.ModelForm):
                     'users',
                     'pi',
                     'prj_admin',
-                    'software_installed',
+                    'software_requested',
                     'env_type',
                     'env_subtype',
                     'requested_launch',
@@ -812,7 +812,7 @@ class ProjectForm(forms.ModelForm):
                     'db' : autocomplete.ModelSelect2(
                                         url='dc_management:autocomplete-node'
                                         ),
-                    'software_installed' : autocomplete.ModelSelect2Multiple(
+                    'software_requested' : autocomplete.ModelSelect2Multiple(
                                         url='dc_management:autocomplete-software'
                                         ),
                     'myapp' : CheckboxInput(),                
@@ -840,7 +840,7 @@ class ProjectUpdateForm(forms.ModelForm):
                 project_governance,
                 Fieldset('<div class="alert alert-info">Environment</div>',
                         project_compute,
-                        'software_installed',
+                        'software_requested',
                         project_access,
                         'db',
                         style="font-weight: bold;"
@@ -860,7 +860,7 @@ class ProjectUpdateForm(forms.ModelForm):
                     'requested_cpu', 
                     'pi',
                     'prj_admin',
-                    'software_installed',
+                    'software_requested',
                     'env_type',
                     'env_subtype',
                     'requested_launch',
@@ -893,7 +893,7 @@ class ProjectUpdateForm(forms.ModelForm):
                     'db' : autocomplete.ModelSelect2(
                                         url='dc_management:autocomplete-node'
                                         ),
-                    'software_installed' : autocomplete.ModelSelect2Multiple(
+                    'software_requested' : autocomplete.ModelSelect2Multiple(
                                         url='dc_management:autocomplete-software'
                                         ),
                     'myapp' : CheckboxInput(),  
