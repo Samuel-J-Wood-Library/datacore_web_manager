@@ -1714,7 +1714,7 @@ class Server_Change_Log(models.Model):
                     (ADD_STORAGE, "Add storage"),
                     (REM_STORAGE, "Remove storage"),
     )  
-    state_change  = models.CharField(
+    storage_change  = models.CharField(
                             max_length=2,
                             choices = STORAGE_CHANGE_CHOICES,
                             null=True,
