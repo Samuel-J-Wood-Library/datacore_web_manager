@@ -24,7 +24,7 @@ tbody tr td {
 {% bootstrap_messages %}
 
 <h1>Finance Report</h1>
-<h2>Projected annual costs</h2>
+<h2>Projected monthly project costs</h2>
 
 <div class="container-outer">
    <div class="container-inner">
@@ -35,20 +35,21 @@ tbody tr td {
 			<th>Title</th>
 			<th>PI</th>
 			<th># users</th>
-			<th>$</th>
+			<th>Compute + Admin</th>
 			<th>Extra resources</th>
 			<th>$</th>
 			<th>Database</th>
 			<th>$</th>
-			<th>fileshare with replication</th>
+			<th>Primary storage</th>
 			<th>$</th>
-			<th>Direct attach</th>
+			<th>Direct storage</th>
 			<th>$</th>
-			<th>versioned backup</th>
+			<th>Derivative storage</th>
 			<th>$</th>
 			<th>Software</th>
 			<th>$</th>
 			<th>Total Cost</th>
+            <th>Account number</th>
 		</tr>
 		</thead>
 		
@@ -104,6 +105,8 @@ tbody tr td {
 			</td>
 			<td {% if prj.status == "CO" %}style="color:#896E4E;"{% endif %}>
 			{{ prj.project_total_cost|account_format }}</td>
+            <td {% if prj.status == "CO" %}style="color:#896E4E;"{% endif %}>
+			{{ prj.account_number }}</td>
 		</tr>
 		{% endfor %}
 		

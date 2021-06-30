@@ -1956,17 +1956,18 @@ class ActiveProjectFinances(LoginRequiredMixin, generic.ListView):
         max_rego = user_costs.order_by('-user_quantity')[0]
         set_cost = max_rego.user_cost
         set_cnt = max_rego.user_quantity
-        
+
+        # get the cost of adding additional users beyond the maximum number priced
         try:
             xtr_cost = user_costs.get(user_quantity=0).user_cost    
         except ObjectDoesNotExist:
             xtr_cost = 0
         
         for prj in all_prjs:
-            # Fileshare and replication
+            # get costs for Primary data storage
             try:
                 fs_rate = storage_costs.get(
-                                storage_type__icontains="share"
+                                storage_type__icontains="primary"
                                             ).st_cost_per_gb
             except ObjectDoesNotExist:
                 fs_rate = 0          
@@ -1976,21 +1977,21 @@ class ActiveProjectFinances(LoginRequiredMixin, generic.ListView):
                 fss = 0
             prj.fileshare_cost = fss * fs_rate
 
-            # backup
+            # get costs for derivative data storage
             try:
                 bkp_rate = storage_costs.get(
-                                storage_type__icontains="backup"
+                                storage_type__icontains="derivative"
                                             ).st_cost_per_gb
             except ObjectDoesNotExist:
                 bkp_rate = 0          
         
-            if prj.backup_storage:
-                bs = prj.backup_storage
+            if prj.fileshare_derivative:
+                bs = prj.fileshare_derivative
             else:
                 bs = 0
             prj.backup_cost = bs * bkp_rate
             
-            # completed projects only have storage costs:
+            # completed projects only have storage costs, ie no compute costs:
             if prj.status == 'CO':
                 prj.direct_attach_cost = 0
                 prj.user_cost = 0
