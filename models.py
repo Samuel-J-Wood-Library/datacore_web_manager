@@ -426,11 +426,15 @@ class Storage(models.Model):
     # location storage is hosted at (Isilon, AWS, etc)
     ISILON = 'IS'
     AWS = 'AW'
+    GLACIER = 'GL'
+    S3 = 'S3'
     AZURE = 'AZ'
     SRA = 'SA'
     LOCATION_CHOICES = (
                 (ISILON, "Isilon"),
                 (AWS, "Amazon Web Services"),
+                (GLACIER, "AWS Glacier"),
+                (S3, "AWS S3 Storage"),
                 (AZURE, "Microsoft Azure"),
                 (SRA, "Secure Remote Archive"),
     )
@@ -529,6 +533,13 @@ class Project(models.Model):
                     null=True,
                     blank=True,
                     related_name='prj_admin')
+    ##############
+    # GOVERNANCE #
+    ##############
+
+    # the data catalog governance docs that regulate this project
+
+    # 
 
     ###########
     # STORAGE #
