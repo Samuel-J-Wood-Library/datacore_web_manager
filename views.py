@@ -2100,8 +2100,8 @@ class ActiveProjectFinances(LoginRequiredMixin, generic.ListView):
                 else: 
                     xtra_ram = 0
                     total_xtra_ram = 0
-                prj.host_cost = (   xtra_cpu / 2 * 
-                                    server_CPU_rate + 
+                prj.host_cost = max(xtra_cpu / 2 *
+                                    server_CPU_rate,
                                     total_xtra_ram / 8 * 
                                     server_RAM_rate
                                 )

@@ -539,7 +539,7 @@ class Project(models.Model):
 
     # the data catalog governance docs that regulate this project
 
-    # 
+    #
 
     ###########
     # STORAGE #
