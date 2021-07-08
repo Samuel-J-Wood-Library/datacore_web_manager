@@ -453,8 +453,8 @@ class Storage(models.Model):
 
     def get_absolute_url(self):
         return reverse('dc_management:storage', kwargs={'pk': self.pk})
-    
-    
+
+
 class Project(models.Model):
     # date the record was created
     record_creation = models.DateField(auto_now_add=True)
@@ -469,10 +469,7 @@ class Project(models.Model):
     
     # short title for easier reference
     nickname = models.CharField(max_length=256, blank=True)
-    
-    # SN reference to onboarding request
-    onboarding_ticket = models.CharField(max_length=32, blank=True, null=True)
-    
+
     # whether it only has public data
     open_allowed = models.NullBooleanField("classification: public?")
     
@@ -537,9 +534,11 @@ class Project(models.Model):
     # GOVERNANCE #
     ##############
 
-    # the data catalog governance docs that regulate this project
+    # SN reference to onboarding request
+    onboarding_ticket = models.CharField(max_length=32, blank=True, null=True)
 
-    #
+    # the data catalog governance docs that regulate this project
+    governance = models.ManyToManyField(DataUseAgreement, blank=True)
 
     ###########
     # STORAGE #
@@ -881,54 +880,54 @@ class AnnualProjectAttestation(models.Model):
 
 class DataCoreUserAgreement(models.Model):
     """
-    A class to capture signed agreement to the terms of using the Data Core. 
-    Each DCUA instance represents one user on one project, for a specified 
+    A class to capture signed agreement to the terms of using the Data Core.
+    Each DCUA instance represents one user on one project, for a specified
     period of time.
     """
     # date the record was created
     record_creation = models.DateField(auto_now_add=True)
-    
+
     # date the record was most recently modified
     record_update = models.DateField(auto_now=True)
-    
+
     # the user who was signed in at time of record modification
     record_author = models.ForeignKey(User, on_delete=models.CASCADE)
 
-    # the project being attested 
+    # the project being attested
     project = models.ForeignKey(Project,
                                 on_delete=models.PROTECT,
                                 )
-    
+
     # the person attesting
-    attestee = models.ForeignKey(Person, 
+    attestee = models.ForeignKey(Person,
                                  on_delete=models.PROTECT,
                                  )
-    
+
     # the start date of the agreement
     start_date = models.DateField()
-    
+
     # the end date of the agreement
-    end_date = models.DateField() 
-    
+    end_date = models.DateField()
+
     # folders allowed (to be defined by curation team)
     locations_allowed = models.TextField()
-    
+
     # consent to project access (to specified folders)
     consent_access = models.CharField(max_length=8, null=True)
-    
+
     # consent to usage conditions
     consent_usage = models.CharField(max_length=8, null=True)
-    
+
     # signature date
     signature_date = models.DateField(null=True)
-    
-    # signature name 
+
+    # signature name
     signature_name = models.CharField(max_length=64, null=True)
-    
+
     # signature title
     signature_title = models.CharField(max_length=64, null=True)
-    
-    # acknowledgement of patching schedule 
+
+    # acknowledgement of patching schedule
     acknowledge_patching = models.CharField(max_length=8, null=True)
 
     def get_absolute_url(self):
@@ -963,7 +962,8 @@ class DC_Administrator(models.Model):
 class DCUAGenerator(models.Model):
     """
     This class allows the creation of Data Core User Agreements (DCUAs) for users to 
-    sign prior to being granted access to Data Core.
+    sign prior to being granted access to Data Core. Designed for sending URL to Qualtrics
+    to create custom form.
     """
     
     # date the record was created

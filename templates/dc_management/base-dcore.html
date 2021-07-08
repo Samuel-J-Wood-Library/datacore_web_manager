@@ -95,8 +95,10 @@ body { padding-top: 67px; }
                     Actions <b class="caret"></b>
                 </a>
             <div class="dropdown-menu" aria-labelledby="ActionsDropdown">
+                <a class="dropdown-item" href="{% url 'dc_management:prep-dcua' %}">
+                    Create MIDAS DCUA</a>
                 <a class="dropdown-item" href="{% url 'dc_management:url_generator' %}">
-                    Create DCUA</a>
+                    Create Qualtrics DCUA</a>
                 <a class="dropdown-item" 
                     href="{% url 'dc_management:file-transfer-add' %}">
                     Transfer file(s)</a>

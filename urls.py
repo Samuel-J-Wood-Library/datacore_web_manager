@@ -140,8 +140,10 @@ urlpatterns = [
         views.AddUserToProject.as_view(), 
         name='usertoproject-add',
     ),
+    path('dcua/view/<int:pk>/', views.DCUAView.as_view(),name='dcua'),
     path('dcua/sign/<int:pk>/', views.SignDCUA.as_view(),name='sign-dcua'),
-    
+    path('dcua/prep/', views.PrepDCUA.as_view(),name='prep-dcua'),
+
     # removing user - project relationship:
     url(r'^project/(?P<pk>[0-9]+)/userconnect$', 
         views.AddUserToThisProject.as_view(), 

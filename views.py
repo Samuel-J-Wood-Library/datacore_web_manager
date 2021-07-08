@@ -918,7 +918,6 @@ class StorageAttach(PermissionRequiredMixin, UpdateView):
         self.object = form.save(commit=False)
         return super(StorageAttach, self).form_valid(form)
 
-  
 #############################
 ######  SERVER VIEWS  ######
 #############################
@@ -1005,7 +1004,6 @@ class SFTPCreate(PermissionRequiredMixin, CreateView):
         self.object.save()
         return super(SFTPCreate, self).form_valid(form)
 
-
 class SFTPUpdate(PermissionRequiredMixin, UpdateView):
     model = SFTP
     form_class = SFTPForm
@@ -1019,7 +1017,6 @@ class SFTPUpdate(PermissionRequiredMixin, UpdateView):
 
         self.object.save()
         return super(SFTPUpdate, self).form_valid(form)
-
 
 ###############################
 ######  UPDATE SOFTWARE  ######
@@ -1331,16 +1328,53 @@ class AddUserToThisProject(AddUserToProject):
         initial.update({'project': chosen_project, })
         return initial
 
-class SignDCUA(LoginRequiredMixin, UpdateView):
-    model = DCUAForm
-    fields = [  'consent_access',
-                'consent_usage',
-                'signature_date',
-                'signature_name',
-                'signature_title'
-    ]
-    template_name = "dc_management/basic_crispy_form.html"
+class DCUAView(LoginRequiredMixin, generic.DetailView):
+    model = DataCoreUserAgreement
+    template_name = 'dc_management/dcua_doc.html'
 
+class PrepDCUA(PermissionRequiredMixin, CreateView):
+    model = DataCoreUserAgreement
+    form_class = DCUAPrepForm
+    template_name = "dc_management/basic_crispy_form.html"
+    permission_required = 'dc_management.view_project'
+
+    def form_valid(self, form):
+        """
+        On successful submission, update the record author.
+        """
+        self.object = form.save(commit=False)
+
+        # update who last edited record
+        self.object.record_author = self.request.user
+
+        # save migration log changes
+        self.object.save()
+        return super(PrepDCUA, self).form_valid(form)
+
+class SignDCUA(PermissionRequiredMixin, UpdateView):
+    model = DataCoreUserAgreement
+    form_class = DCUAForm
+    template_name = "dc_management/basic_crispy_form.html"
+    permission_required = 'dc_management.view_project'
+
+    def has_permission(self):
+        if self.request.user == self.get_object().attestee:
+            return True
+        else:
+            return False
+
+    def form_valid(self, form):
+        """
+        On successful submission, update the node for the project.
+        """
+        self.object = form.save(commit=False)
+
+        # update who last edited record
+        self.object.record_author = self.request.user
+
+        # save migration log changes
+        self.object.save()
+        return super(SignDCUA, self).form_valid(form)
 
 ######### Removing users from projects ###########
 
@@ -1707,8 +1741,7 @@ class ProjectMonthlyBillGenerate(PermissionRequiredMixin, CreateView):
         self.object.project = prj
         self.object.save()
         return super(ProjectMonthlyBillGenerate, self).form_valid(form)
-        
-        
+
 class ProjectMonthlyBillGenerateOld(LoginRequiredMixin, CreateView):
     model = ProjectBillingRecord
     template_name = 'dc_management/basic_form.html'
@@ -1930,7 +1963,6 @@ class ProjectMonthlyBillUpdate(LoginRequiredMixin, CreateView):
         
         self.object = form.save(commit=False)
         return super(ProjectMonthlyBillCreate, self).form_valid(form)
-
 
 class ActiveProjectFinances(LoginRequiredMixin, generic.ListView):
     template_name = 'dc_management/finances_global.html'
@@ -2310,12 +2342,10 @@ class MigrationDetailView(LoginRequiredMixin, generic.DetailView):
     model = MigrationLog
     template_name = 'dc_management/migration_record.html'
 
-    
 class AddProjectComment(CreateView):
     template_name = 'dc_management/comment_form.html'
     form_class = CommentForm
-    
-    
+
 ##############################
 ######  SEARCH  VIEWS   ######
 ##############################

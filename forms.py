@@ -1,5 +1,6 @@
 import datetime
 import numpy as np
+import re
 
 from dal import autocomplete
 
@@ -31,7 +32,6 @@ class CommentForm(forms.ModelForm):
     class Meta:
         model = CommentLog
         fields = ['comment', ]
-     
 
 class AddUserToProjectForm(forms.Form):
     dcusers = forms.ModelMultipleChoiceField(
@@ -403,7 +403,6 @@ def get_storage_costs(storage_type, project):
     st_expense = st_rate * st_value             # cost
     return st_type, st_value, st_rate, st_expense
 
- 
 class ProjectBillingForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         ppk = kwargs.pop('ppk', None)
@@ -601,14 +600,14 @@ class ProjectBillingForm(forms.ModelForm):
                         'multiplier',
                         'account',
                 ]
-   
-        
+
 class DCUAForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(DCUAForm, self).__init__(*args, **kwargs)
-        self.fields['consent_access'].label = "Initials:"
-        self.fields['consent_usage'].label = "Initials:"
-        self.fields['signature_date'].label = "Date:"
+        self.fields['consent_access'].label = "I consent to the above conditions (enter initials):"
+        self.fields['consent_usage'].label = "I consent to the above conditions (enter initials):"
+        self.fields['signature_date'].label = "Date (MM/DD/YYYY):"
+        self.fields['signature_date'].initial = datetime.datetime.today()
         self.fields['signature_name'].label = "Full Name:"
         self.fields['signature_title'].label = "Title:"
         self.fields['acknowledge_patching'].label = "Initials:"
@@ -619,25 +618,42 @@ class DCUAForm(forms.ModelForm):
         self.helper.add_input(Submit('submit', 'Submit'))
         self.helper.layout = Layout(
                     Fieldset(
-            """ <div class="alert alert-info">
-                    Data Core User Agreement for f"{self.instance.attestee} on 
-                    {self.instance.project}"
+            f""" <div class="alert alert-info">
+                    Data Core User Agreement for {self.instance.attestee} on 
+                    {self.instance.project}
                 </div>
-                <p>This agreement is between {} and the Data Core at WCM. This agreement is effective as of {} and expires on {} unless extended by mutual consent of the data distributor and Data Core.</p>
-            """.format( self.instance.attestee, 
-                        self.instance.start_date,
-                        self.instance.end_date,
-                        ),
+            """,
+            HTML("""
+                <p>This agreement is between {{datacoreuseragreement.attestee}} and the Data Core at WCM. This agreement is effective as of {{ datacoreuseragreement.start_date }} and expires on {{ datacoreuseragreement.end_date }} unless extended by mutual consent of the data distributor and Data Core.</p>
+                <p>1. {{ datacoreuseragreement.attestee }} is authorized to access only the data residing in the folders (and subfolders) on the Data Core computing system listed below, in accordance with the data user permissions set by the Data Core computing system administrator. Data are not to be stored in any other folder (including subfolders) than those listed below:</p> 
+                <p>{{ datacoreuseragreement.locations_allowed | linebreaks }}</p>             
+            """),
                             'consent_access',
+                            HTML(
+            f"""
+            <p>2. When required by the Data Use Agreement, the Data Core Data Custodian will disclosure proof any files uploaded to, or downloaded from, the Data Core computing system. Such files will be delivered by secure WS-FTP to authorized IP addresses, or other methods considered appropriate by Data Core staff to ensure compliance with the current Data Use Agreement.</p>
+            <p>3. Confidential data on the Data Core system may only be used for non-proprietary scientific research.</p>
+            <p>4. {self.instance.attestee} agrees not to allow anyone else to use their credentials to access the Data Core computing system.</p>
+            <p>5. {self.instance.attestee} agrees not to attempt to circumvent or disable any of the security systems in place on the Data Core computing system and to report to the Data Core Data Custodian any attempts to circumvent or disable these systems that are known to them.</p>
+            <p>6. {self.instance.attestee} agrees to inform the Data Provider and Data Core staff of any change in their employment or WCM status, within the timeframe specified by the DUA, or 30 days, whichever is shorter. </p>
+            <p>7. If {self.instance.attestee} is a primary investigator or co-investigator and the restricted data are subject to review by the WCM Institutional Review Board (IRB) for Human Participants, he/she acknowledges that IRB approval will be maintained for the duration of the project.</p>
+            <p>8. {self.instance.attestee} acknowledges that the Data Core may suspend or terminate access privileges at any time in order to protect the integrity of the confidential data.</p>
+            """
+                            ),
                             'consent_usage',
-                            'signature_date',
+                            HTML("The foregoing has been agreed to and accepted by the person whose name appears below:"),
                             'signature_name',
                             'signature_title',
-                            style="font-weight:bold;",
+                            'signature_date',
+                            style="font-weight:normal;",
                     ),
-                    Fieldset('<div class="alert alert-info">Acknowledgement of monthly patching</div>',
+                    Fieldset("""<div class="alert alert-info">Acknowledgement of monthly patching</div>""",
+                             HTML("""
+            <p>Monthly patching of all ITS servers occurs the <strong>third Saturday</strong> of every month, from <strong>6am - noon</strong>. This includes Data Core on-premise servers and will interrupt any ongoing analyses at that time. Please ensure you have saved any work you have prior to the third Saturday of each month at 6am in order to prevent loss of work.</p>
+            <p>I acknowledge and understand the Monthly Patching Schedule and its implications for my work in the Data Core:</p>
+            """),
                             'acknowledge_patching',                        
-                            style="font-weight: bold;",
+                            style="font-weight: normal;",
                     ),
         )
     
@@ -652,6 +668,31 @@ class DCUAForm(forms.ModelForm):
                 ]
 
 class DCUAPrepForm(forms.ModelForm):
+    """
+    The Prep Form is to allow  administrators to define the terms of the DCUA before sending to the user to sign.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(DCUAPrepForm, self).__init__(*args, **kwargs)
+        self.fields['start_date'].initial = datetime.datetime.now().strftime("%m/%d/%Y")
+        self.fields['end_date'].initial = (datetime.datetime.now() + datetime.timedelta(days=365)
+                                            ).strftime("%m/%d/%Y")
+        self.fields['locations_allowed'].initial = """WorkArea-[CWID]\ndcore-prj-SOURCE\ndcore-prj-SHARE"""
+        self.helper = FormHelper()
+        self.helper.form_id = 'DCUAPrepForm'
+        self.helper.form_method = 'post'
+        self.helper.add_input(Submit('submit', 'Submit'))
+        self.helper.layout = Layout(
+            Fieldset("""<div class="alert alert-info">Data Core User Agreement creation</div>""",
+                     'attestee',
+                     'project',
+                     'start_date',
+                     'end_date',
+                     'locations_allowed',
+                     style="font-weight: normal;",
+                     )
+        )
+
     class Meta:
         model = DataCoreUserAgreement
         fields = [  'attestee',
@@ -659,7 +700,16 @@ class DCUAPrepForm(forms.ModelForm):
                     'start_date',
                     'end_date', 
                     'locations_allowed',
-                ]  
+                ]
+
+
+        widgets = {'attestee': autocomplete.ModelSelect2(
+                        url='dc_management:autocomplete-user'
+                    ),
+                    'project': autocomplete.ModelSelect2(
+                        url='dc_management:autocomplete-project'
+                    ),
+                }
 
 class SFTPForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -847,8 +897,7 @@ class ProjectUpdateForm(forms.ModelForm):
                 ),
                 project_dates,
         )
-        
-    
+
     class Meta:
         model = Project
         fields = [  'title', 

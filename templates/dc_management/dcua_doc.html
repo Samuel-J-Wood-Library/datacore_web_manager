@@ -1,0 +1,77 @@
+{% extends 'dc_management/base-dcore.html' %}
+
+{% load bootstrap4 %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+    {% if perms.dc_management.view_project or user == datacoreuseragreement.attestee %}
+<h2>Data Core User Agreement #{{ datacoreuseragreement.pk }}
+    {% if datacoreuseragreement.signature_name %}{% else %}
+    <a type="button" class="btn btn-primary"
+       href="{% url 'dc_management:sign-dcua' datacoreuseragreement.pk %}">Sign</a>
+        {% endif %}
+</h2>
+
+    <table class="table table-striped table-hover">
+    <thead class="thead-default">
+    <tr>
+        <th>Field</th>
+        <th>Value(s)</th>
+    </tr>
+    </thead>
+
+    <tr>
+        <td>Record created</td>
+        <td>{{ datacoreuseragreement.record_creation }}</td>
+    </tr>
+    <tr>
+        <td>Last modified</td>
+        <td>{{ datacoreuseragreement.record_update }}</td>
+    </tr>
+    <tr>
+        <td>Updated by</td>
+        <td>{{ datacoreuseragreement.record_author }}</td>
+    </tr>
+    <tr>
+        <td>Project</td>
+        <td>{{ datacoreuseragreement.project }}</td>
+    </tr>
+    <tr>
+        <td>Person attesting</td>
+        <td>{{ datacoreuseragreement.attestee }}</td>
+    </tr>
+    <tr>
+        <td>Period</td>
+        <td>{{ datacoreuseragreement.start_date }} - {{ datacoreuseragreement.end_date }}</td>
+    </tr>
+    <tr>
+        <td>Folders allowed</td>
+        <td>{{ datacoreuseragreement.locations_allowed|linebreaks }}</td>
+    </tr>
+    <tr>
+        <td>consent to project access</td>
+        <td>{{ datacoreuseragreement.consent_access }}</td>
+    </tr>
+    <tr>
+        <td>consent to usage conditions</td>
+        <td>{{ datacoreuseragreement.consent_usage }}</td>
+    </tr>
+    <tr>
+        <td>Electronic signature</td>
+        <td {% if datacoreuseragreement.signature_name %}class="table-success"{% else %}class="table-danger"{% endif %}>
+            {{ datacoreuseragreement.signature_name }},
+            {{ datacoreuseragreement.signature_title }},
+            {{ datacoreuseragreement.signature_date }}</td>
+    </tr>
+    <tr>
+        <td>acknowledgement of patching schedule</td>
+        <td>{{ datacoreuseragreement.acknowledge_patching }}</td>
+    </tr>
+
+    </table>
+    {% else %}
+        <p>You do not have permission to view this DCUA record. If you think there is an error, please contact the Data Core team (dcore-ticket@med.cornell.edu)</p>
+    {% endif %}
+{% endblock %}
