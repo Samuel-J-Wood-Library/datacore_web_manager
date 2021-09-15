@@ -40,9 +40,9 @@ class TestAccess(TestCase):
     
     def test_call_view_denies_anonymous(self):
         response = self.client.get(reverse('dc_management:index'), follow=True)
-        self.assertRedirects(response, 'accounts/login/?next=%2Finfo%2F')
+        self.assertRedirects(response, '/accounts/login/?next=%2Finfo%2F')
         response = self.client.post(reverse('dc_management:index'), follow=True)
-        self.assertRedirects(response, 'accounts/login/?next=%2Finfo%2F')
+        self.assertRedirects(response, '/accounts/login/?next=%2Finfo%2F')
         pages = ['all_users',
                  'all_projects',
                  'person-add',
