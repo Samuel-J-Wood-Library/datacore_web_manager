@@ -11,7 +11,7 @@
 {{ form.media }}
 
 <h2>Add a user to a project</h2>
-<a type="button" class="btn btn-primary" href="{% url 'dc_management:person-add' %}">Create user</a>
+<a  class="btn btn-primary" href="{% url 'dc_management:person-add' %}">Create user</a>
 <form action="" method="post">
 	{% csrf_token %}
     {{ form|crispy }}

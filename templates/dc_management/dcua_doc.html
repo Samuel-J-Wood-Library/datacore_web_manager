@@ -9,7 +9,7 @@
     {% if perms.dc_management.view_project or user == datacoreuseragreement.attestee %}
 <h2>Data Core User Agreement #{{ datacoreuseragreement.pk }}
     {% if datacoreuseragreement.signature_name %}{% else %}
-    <a type="button" class="btn btn-primary"
+    <a  class="btn btn-primary"
        href="{% url 'dc_management:sign-dcua' datacoreuseragreement.pk %}">Sign</a>
         {% endif %}
 </h2>

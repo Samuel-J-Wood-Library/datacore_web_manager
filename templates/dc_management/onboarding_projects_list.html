@@ -47,7 +47,7 @@
         <!-- highlight based on project status and days to expected completion --!>    
         {% if project.requested_launch|days_until:7  %}
             <td class="bg-danger">
-            {{ project.requested_launch }} <a type="button" class="btn btn-default" href="#">Launch</a></td>
+            {{ project.requested_launch }} <a  class="btn btn-default" href="#">Launch</a></td>
         {% elif project.requested_launch|days_until:14 %}
             <td class="bg-warning">
             {{ project.requested_launch }}</td>

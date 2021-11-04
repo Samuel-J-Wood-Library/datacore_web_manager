@@ -18,12 +18,12 @@
 
 		  
     <h2>{{ project_list|length }} Active Projects</h2>
-    <a type="button" class="btn btn-info" href="{% url 'dc_management:all_projects' %}">View all projects</a>
-    <a type="button" class="btn btn-primary" href="{% url 'dc_management:project-add' %}">Add new project</a>
-    <a type="button" class="btn btn-default" href="#">Schedule project close</a>
-    <a type="button" class="btn btn-default" href="#">Close project</a>
-    <a type="button" class="btn btn-primary"  href="{% url 'dc_management:govdocmeta-add' %}">Add governance document</a>
-    <a type="button" class="btn btn-danger" href="{% url 'dc_management:file-transfer-add' %}">Transfer file(s)</a>
+    <a  class="btn btn-info" href="{% url 'dc_management:all_projects' %}">View all projects</a>
+    <a  class="btn btn-primary" href="{% url 'dc_management:project-add' %}">Add new project</a>
+    <a  class="btn btn-default" href="#">Schedule project close</a>
+    <a  class="btn btn-default" href="#">Close project</a>
+    <a  class="btn btn-primary"  href="{% url 'dc_management:govdocmeta-add' %}">Add governance document</a>
+    <a  class="btn btn-danger" href="{% url 'dc_management:file-transfer-add' %}">Transfer file(s)</a>
     {% with  project_list as project_list %}
     {% with 'dc_management/project_list.html' as passthroughhtml %}
         {% include 'dc_management/project_list_template.html' %}

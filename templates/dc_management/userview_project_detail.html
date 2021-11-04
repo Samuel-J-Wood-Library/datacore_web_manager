@@ -162,7 +162,7 @@
     {### STICKY ACTION BUTTONS ###}
     <div class="col-2">
     <div class="card sticky-top border-0 sticky-offset">
-        <a  type="button" class="mb-1 mt-2 btn btn-primary btn-block" 
+        <a   class="mb-1 mt-2 btn btn-primary btn-block" 
             href="http://www.xkcd.com">View XKCD</a>
 
 
@@ -227,7 +227,7 @@
       <div class="card-header">
         <h5>USERS ({{ project.billable_users.count }} active)
             <span style="float:right">
-                <a type="button" class="btn btn-primary ml-auto" href="https://wcmcprd.service-now.com/myhelpdesk?id=sc_cat_item&sys_id=7c81b0b41302f70037507b104244b047&sysparm_category=009b496f0f85af00911291dbe1050e56">Request user addition/removal</a>
+                <a  class="btn btn-primary ml-auto" href="https://wcmcprd.service-now.com/myhelpdesk?id=sc_cat_item&sys_id=7c81b0b41302f70037507b104244b047&sysparm_category=009b496f0f85af00911291dbe1050e56">Request user addition/removal</a>
             </span>
         </h5>
         
@@ -249,10 +249,10 @@
       <div class="card-header">
         <h4>Project storage
           <span style="float:right">
-                <a  type="button" 
+                <a   
                     class="btn btn-primary"  
                     href="{% url 'dc_management:storage-add' %}">Create storage</a>
-                <a  type="button" 
+                <a   
                     class="btn btn-primary"  
                     href="{% url 'dc_management:storage-attach' project.pk %}">
                     Attach storage</a>
@@ -287,10 +287,10 @@
       <div class="card-header">
         <h4>Project governance - current only
           <span style="float:right">
-                <a  type="button" 
+                <a   
                     class="btn btn-info"  
                     href="{% url 'dc_management:prjgovdocs' project.pk %}">See all</a>
-                <a  type="button" 
+                <a   
                     class="btn btn-primary"  
                     href="{% url 'dc_management:govdocmeta-add' %}">Add document</a>
           </span>
@@ -320,7 +320,7 @@
       <div class="card-header">
         <h4>Installed software:
           <span style="float:right">
-                <a type="button" class="btn btn-primary"  href="{% url 'dc_management:change_software' %}">Install/remove software</a>
+                <a  class="btn btn-primary"  href="{% url 'dc_management:change_software' %}">Install/remove software</a>
           </span>
         </h4>
     

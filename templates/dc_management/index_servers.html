@@ -5,16 +5,16 @@
 
     <h2>{{ server_list|length }} Active Production Servers</h2>
     
-    <a type="button" class="btn btn-info" 
+    <a  class="btn btn-info" 
        href="{% url 'dc_management:all_servers' %}">
        View all servers
     </a>
-    <a type="button" class="btn btn-primary" href="{% url 'dc_management:server-add' %}">
+    <a  class="btn btn-primary" href="{% url 'dc_management:server-add' %}">
         Add new server
     </a>
-    <a type="button" class="btn btn-default" href="#">Decommission server</a>
-    <a type="button" class="btn btn-default" href="#">Suspend server</a>
-    <a type="button" class="btn btn-default" href="#">Reactivate server</a>
+    <a  class="btn btn-default" href="#">Decommission server</a>
+    <a  class="btn btn-default" href="#">Suspend server</a>
+    <a  class="btn btn-default" href="#">Reactivate server</a>
 
     {% include 'dc_management/server_list.html' %}
  

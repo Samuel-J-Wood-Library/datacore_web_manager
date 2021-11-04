@@ -237,12 +237,12 @@
   
   <div class="tab-pane" id="projects">			  
     <h2>{{ project_list|length }} Active Projects</h2>
-    <a type="button" class="btn btn-info" href="{% url 'dc_management:all_projects' %}">View all projects</a>
-    <a type="button" class="btn btn-primary" href="{% url 'dc_management:project-add' %}">Add new project</a>
-    <a type="button" class="btn btn-default" href="#">Schedule project close</a>
-    <a type="button" class="btn btn-default" href="#">Close project</a>
-    <a type="button" class="btn btn-primary"  href="{% url 'dc_management:govdocmeta-add' %}">Add governance document</a>
-    <a type="button" class="btn btn-danger" href="{% url 'dc_management:file-transfer-add' %}">Transfer file(s)</a>
+    <a  class="btn btn-info" href="{% url 'dc_management:all_projects' %}">View all projects</a>
+    <a  class="btn btn-primary" href="{% url 'dc_management:project-add' %}">Add new project</a>
+    <a  class="btn btn-default" href="#">Schedule project close</a>
+    <a  class="btn btn-default" href="#">Close project</a>
+    <a  class="btn btn-primary"  href="{% url 'dc_management:govdocmeta-add' %}">Add governance document</a>
+    <a  class="btn btn-danger" href="{% url 'dc_management:file-transfer-add' %}">Transfer file(s)</a>
     {% with  project_list as project_list %}
     {% with 'dc_management/project_list.html' as passthroughhtml %}
         {% include 'dc_management/project_list_template.html' %}
@@ -253,9 +253,9 @@
   
   <div class="tab-pane" id="users">
     <h2>{{ user_list|length }} Data Core PIs</h2>
-    <a type="button" class="btn btn-info" href="{% url 'dc_management:all_users' %}">View all users</a>
-    <a type="button" class="btn btn-primary" href="{% url 'dc_management:person-add' %}">Create user</a>
-    <a type="button" class="btn btn-info" href="{% url 'dc_management:bulkuserupload' %}">Create users (bulk upload)</a>
+    <a  class="btn btn-info" href="{% url 'dc_management:all_users' %}">View all users</a>
+    <a  class="btn btn-primary" href="{% url 'dc_management:person-add' %}">Create user</a>
+    <a  class="btn btn-info" href="{% url 'dc_management:bulkuserupload' %}">Create users (bulk upload)</a>
     {% include "dc_management/user_list_multiproject.html" %}
     </br>
   </div>
@@ -264,16 +264,16 @@
   <div class="tab-pane" id="servers">
     <h2>{{ server_list|length }} Active Production Servers</h2>
     
-    <a type="button" class="btn btn-info" 
+    <a  class="btn btn-info" 
        href="{% url 'dc_management:all_servers' %}">
        View all servers
     </a>
-    <a type="button" class="btn btn-primary" href="{% url 'dc_management:server-add' %}">
+    <a  class="btn btn-primary" href="{% url 'dc_management:server-add' %}">
         Add new server
     </a>
-    <a type="button" class="btn btn-default" href="#">Decommission server</a>
-    <a type="button" class="btn btn-default" href="#">Suspend server</a>
-    <a type="button" class="btn btn-default" href="#">Reactivate server</a>
+    <a  class="btn btn-default" href="#">Decommission server</a>
+    <a  class="btn btn-default" href="#">Suspend server</a>
+    <a  class="btn btn-default" href="#">Reactivate server</a>
 
     {% include 'dc_management/server_list.html' %}
   </div>
@@ -281,8 +281,8 @@
     
   <div class="tab-pane" id="software">
     <h2>{{ user_list|length }} Software</h2>
-    <a type="button" class="btn btn-default" href="#">View all software</a>
-    <a type="button" class="btn btn-default" href="#">Create software</a>
+    <a  class="btn btn-default" href="#">View all software</a>
+    <a  class="btn btn-default" href="#">Create software</a>
     
         {% include "dc_management/software_all.html" %}
     </br>

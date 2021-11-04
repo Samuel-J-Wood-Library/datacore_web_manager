@@ -18,12 +18,12 @@
 {% if project.expected_completion|days_until:0 and project.users.count != 0 %}
     <td class="bg-danger" style="color:red;">
     {{ project.expected_completion }}
-    <a type="button" class="btn btn-default" href="#">Close project</a>
+    <a  class="btn btn-default" href="#">Close project</a>
     </td>
 {% elif project.expected_completion|days_until:1 and project.users.count != 0  %}
     <td class="bg-warning" style="color:orange;">
     {{ project.expected_completion }}
-    <a type="button" class="btn btn-default" href="#">Close project</a>
+    <a  class="btn btn-default" href="#">Close project</a>
     </td>
 {% else %}
     <td>
