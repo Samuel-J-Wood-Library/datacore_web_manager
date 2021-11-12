@@ -471,14 +471,14 @@ class Project(models.Model):
     nickname = models.CharField(max_length=256, blank=True)
 
     # whether it only has public data
-    open_allowed = models.NullBooleanField("classification: public?")
+    open_allowed = models.BooleanField("classification: public?", null=True)
     
     # whether or not the project actually has internet access
     # this field will not be actively used, as this setting is configured at node level
-    open_enabled = models.NullBooleanField("security: open?")
+    open_enabled = models.BooleanField("security: open?", null=True)
     
     # whether or not multiple data sources are allowed to be present in this project
-    isolate_data = models.NullBooleanField("data isolation: isolate?")
+    isolate_data = models.BooleanField("data isolation: isolate?", null=True)
     
     # the requested amount of fileshare storage (Isilon) configured in Isilon
     # for primary (source) data, which is archived, but without version backup
@@ -644,7 +644,7 @@ class Project(models.Model):
     )
     
     # boolean field to indicate whether a MyApps app has been created for the project
-    myapp = models.NullBooleanField("MyApps RDP created")
+    myapp = models.BooleanField("MyApps RDP created", null=True)
     
     # links to server table, for any database utilized by the project
     db = models.ForeignKey(Server, 
@@ -787,13 +787,13 @@ class Governance_Doc(models.Model):
                             null=True,
                             blank=True,
     )
-    destroy_data = models.NullBooleanField()
+    destroy_data = models.BooleanField(null=True)
     comments = models.TextField(null=True, blank=True)
     dynamic_comments = models.ManyToManyField(CommentLog, 
                                               blank=True, 
                                               related_name='govdoc_comments'
                                               )
-    isolate_data = models.NullBooleanField()
+    isolate_data = models.BooleanField(null=True)
 
     def __str__(self):
             return "{4}_{0}_{2}_{1}_{3}".format(self.governance_type, 
@@ -1046,7 +1046,7 @@ class SFTP(models.Model):
     project = models.ForeignKey(Project, null=False, on_delete=models.CASCADE)
 
     # boolean to capture if access is only via internal log on to the sFTP server, not by pushing data in.
-    internal_connection = models.NullBooleanField()
+    internal_connection = models.BooleanField(null=True)
 
     # Whitelisted IP addresses that can push to the sFTP server
     whitelisted = models.CharField(max_length=128, null=True, blank=True)
@@ -1589,7 +1589,7 @@ class FileTransfer(models.Model):
     file_num = models.IntegerField(verbose_name="number of files", blank=True, null=True)
     
     # if the number of files being transferred is unknown, this field is True
-    file_num_unknown = models.NullBooleanField(verbose_name='file number unknown')
+    file_num_unknown = models.BooleanField(verbose_name='file number unknown', null=True)
     
     # specification of presence of protected information in data
     DEIDENTIFIED = 'DE'
