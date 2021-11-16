@@ -1163,11 +1163,11 @@ class FileTransferForm(forms.ModelForm):
                             Div(
                                 Div(  'destination', 
                                     label='Data Core source',
-                                    title="Use if source is a dcore project.",
+                                    title="Use if destination is a dcore project.",
                                     css_class="row",
                                 ),
                                 Div('external_destination', 
-                                    title="Use if destination is a dcore project.",
+                                    title="Use if destination is external to Data Core.",
                                     css_class="row",
                                 ),
                                 Div('filepath_dest',
@@ -1221,7 +1221,7 @@ class FileTransferForm(forms.ModelForm):
                                         ),
                     'file_num_unknown' : CheckboxInput(),    
                     'reviewed_by' : autocomplete.ModelSelect2(
-                                        url='dc_management:autocomplete-user'
+                                        url='dc_management:autocomplete-djuser'
                                         ),               
                     }
 

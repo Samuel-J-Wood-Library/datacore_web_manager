@@ -13,6 +13,7 @@ from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView, FormView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.models import User
 
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -111,6 +112,19 @@ class CommentView(LoginRequiredMixin, CreateView):
 ####################################
 ######  AUTOCOMPLETE  VIEWS   ######
 ####################################
+class DjangoUserAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        qs = User.objects.all()
+
+        if self.q:
+            qs = qs.filter(
+                            Q(username__istartswith=self.q) |
+                            Q(first_name__istartswith=self.q) |
+                            Q(last_name__istartswith=self.q)
+                            )
+            #qs = qs.filter(cwid__istartswith=self.q)
+
+        return qs
 
 class DCUserAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
     def get_queryset(self):
@@ -330,9 +344,10 @@ class IndexProjectView(PermissionRequiredMixin, generic.ListView):
         })
         return context
         
-class IndexUserView(LoginRequiredMixin, generic.ListView):
+class IndexUserView(PermissionRequiredMixin, generic.ListView):
     template_name = 'dc_management/index_users.html'
     context_object_name = 'user_list'
+    permission_required = 'dc_management.view_project'
 
     def get_queryset(self):
         """Return  all active projects."""
@@ -2215,10 +2230,8 @@ class FileTransferCreate(LoginRequiredMixin, CreateView):
             plural = ""
         
         if form.instance.source:
-            src = "from {} ({})".format(form.instance.source.dc_prj_id, 
-                            form.instance.source.host.node,
-                            )
-            basepath = "   \\\\hpr_datacore_{}\\".format(form.instance.source.dc_prj_id,)
+            src = f"from {form.instance.source.dc_prj_id} ({form.instance.source.host.node})"
+            basepath = f"   \\\\hpr_datacore_{form.instance.source.dc_prj_id}\\"
             src_path = "\n".join(
                 [ basepath + fn for fn in str(form.instance.filenames).split('\n') ]
                                 ) 
@@ -2226,16 +2239,12 @@ class FileTransferCreate(LoginRequiredMixin, CreateView):
             src = "attached to this ticket"
             src_path = form.instance.filenames
         else:
-            src = "from {}".format(form.instance.transfer_method)
+            src = f"from {form.instance.transfer_method}"
             src_path = form.instance.filenames
             
         if form.instance.destination:
-            dest = "to {} ({})".format(form.instance.destination.dc_prj_id, 
-                            form.instance.destination.host.node,
-                            )
-            basepath = "   \\\\hpr_datacore_{}\\".format( 
-                                                form.instance.destination.dc_prj_id,
-                                                )
+            dest = f"to {form.instance.destination.dc_prj_id} ({form.instance.destination.host.node})"
+            basepath = f"   \\\\hpr_datacore_{form.instance.destination.dc_prj_id}\\"
             dest_path = "\n".join(
                 [ basepath + fn for fn in str(form.instance.filepath_dest).split('\n') ]
                                 ) 
@@ -2245,31 +2254,24 @@ class FileTransferCreate(LoginRequiredMixin, CreateView):
                                         )
             dest_path = form.instance.filepath_dest
         
-        subject_str = '{}Transfer file{} {} {}'
-        body_str = '''Dear OPs,
+        subj_msg = f'{sbj_ticket}Transfer file{plural} {src} {dest}'
+        body_msg = f'''Dear OPs,
 
-Please copy the following {0} file{1} {2} {3}:
+Please copy the following {form.instance.file_num} file{plural} {src} {dest}:
 
-Source: {4}
+_______
+SOURCE: 
+{src_path}
 
-Destination: {7}
+___________
+DESTINATION: 
+{dest_path}
 
-{5}
+{form.instance.comment}
 
 Kind regards,
-{6}'''
-        subj_msg = subject_str.format(sbj_ticket, plural, src, dest)
-        body_msg = body_str.format(form.instance.file_num,              # 0
-                                    plural,                             # 1
-                                    src,                                # 2
-                                    dest,                               # 3
-                                    src_path,                           # 4
-                                    form.instance.comment,              # 5
-                                    self.request.user.get_short_name(), # 6
-                                    dest_path,                          # 7
-                                    #form.instance.source.dc_prj_id      # 8
-                                    )
-        
+{self.request.user.get_short_name()}'''
+
         email_dict = {  'subject'       :subj_msg,
                         'body'          :body_msg,
                         'to_email'      :toemail,
