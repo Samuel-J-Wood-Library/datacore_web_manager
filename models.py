@@ -11,7 +11,7 @@ from datetime import date
 import numpy as np
 
 from persons.models import Person, Department, Organization, Role 
-from datacatalog.models import Dataset, DataUseAgreement
+from datacatalog.models import Dataset, DataUseAgreement, DataAccess
 
 ############################
 ####  Comment Models    ####
@@ -403,7 +403,8 @@ class Server(models.Model):
 
 class Storage(models.Model):
     """
-    The Storage model defines locations in which data are stored. Storage could be 
+    DEPRECATED
+    The Storage model defines locations in which data are stored. Storage could be
     Isilon fileshares, or AWS S3 buckets, or other media. The data in a storage instance
     will also have governance that defines its use and access. Projects point to the 
     relevant storage instances to determine what data are available for project users. 
@@ -545,7 +546,7 @@ class Project(models.Model):
     ###########
     
     # the storage (typically fileshares) accessible by the project
-    storage = models.ManyToManyField(Storage, blank=True)
+    storage = models.ManyToManyField(DataAccess, blank=True, related_name='dc_project')
     
     ############################
     # SOFTWARE AND ENVIRONMENT #
@@ -636,8 +637,12 @@ class Project(models.Model):
     completion_date = models.DateField(null=True, blank=True)
     
     # the node the project is mounted to
+    # this is to be deprecated and replaced with server field
     host = models.ForeignKey(Server, on_delete=models.CASCADE, null=True, blank=True)
-    
+
+    # contains all servers accessible from the project
+    servers = models.ManyToManyField(Server, related_name='project_servers')
+
     # the FQDN of the project - will be mapped to the IP of the node project is mounted to
     prj_dns = models.CharField('project-specific DNS', 
                                 max_length=64, null=True, blank=True,
@@ -647,6 +652,7 @@ class Project(models.Model):
     myapp = models.NullBooleanField("MyApps RDP created")
     
     # links to server table, for any database utilized by the project
+    # this is to be deprecated and replaced with the server field
     db = models.ForeignKey(Server, 
                             on_delete=models.CASCADE, 
                             related_name='db_host',
@@ -1076,7 +1082,7 @@ class SFTP(models.Model):
     host_server = models.ForeignKey(Server, on_delete=models.PROTECT)
 
     # storage that this sFTP instance gains access to
-    storage = models.ForeignKey(Storage, on_delete=models.PROTECT)
+    storage = models.ForeignKey(DataAccess, on_delete=models.PROTECT)
 
     def __str__(self):
         return f"{self.pusher}"
@@ -1581,7 +1587,10 @@ class FileTransfer(models.Model):
 
     # references one of the means of transfer (eg FTP, transfer.med)
     transfer_method = models.ForeignKey(TransferMethod, on_delete=models.PROTECT)
-    
+
+    # define any location the data was copied during the transfer (eg for review)
+    staging = models.ForeignKey(DataAccess, on_delete=models.PROTECT, null=True, blank=True)
+
     # person requesting the file transfer 
     requester = models.ForeignKey(Person, on_delete=models.CASCADE)
     

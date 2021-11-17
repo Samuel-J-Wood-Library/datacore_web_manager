@@ -769,7 +769,7 @@ class SFTPForm(forms.ModelForm):
                          url='dc_management:autocomplete-node'
                      ),
                      'storage': autocomplete.ModelSelect2(
-                         url='dc_management:autocomplete-storage'
+                         url='dc_management:autocomplete-dataaccess'
                      ),
                     }
 
@@ -851,7 +851,7 @@ class ProjectForm(forms.ModelForm):
                                         url='dc_management:autocomplete-user'
                                         ),
                     'storage' : autocomplete.ModelSelect2Multiple(
-                                        url='dc_management:autocomplete-storage'
+                                        url='dc_management:autocomplete-dataaccess'
                                         ),
                     'pi' : autocomplete.ModelSelect2(
                                         url='dc_management:autocomplete-user'
@@ -937,7 +937,7 @@ class ProjectUpdateForm(forms.ModelForm):
                                         url='dc_management:autocomplete-user'
                                         ),   
                     'storage' : autocomplete.ModelSelect2Multiple(
-                                        url='dc_management:autocomplete-storage'
+                                        url='dc_management:autocomplete-dataaccess'
                                         ),                 
                     'db' : autocomplete.ModelSelect2(
                                         url='dc_management:autocomplete-node'
@@ -1042,7 +1042,7 @@ class StorageAttachForm(forms.ModelForm):
         fields = [ 'storage', ]
 
         widgets =  {'storage' : autocomplete.ModelSelect2Multiple(
-                                url='dc_management:autocomplete-storage'
+                                url='dc_management:autocomplete-dataaccess'
                                 ), 
                     }
 

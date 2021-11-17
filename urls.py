@@ -26,6 +26,10 @@ urlpatterns = [
         views.StorageAutocomplete.as_view(), 
         name='autocomplete-storage',
         ),
+    url(r'autocomplete-dataaccess/$',
+        views.DataAccessAutocomplete.as_view(),
+        name='autocomplete-dataaccess'
+        ),
     url(r'autocomplete-djuser/$',
         views.DjangoUserAutocomplete.as_view(),
         name='autocomplete-djuser',

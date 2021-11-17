@@ -17,16 +17,17 @@
 <p>{{ email_details.body|linebreaks }}</p>
 
 {% else %}
-<h2>Database updated, but email not sent </h2>
-<p>Email error log:</p>
-<p>"{{ sendtest }}"</p>
+<p> </p>
 
 </br>
-<h3>Send email manually:</h3>
-<p>To: {{ email_details.to_email }}</p>
-<p>Subject: <strong>{{ email_details.subject }}</strong></p>
+<h3>Copy the following details into a new <a href="https://wcmcprd.service-now.com/myhelpdesk?id=sc_cat_item&sys_id=2a73bbaadbc42c146f4e105f689619f9&sysparm_category=4b63ad5f137c3f8037507b104244b032"
+                                           target="_blank">Data Core Work Request</a>:
+</h3>
+
+{% comment %}<p>To: {{ email_details.to_email }}</p>{% endcomment %}
+<p>Short Description: <strong>{{ email_details.subject }}</strong></p>
 <p>{{ email_details.body|linebreaks }}</p>
-<a class="btn btn-success" href="mailto:{{ email_details.to_email }}?subject={{ email_details.subject_html }}&body={{ email_details.body_html }}"">Send email!</a>
+<a class="btn btn-success" href="mailto:{{ email_details.to_email }}?subject={{ email_details.subject_html }}&body={{ email_details.body_html }}"">Send as email</a>
 
 
 {% endif %}

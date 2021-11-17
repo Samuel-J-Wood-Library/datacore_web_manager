@@ -37,7 +37,7 @@
             <tr><td>Firewall request</td><td>{{ sftp.firewall_request }}</td></tr>
         {% endif %}
         {% if sftp.storage %}
-            <tr><td>Storage connected</td><td><a href="{% url 'dc_management:storage' sftp.storage.pk %}">{{ sftp.storage }}</a></td></tr>
+            <tr><td>Storage connected</td><td><a href="{% url 'datacatalog:access-view' sftp.storage.pk %}">{{ sftp.storage }}</a></td></tr>
         {% endif %}
         {% if sftp.host_server %}
             <tr><td>sFTP host</td><td><a href="{% url 'dc_management:node' sftp.host_server.pk %}">{{ sftp.host_server }}</a></td></tr>

@@ -1,19 +1,21 @@
 <table class="table table-striped table-hover" id="storageTable">
 <thead class="thead-default">
     <tr>
-        <th>Storage/Name</th>
+        <th>Name</th>
+        <th>Storage</th>
         <th>Access</th>
         <th># datasets</th>
     </tr>
 </thead>
 
-{% for s in storage_list %}
+{% for da in storage_list %}
     <tr>
-    <td>{{ s.get_location_display }}/<a href="{% url 'dc_management:storage' s.pk %}">{{ s.name }}</a></td>
-    <td> {% for p in s.project_set.all %}
-            <a href="{% url 'dc_management:project' p.pk %}">{{ p.dc_prj_id }}</a> 
+    <td><a href="{% url 'datacatalog:access-view' da.pk %}">{{ da.name }}</a></td>
+    <td>{{ da.storage_type.name }}</td>
+    <td>{% for p in da.dc_project.all %}
+            <a href="{% url 'dc_management:project' p.pk %}">{{ p.dc_prj_id }} </a>
         {% endfor %}</td>
-    <td> {{ s.datasets.count }}</td>
+    <td> {{ da.metadata.count }}</td>
     </tr>
 {% endfor %}
 </table>

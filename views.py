@@ -40,7 +40,7 @@ from .models import ProjectBillingRecord, ExtraResourceCost
 from .models import DataCoreUserAgreement, AnnualProjectAttestation, SFTP
 
 from persons.models import Person
-from datacatalog.models import Dataset, DataUseAgreement
+from datacatalog.models import Dataset, DataUseAgreement, DataAccess
 
 from .forms import AddUserToProjectForm, RemoveUserFromProjectForm
 from .forms import ExportFileForm, CreateDCAgreementURLForm
@@ -197,6 +197,18 @@ class StorageAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
             qs = qs.filter(
                             Q(name__icontains=self.q) | 
                             Q(description__icontains=self.q)
+                            )
+        return qs
+
+class DataAccessAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        qs = DataAccess.objects.all()
+
+        if self.q:
+            qs = qs.filter(
+                            Q(name__icontains=self.q) |
+                            Q(storage_type__name__icontains=self.q) |
+                            Q(filepaths__icontains=self.q)
                             )
         return qs
 
@@ -574,7 +586,7 @@ class ProjectView(LoginRequiredMixin, generic.DetailView):
             available_sw = []            
         
         # pull all governance docs from datasets on attached storage:
-        prj_governance = DataUseAgreement.objects.filter(datasets__storage__project=self.object.pk,
+        prj_governance = DataUseAgreement.objects.filter(datasets__dataaccess__dc_project=self.object.pk,
                                 ).distinct()
         
         # create other lists for display:
@@ -886,7 +898,7 @@ class AllStorageView(PermissionRequiredMixin, generic.ListView):
     
     def get_queryset(self):
         """Return  all storage."""
-        return Storage.objects.all().order_by('name')
+        return DataAccess.objects.all().order_by('name')
 
 class StorageCreate(PermissionRequiredMixin, CreateView):
     model = Storage
