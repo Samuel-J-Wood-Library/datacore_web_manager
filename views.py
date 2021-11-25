@@ -4,7 +4,7 @@ import re
 from datetime import date, timedelta
 import time
 from urllib.parse import quote
-
+from mimetypes import guess_type
 import numpy as np
 
 from dal import autocomplete
@@ -1598,11 +1598,13 @@ class CreateDCAgreementURL(LoginRequiredMixin, CreateView):
 
         return super(CreateDCAgreementURL, self).form_valid(form)
 
+
 class ViewDCAgreementURL(LoginRequiredMixin, generic.DetailView):
     template_name = 'dc_management/dcua_url_generator_result.html'
     model = DCUAGenerator
 
 ###### Export requests #######
+
 
 class ExportRequest(LoginRequiredMixin, FormView):
     template_name = 'dc_management/export_request_form.html'
@@ -1614,9 +1616,7 @@ class ExportRequest(LoginRequiredMixin, FormView):
         # This method is called when valid form data has been POSTed.
         # It should return an HttpResponse.
         post_data = self.request.POST
-        
-        
-        
+
         # Check if user in project, then connect user to project
         
         prj = form.cleaned_data['project']
@@ -1657,12 +1657,11 @@ class ExportRequest(LoginRequiredMixin, FormView):
         )
         return super(AddUserToProject, self).form_valid(form)
 
+
 class ExportFromThisProject(ExportRequest):
     template_name = 'dc_management/addusertoproject.html'
     form_class = ExportFileForm
     success_url = reverse_lazy('dc_management:all_projects')
-    #chosen_user = Person.objects.get(pk=self.kwargs['pk'])
-    #success_url = reverse_lazy('dc_management:dcuser', self.kwargs['pk'])
     
     def get_initial(self):
         initial = super(AddThisUserToProject, self).get_initial()
@@ -1676,45 +1675,63 @@ class ExportFromThisProject(ExportRequest):
 ######  GOVERNANCE RELATED VIEWS  ######
 ########################################
 
+
 @login_required()
 def pdf_view(request, pk):
     gov_doc = Governance_Doc.objects.get(pk=pk)
     # check to see if file is associated:
     try:
         gd_file = gov_doc.documentation.file
-    except (FileNotFoundError, ValueError) as e:
+    except (FileNotFoundError, ValueError):
         raise Http404()
-        
-    if gov_doc.documentation.name[-3:] == "pdf":
+
+    # get standardized extension name to evaluate how to display:
+    extension_raw = os.path.splitext(gov_doc.documentation.name)
+    extension = extension_raw[1][1:].lower()
+
+    # serve pdfs for viewing in the browser
+    if extension == "pdf":
         try:
-            # open(gov_doc.documentation.file, 'rb')
-            return FileResponse(gov_doc.documentation.file, 
-                                content_type='application/pdf')
+            return FileResponse(gov_doc.documentation.file,
+                                content_type='application/pdf',
+                                )
         except FileNotFoundError:
             raise Http404()
-    elif gov_doc.documentation.name[-4:] == "docx":
+
+    # viewing of docx files
+    elif extension == "docx":
         try:
             with open(str(gov_doc.documentation.file), 'rb') as fh:
                 response = HttpResponse(fh.read(),
-                                        content_type="application/vnd.ms-word")
-                response['Content-Disposition'] = 'inline; filename=' + os.path.basename(str(gov_doc.documentation.file))
+                                        content_type="application/vnd.ms-word",
+                                        )
+                response['Content-Disposition'] = f'inline; filename={os.path.basename(str(gov_doc.documentation.file))}'
                 return response
             
         except FileNotFoundError:
             raise Http404()
+
+    # download all other files for handling by the user.
     else:
-        raise Http404()
+        mime_type = guess_type(gov_doc.documentation.name)
+        with open(str(gov_doc.documentation.file), 'rb') as fh:
+            response = HttpResponse(fh.read(),
+                                    content_type=mime_type,
+                                    )
+            response['Content-Disposition'] = f'attachment; filename={os.path.basename(str(gov_doc.documentation.file))}'
+            return response
+
 
 class GovernanceView(LoginRequiredMixin, generic.DetailView):
     model = Governance_Doc
     template_name = 'dc_management/governance_meta.html'
 
+
 class GovernanceCreate(LoginRequiredMixin, CreateView):
     model = Governance_Doc
     form_class = GovernanceDocForm
     template_name = 'dc_management/governance_form.html'
-    #success_url = reverse_lazy("dc_management:index" )
-    # default success_url should be to the object page defined in model.
+
     def form_valid(self, form):
         # add the logged in user as the record author
         form.instance.record_author = self.request.user
@@ -1722,14 +1739,12 @@ class GovernanceCreate(LoginRequiredMixin, CreateView):
         self.object = form.save(commit=False)
         return super(GovernanceCreate, self).form_valid(form)
 
+
 class GovernanceUpdate(LoginRequiredMixin, UpdateView):
     model = Governance_Doc
     form_class = GovernanceDocForm
     template_name = 'dc_management/governance_form.html'
-    #is_update_view = True
-    
-    #success_url = reverse_lazy("dc_management:index" )
-    #default success_url should be to the object page defined in model.
+
     def form_valid(self, form):
         # add the logged in user as the record author
         form.instance.record_author = self.request.user
