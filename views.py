@@ -37,7 +37,7 @@ from .models import Software, Software_Log, Storage_Log, Storage
 from .models import UserCost, SoftwareCost, StorageCost, DCUAGenerator, DatabaseCost
 from .models import FileTransfer, MigrationLog, CommentLog
 from .models import ProjectBillingRecord, ExtraResourceCost
-from .models import DataCoreUserAgreement, AnnualProjectAttestation, SFTP
+from .models import DataCoreUserAgreement, SFTP
 
 from persons.models import Person
 from datacatalog.models import Dataset, DataUseAgreement, DataAccess
@@ -775,6 +775,9 @@ class StorageChange(LoginRequiredMixin, CreateView):
         # match storage type to project (this needs to be more robust)
         s_type = log.storage_type.storage_type
         assess_server = False
+        existing_project_storage = None
+        new_project_storage = None
+
         if re.search('direct', s_type.lower()):
             existing_project_storage = project.direct_attach_storage
             if not existing_project_storage:
@@ -790,8 +793,8 @@ class StorageChange(LoginRequiredMixin, CreateView):
         elif re.search('derivative', s_type.lower()):
             project.fileshare_derivative = log.storage_amount
         else:
-            pass # may want to add an error message here.
-        
+            raise Http404()
+
         project.save()
         log.save()
         
@@ -1045,9 +1048,10 @@ class SFTPUpdate(PermissionRequiredMixin, UpdateView):
         self.object.save()
         return super(SFTPUpdate, self).form_valid(form)
 
-###############################
-######  UPDATE SOFTWARE  ######
-###############################
+# ############################# #
+# #####  UPDATE SOFTWARE  ##### #
+# ############################# #
+
 
 class UpdateSoftware(LoginRequiredMixin, FormView):
     template_name = 'dc_management/updatesoftwareform.html'
@@ -1069,12 +1073,12 @@ class UpdateSoftware(LoginRequiredMixin, FormView):
                                      prj.host.ip_address,
                                     )
 
-        email_dict = {  'subject'       :sbj_msg,
-                        'body'          :body_msg,
-                        'to_email'      :"dcore-ticket@med.cornell.edu",
-                        'subject_html'  :quote(sbj_msg),
-                        'body_html'     :quote(body_msg),
-        }
+        email_dict = {'subject': sbj_msg,
+                      'body': body_msg,
+                      'to_email': "dcore-ticket@med.cornell.edu",
+                      'subject_html': quote(sbj_msg),
+                      'body_html': quote(body_msg),
+                      }
         
         self.request.session['email_json'] = json.dumps(email_dict)
     
@@ -1084,29 +1088,29 @@ class UpdateSoftware(LoginRequiredMixin, FormView):
         """
         sbj_str = '{} software {} to {}'
         body_str = 'Please install {} on node {} ({}).'
-        sbj_msg  = sbj_str.format(changestr, sw, node.node)
+        sbj_msg = sbj_str.format(changestr, sw, node.node)
         body_msg = body_str.format(sw, 
-                             node.node,
-                             node.ip_address,
-                            )
+                                   node.node,
+                                   node.ip_address,
+                                   )
 
-        email_dict = {  'subject'       :sbj_msg,
-                        'body'          :body_msg,
-                        'to_email'      :"dcore-ticket@med.cornell.edu",
-                        'subject_html'  :quote(sbj_msg),
-                        'body_html'     :quote(body_msg),
-        }
+        email_dict = {'subject': sbj_msg,
+                      'body': body_msg,
+                      'to_email': "dcore-ticket@med.cornell.edu",
+                      'subject_html': quote(sbj_msg),
+                      'body_html': quote(body_msg),
+                      }
         
         self.request.session['email_json'] = json.dumps(email_dict)
 
     def form_valid(self, form):
         # clear email fields in session
-        email_details = {   'subject'       :"na",
-                            'body'          :"na",
-                            'to_email'      :"na",
-                            'subject_html'  :"na",
-                            'body_html'     :"na",
-        }
+        email_details = {'subject': "na",
+                         'body': "na",
+                         'to_email': "na",
+                         'subject_html': "na",
+                         'body_html': "na",
+                         }
         self.request.session['email_json'] = json.dumps(email_details)
         
         # Check if user in project, then connect user to project
@@ -1176,16 +1180,19 @@ class UpdateSoftware(LoginRequiredMixin, FormView):
                 
         return super(UpdateSoftware, self).form_valid(form)    
 
+
 class EmailResults(LoginRequiredMixin, generic.TemplateView):
     template_name = 'dc_management/email_result.html'
-    
+
+
 class SoftwareView(LoginRequiredMixin, generic.DetailView):
     model = Software
     template_name = 'dc_management/software.html'
-    
-###############################
-######  USER PAGE VIEWS  ######
-###############################
+
+# ############################# #
+# #####  USER PAGE VIEWS  ##### #
+# ############################# #
+
 
 class UserProjectView(LoginRequiredMixin, generic.DetailView):
     model = Project

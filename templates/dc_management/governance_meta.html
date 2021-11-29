@@ -37,8 +37,9 @@
 </h2>
 
 
-
-<a  class="btn btn-info" href="{% url 'dc_management:govdoc' governance_doc.pk %}"  target="_blank">View governance doc</a>
+{% if  governance_doc.documentation %}
+    <a  class="btn btn-info" href="{% url 'dc_management:govdoc' governance_doc.pk %}"  target="_blank">View governance doc</a>
+{% endif %}
 <a  class="btn btn-primary" href="{% url 'dc_management:govdocmeta-update' governance_doc.pk %}">Update governance doc</a>
 
 </br>
